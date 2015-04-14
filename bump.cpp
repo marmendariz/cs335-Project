@@ -63,8 +63,10 @@ Vec leftButtonPos;
 typedef struct t_Ball {
 	Vec pos;
 	Vec vel;
+        Vec center;
 	float radius;
 	float mass;
+        float width,height;
 } Ball;
 Ball ball1;
 Ball ball2;
@@ -213,7 +215,8 @@ void init_balls(void)
 	ball1.pos[1] = 200;
 	ball1.vel[0] = 1.6;
 	ball1.vel[1] = 0.0;
-	ball1.radius = 80.0;
+	ball1.width = 80.0;
+        ball1.height=80.0;
 	ball1.mass = 1.0;
 
 	ball2.pos[0] = 400;
@@ -328,7 +331,7 @@ void physics(void)
 	tx = ball1.pos[0] - ball2.pos[0];
 	ty = ball1.pos[1] - ball2.pos[1];
 	distance = sqrt(tx * tx + ty * ty);
-	if (distance < (ball1.radius+ball2.radius)) {
+	if (distance < (ball1.width+ball2.radius)) {
 		//We have a collision!
 		//vector from center to center.
 		vcontact[0][0] = tx;
@@ -378,12 +381,12 @@ void physics(void)
 		ball1.vel[1] = (leftButtonPos[1] - ball1.pos[1]) * 0.5;
 	}
 	//Check for collision with window edges
-	if ((ball1.pos[0] < ball1.radius && ball1.vel[0] < 0.0) ||
-		(ball1.pos[0] >= (Flt)xres-ball1.radius && ball1.vel[0] > 0.0)) {
+	if ((ball1.pos[0] < ball1.width && ball1.vel[0] < 0.0) ||
+		(ball1.pos[0] >= (Flt)xres-ball1.width && ball1.vel[0] > 0.0)) {
 		ball1.vel[0] = -ball1.vel[0];
 	}
-	if ((ball1.pos[1] < ball1.radius && ball1.vel[1] < 0.0) ||
-		(ball1.pos[1] >= (Flt)yres-ball1.radius && ball1.vel[1] > 0.0)) {
+	if ((ball1.pos[1] < ball1.width && ball1.vel[1] < 0.0) ||
+		(ball1.pos[1] >= (Flt)yres-ball1.width && ball1.vel[1] > 0.0)) {
 		ball1.vel[1] = -ball1.vel[1];
 	}
 	if ((ball2.pos[0] < ball2.radius && ball2.vel[0] < 0.0) ||
@@ -419,7 +422,19 @@ void drawBall(Flt rad)
 	glEnd();
 }
 
+void drawBox(Flt width, Flt height){
+  glPushMatrix();
+       // glTranslatef(s->center.x, s->center.y, s->center.z);
+        int w = width;
+        int h = height;
+        glBegin(GL_QUADS);
+        glVertex2i(-w,-h);
+        glVertex2i(-w, h);
+        glVertex2i( w, h);
+        glVertex2i( w,-h);
+        glEnd();
 
+} 
 void render(void)
 {
 	Rect r;
@@ -429,7 +444,7 @@ void render(void)
 	glColor3ub(30,60,90);
 	glPushMatrix();
 	glTranslatef(ball1.pos[0], ball1.pos[1], ball1.pos[2]);
-	drawBall(ball1.radius);
+	drawBox(ball1.width,ball1.height);
 	glPopMatrix();
 
 	glColor3ub(130,60,90);
