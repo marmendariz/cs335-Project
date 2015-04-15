@@ -107,7 +107,7 @@ int main(void)
 			XEvent e;
 			XNextEvent(dpy, &e);
 			check_resize(&e);
-			check_mouse(&e);
+		//	check_mouse(&e);
 			done = check_keys(&e);
 		}
 		clock_gettime(CLOCK_REALTIME, &timeCurrent);
@@ -218,17 +218,20 @@ void init_balls(void)
 {
 	ball1.pos[0] = 100;
 	ball1.pos[1] = 200;
-	ball1.vel[0] = 1.6;
+	ball1.vel[0] = 100;
 	ball1.vel[1] = 0.0;
-	ball1.width = 80.0;
-        ball1.height=80.0;
+	ball1.width = 30.0;
+        ball1.height=60.0;
+        ball1.radius=30.0;
 	ball1.mass = 1.0;
 
 	ball2.pos[0] = 400;
-	ball2.pos[1] = 230;
-	ball2.vel[0] = -1.6;
+	ball2.pos[1] = 200;
+	ball2.vel[0] = -7;
 	ball2.vel[1] = 0.0;
-	ball2.radius = 80.0;
+	ball2.radius = 30.0;
+        ball2.width = 30.0;
+        ball2.height=60.0;
 	ball2.mass = 1.0;
 }
 
@@ -278,36 +281,57 @@ void check_mouse(XEvent *e)
 	}
 }
 
+int key[3000];
 int check_keys(XEvent *e)
 {
+
 	//Was there input from the keyboard?
-	if (e->type == KeyPress) {
-		int key = XLookupKeysym(&e->xkey, 0);
-		switch(key) {
+	while (e->type == KeyPress) {
+	      int key= XLookupKeysym(&e->xkey, 0);
+                 
+		switch(key[i]) {
 			case XK_Left:
 				ball1.vel[0] -= 1.0;
 				break;
+			case XK_a:
+				ball2.vel[0] -= 1.0;
+				break;
+		/*	case XK_s:
+				ball2.vel[1] -= 1.0;
+				break;*/
+                        case XK_d:
+				ball2.vel[0] += 1.0;
+				break;
+                       /* case XK_w:
+				ball2.vel[1] += 1.0;
+				break;*/
 			case XK_Right:
 				ball1.vel[0] += 1.0;
 				break;
-			case XK_Up:
+			/*case XK_Up:
 				ball1.vel[1] += 1.0;
 				break;
 			case XK_Down:
 				ball1.vel[1] -= 1.0;
-				break;
-			case XK_s:
+				break;*/
+			case XK_x:
 				//press s to slow the balls
-				ball1.vel[0] *= 0.5;
-				ball1.vel[1] *= 0.5;
-				ball2.vel[0] *= 0.5;
-				ball2.vel[1] *= 0.5;
+				ball1.vel[0] *= 0;
+				ball1.vel[1] *= 0;
+				ball2.vel[0] *= 0;
+				ball2.vel[1] *= 0;
 				break;
 			case XK_Escape:
 				return 1;
 				break;
 		}
 	}
+
+
+	
+	
+
+
 	return 0;
 }
 
@@ -334,13 +358,14 @@ void physics(void)
 	Vec vmove[2];
 	Flt dot0,dot1;
 	tx = ball1.pos[0] - ball2.pos[0];
-	ty = ball1.pos[1] - ball2.pos[1];
-	distance = sqrt(tx * tx + ty * ty);
-	if (distance < (ball1.width+ball2.radius)) {
+	//ty = ball1.pos[1] - ball2.pos[1];
+	distance = sqrt(tx * tx);
+	//distance = sqrt(tx * tx + ty * ty);
+	if (distance < ball1.width+(ball2.width)) {
 		//We have a collision!
 		//vector from center to center.
 		vcontact[0][0] = tx;
-		vcontact[0][1] = ty;
+		//vcontact[0][1] = ty;
 		vcontact[0][2] = 0.0;
 		VecNormalize(vcontact[0]);
 		VecCopy(vcontact[0],vcontact[1]);
@@ -350,10 +375,10 @@ void physics(void)
 		movj[0] = ball2.vel[0];
 		movj[1] = ball2.vel[1];
 		vmove[0][0] = movi[0];
-		vmove[0][1] = movi[1];
+		//vmove[0][1] = movi[1];
 		vmove[0][2] = 0.0;
 		vmove[1][0] = movj[0];
-		vmove[1][1] = movj[1];
+		//vmove[1][1] = movj[1];
 		vmove[1][2] = 0.0;
 		VecNormalize(vmove[0]);
 		VecNormalize(vmove[1]);
@@ -361,8 +386,10 @@ void physics(void)
 		dot0 = VecDot(vcontact[0], vmove[0]);  //dot product
 		dot1 = VecDot(vcontact[1], vmove[1]);  //dot product
 		//Find the closing (relative) speed of the objects...
-		float speed0 = sqrtf( movi[0]*movi[0] + movi[1]*movi[1]) * dot0;
-		float speed1 = sqrtf( movj[0]*movj[0] + movj[1]*movj[1]) * dot1;
+		float speed0 = 0.5;
+                //sqrtf( movi[0]*movi[0] + movi[1]*movi[1]) * dot0;
+		float speed1 = 0.5;
+                //sqrtf( movj[0]*movj[0] + movj[1]*movj[1]) * dot1;
 		speed = speed0 + speed1;
 		if (speed < 0.0) {
 			//Normalize the mass of each object...
@@ -376,15 +403,25 @@ void physics(void)
 		}
 	}
 	//Update position
+        while(ball1.pos[0]+2*ball1.width>=ball2.pos[0]){
+	ball1.pos[0]-= 10;
+        ball2.pos[0]+= 10;
+        }
+
+        if(ball1.pos[0]<(30+ball2.pos[0])){
 	ball1.pos[0] += ball1.vel[0];
-	ball1.pos[1] += ball1.vel[1];
+	//ball1.pos[1] += ball1.vel[1];
 	ball2.pos[0] += ball2.vel[0];
-	ball2.pos[1] += ball2.vel[1];
-	if (leftButtonDown) {
+	//ball2.pos[1] += ball2.vel[1];
+        }
+
+        //steps
+        ball1.vel[0] = 0;
+        ball2.vel[0] = 0;
+/*	if (leftButtonDown) {
 		//make ball go toward mouse pointer position
 		ball1.vel[0] = (leftButtonPos[0] - ball1.pos[0]) * 0.5;
-		ball1.vel[1] = (leftButtonPos[1] - ball1.pos[1]) * 0.5;
-	}
+		ball1.vel[1] = (leftButtonPos[1] - ball1.pos[1]) * 0.5;	}*/
 	//Check for collision with window edges
 	if ((ball1.pos[0] < ball1.width && ball1.vel[0] < 0.0) ||
 		(ball1.pos[0] >= (Flt)xres-ball1.width && ball1.vel[0] > 0.0)) {
@@ -452,10 +489,10 @@ void render(void)
 	drawBox(ball1.width,ball1.height);
 	glPopMatrix();
 
-	glColor3ub(130,60,90);
+	glColor3ub(30,60,90);
 	glPushMatrix();
 	glTranslatef(ball2.pos[0], ball2.pos[1], ball2.pos[2]);
-	drawBall(ball2.radius);
+	drawBox(ball2.width,ball2.height);
 	glPopMatrix();
 	//
 	r.bot = yres - 20;
