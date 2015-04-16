@@ -1,41 +1,20 @@
 
-/*THIS IS WHAT WE WILL BUILD ON*/
-/*asdfadfas*/
-//booop
-
-//cs335 Sample
-//This program demonstrates billiard ball collisions
-//
-//program: bump.cpp
-//author:  Gordon Griesel
-//date:    2014/2015
-//
+/*ULTIMATE PUNCH FRENZY:
+	IMMORTAL PEACETIME:
+		FIGHTERS IN THE STREET*/
 //-------------------------------------------
-//Press arrow keys to move a ball
-//Press S to slow the ball movement
-//Grab and move a ball with mouse left button
-//-------------------------------------------
-//
-//
-//Depending on your Linux distribution,
-//may have to install these packages:
-// libx11-dev
-// libglew1.6
-// libglew1.6-dev
 //
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
-//#include <unistd.h>
+#include <unistd.h>
 #include <ctime>
 #include <cmath>
 #include <X11/Xlib.h>
-//#include <X11/Xutil.h>
 #include <X11/keysym.h>
-//#include <GL/gl.h>
 #include <GL/glx.h>
-//#include <GL/glu.h>
-//#include "log.h"
+#include "ppm.h"
+#include "log.h"
 extern "C" {
 	#include "fonts.h"
 }
@@ -52,6 +31,9 @@ Display *dpy;
 Window win;
 GLXContext glc;
 
+/*KEY ARRAY*/
+int keys[65536];
+
 void initXWindows(void);
 void init_opengl(void);
 void init_balls(void);
@@ -62,7 +44,7 @@ int check_keys(XEvent *e);
 void physics(void);
 void render(void);
 
-int xres=640, yres=480;
+int xres=1280, yres=680;
 int leftButtonDown=0;
 Vec leftButtonPos;
 typedef struct t_Ball {
@@ -107,7 +89,7 @@ int main(void)
 			XEvent e;
 			XNextEvent(dpy, &e);
 			check_resize(&e);
-		//	check_mouse(&e);
+			check_mouse(&e);
 			done = check_keys(&e);
 		}
 		clock_gettime(CLOCK_REALTIME, &timeCurrent);
@@ -136,7 +118,7 @@ void set_title(void)
 {
 	//Set the window title bar.
 	XMapWindow(dpy, win);
-	XStoreName(dpy, win, "CS335 Demo Program");
+	XStoreName(dpy, win, "Ultimate Punch Frenzy: Immortal Peacetime: Fighters in the Street");
 }
 
 void setup_screen_res(const int w, const int h)
@@ -151,7 +133,7 @@ void initXWindows(void)
 	//GLint att[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, None };
 	XSetWindowAttributes swa;
 
-	setup_screen_res(640, 480);
+	setup_screen_res(1280, 680);
 	dpy = XOpenDisplay(NULL);
 	if(dpy == NULL) {
 		std::cout << "\n\tcannot connect to X server\n" << std::endl;
@@ -218,7 +200,7 @@ void init_balls(void)
 {
 	ball1.pos[0] = 100;
 	ball1.pos[1] = 200;
-	ball1.vel[0] = 100;
+	ball1.vel[0] = 0.0;
 	ball1.vel[1] = 0.0;
 	ball1.width = 30.0;
         ball1.height=60.0;
@@ -227,7 +209,7 @@ void init_balls(void)
 
 	ball2.pos[0] = 400;
 	ball2.pos[1] = 200;
-	ball2.vel[0] = -7;
+	ball2.vel[0] = 0.0;
 	ball2.vel[1] = 0.0;
 	ball2.radius = 30.0;
         ball2.width = 30.0;
@@ -281,57 +263,59 @@ void check_mouse(XEvent *e)
 	}
 }
 
-int key[3000];
+
 int check_keys(XEvent *e)
 {
+	int key= XLookupKeysym(&e->xkey, 0);
+	
+	if (e->type == KeyRelease)
+	{
+		keys[key]=0;
+		return 0;
+	}
+	if (e->type == KeyPress)
+		keys[key]=1;
+	else
+		return 0;
 
-	//Was there input from the keyboard?
-	while (e->type == KeyPress) {
-	      int key= XLookupKeysym(&e->xkey, 0);
-                 
-		switch(key[i]) {
+		switch(key) 
+		{
+			/*
 			case XK_Left:
 				ball1.vel[0] -= 1.0;
 				break;
 			case XK_a:
 				ball2.vel[0] -= 1.0;
 				break;
-		/*	case XK_s:
+		    case XK_s:
 				ball2.vel[1] -= 1.0;
-				break;*/
+				break;
                         case XK_d:
 				ball2.vel[0] += 1.0;
 				break;
-                       /* case XK_w:
+                       case XK_w:
 				ball2.vel[1] += 1.0;
-				break;*/
+				break;
 			case XK_Right:
 				ball1.vel[0] += 1.0;
 				break;
-			/*case XK_Up:
+			case XK_Up:
 				ball1.vel[1] += 1.0;
 				break;
 			case XK_Down:
 				ball1.vel[1] -= 1.0;
-				break;*/
+				break;
 			case XK_x:
 				//press s to slow the balls
 				ball1.vel[0] *= 0;
 				ball1.vel[1] *= 0;
 				ball2.vel[0] *= 0;
 				ball2.vel[1] *= 0;
-				break;
+				break;*/
 			case XK_Escape:
 				return 1;
 				break;
 		}
-	}
-
-
-	
-	
-
-
 	return 0;
 }
 
@@ -358,9 +342,19 @@ void physics(void)
 	Vec vmove[2];
 	Flt dot0,dot1;
 	tx = ball1.pos[0] - ball2.pos[0];
-	//ty = ball1.pos[1] - ball2.pos[1];
 	distance = sqrt(tx * tx);
-	//distance = sqrt(tx * tx + ty * ty);
+
+	/*CHECK KEYS*/
+	if(keys[XK_Left])
+		ball1.pos[0] -= 2.0;	
+	if(keys[XK_Right])
+		ball1.pos[0] += 2.0;
+	if(keys[XK_a])
+		ball2.pos[0] -= 2.0;
+	if(keys[XK_d])
+		ball2.pos[0] += 2.0;
+
+
 	if (distance < ball1.width+(ball2.width)) {
 		//We have a collision!
 		//vector from center to center.
@@ -402,17 +396,16 @@ void physics(void)
 			ball1.vel[1] += vcontact[1][1] * speed * massj;
 		}
 	}
+
 	//Update position
         while(ball1.pos[0]+2*ball1.width>=ball2.pos[0]){
-	ball1.pos[0]-= 10;
-        ball2.pos[0]+= 10;
+	ball1.pos[0]-= 2;
+        ball2.pos[0]+= 2;
         }
 
         if(ball1.pos[0]<(30+ball2.pos[0])){
 	ball1.pos[0] += ball1.vel[0];
-	//ball1.pos[1] += ball1.vel[1];
 	ball2.pos[0] += ball2.vel[0];
-	//ball2.pos[1] += ball2.vel[1];
         }
 
         //steps
@@ -439,6 +432,7 @@ void physics(void)
 		(ball2.pos[1] >= (Flt)yres-ball2.radius && ball2.vel[1] > 0.0)) {
 		ball2.vel[1] = -ball2.vel[1];
 	}
+
 }
 
 void drawBall(Flt rad)
@@ -465,8 +459,8 @@ void drawBall(Flt rad)
 }
 
 void drawBox(Flt width, Flt height){
-  glPushMatrix();
-       // glTranslatef(s->center.x, s->center.y, s->center.z);
+  //glPushMatrix();
+       // glTranslatef(50, 50, 0);
         int w = width;
         int h = height;
         glBegin(GL_QUADS);
