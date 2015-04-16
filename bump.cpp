@@ -357,15 +357,15 @@ void physics(void)
 
 	/*CHECK KEYS*/
 	/*Player ONE*/
-	if(keys[XK_Left])
+	if(keys[XK_a])
 		ball1.pos[0] -= stepVel;	
-	if(keys[XK_Right])
+	if(keys[XK_d])
 		ball1.pos[0] += stepVel;
 
 	/*Player TWO*/
-	if(keys[XK_a])
+	if(keys[XK_Left])
 		ball2.pos[0] -= stepVel;
-	if(keys[XK_d])
+	if(keys[XK_Right])
 		ball2.pos[0] += stepVel;
 	/*END CHECK KEYS*/
 
