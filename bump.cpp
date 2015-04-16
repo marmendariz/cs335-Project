@@ -1,9 +1,17 @@
 
 /*ULTIMATE PUNCH FRENZY:
 	IMMORTAL PEACETIME:
-		FIGHTERS IN THE STREET*/
-//-------------------------------------------
-//
+		FIGHTERS IN THE STREET
+
+	cs335 - Software Engineering Project
+	Team #6
+	Mark
+	Zenaida
+	Sarahbeth
+	Kevin
+		*/
+/**********************************************/
+/**********************************************/
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
@@ -198,22 +206,24 @@ void init_opengl(void)
 
 void init_balls(void)
 {
-	ball1.pos[0] = 100;
+	/*Player ONE*/
+	ball1.pos[0] = 350;
 	ball1.pos[1] = 200;
 	ball1.vel[0] = 0.0;
 	ball1.vel[1] = 0.0;
-	ball1.width = 30.0;
-        ball1.height=60.0;
-        ball1.radius=30.0;
+	ball1.width = 70.0;
+    ball1.height= 120.0;
+    ball1.radius= 30.0;
 	ball1.mass = 1.0;
 
-	ball2.pos[0] = 400;
+	/*Player TWO*/
+	ball2.pos[0] = xres - 350;
 	ball2.pos[1] = 200;
 	ball2.vel[0] = 0.0;
 	ball2.vel[1] = 0.0;
 	ball2.radius = 30.0;
-        ball2.width = 30.0;
-        ball2.height=60.0;
+    ball2.width = 70.0;
+    ball2.height= 120.0;
 	ball2.mass = 1.0;
 }
 
@@ -280,6 +290,9 @@ int check_keys(XEvent *e)
 
 		switch(key) 
 		{
+			case XK_Escape:
+				return 1;
+				break;
 			/*
 			case XK_Left:
 				ball1.vel[0] -= 1.0;
@@ -312,9 +325,6 @@ int check_keys(XEvent *e)
 				ball2.vel[0] *= 0;
 				ball2.vel[1] *= 0;
 				break;*/
-			case XK_Escape:
-				return 1;
-				break;
 		}
 	return 0;
 }
@@ -343,17 +353,21 @@ void physics(void)
 	Flt dot0,dot1;
 	tx = ball1.pos[0] - ball2.pos[0];
 	distance = sqrt(tx * tx);
+	double stepVel = 4.0;
 
 	/*CHECK KEYS*/
+	/*Player ONE*/
 	if(keys[XK_Left])
-		ball1.pos[0] -= 2.0;	
+		ball1.pos[0] -= stepVel;	
 	if(keys[XK_Right])
-		ball1.pos[0] += 2.0;
-	if(keys[XK_a])
-		ball2.pos[0] -= 2.0;
-	if(keys[XK_d])
-		ball2.pos[0] += 2.0;
+		ball1.pos[0] += stepVel;
 
+	/*Player TWO*/
+	if(keys[XK_a])
+		ball2.pos[0] -= stepVel;
+	if(keys[XK_d])
+		ball2.pos[0] += stepVel;
+	/*END CHECK KEYS*/
 
 	if (distance < ball1.width+(ball2.width)) {
 		//We have a collision!
@@ -398,23 +412,21 @@ void physics(void)
 	}
 
 	//Update position
-        while(ball1.pos[0]+2*ball1.width>=ball2.pos[0]){
-	ball1.pos[0]-= 2;
+	while(ball1.pos[0]+2*ball1.width>=ball2.pos[0])
+	{
+		ball1.pos[0]-= 2;
         ball2.pos[0]+= 2;
-        }
+    }
+    if(ball1.pos[0]<(30+ball2.pos[0]))
+    {
+    	ball1.pos[0] += ball1.vel[0];
+    	ball2.pos[0] += ball2.vel[0];
+    }
 
-        if(ball1.pos[0]<(30+ball2.pos[0])){
-	ball1.pos[0] += ball1.vel[0];
-	ball2.pos[0] += ball2.vel[0];
-        }
+    //steps
+    ball1.vel[0] = 0;
+    ball2.vel[0] = 0;
 
-        //steps
-        ball1.vel[0] = 0;
-        ball2.vel[0] = 0;
-/*	if (leftButtonDown) {
-		//make ball go toward mouse pointer position
-		ball1.vel[0] = (leftButtonPos[0] - ball1.pos[0]) * 0.5;
-		ball1.vel[1] = (leftButtonPos[1] - ball1.pos[1]) * 0.5;	}*/
 	//Check for collision with window edges
 	if ((ball1.pos[0] < ball1.width && ball1.vel[0] < 0.0) ||
 		(ball1.pos[0] >= (Flt)xres-ball1.width && ball1.vel[0] > 0.0)) {
@@ -432,7 +444,6 @@ void physics(void)
 		(ball2.pos[1] >= (Flt)yres-ball2.radius && ball2.vel[1] > 0.0)) {
 		ball2.vel[1] = -ball2.vel[1];
 	}
-
 }
 
 void drawBall(Flt rad)
@@ -458,17 +469,16 @@ void drawBall(Flt rad)
 	glEnd();
 }
 
-void drawBox(Flt width, Flt height){
-  //glPushMatrix();
-       // glTranslatef(50, 50, 0);
-        int w = width;
-        int h = height;
-        glBegin(GL_QUADS);
-        glVertex2i(-w,-h);
-        glVertex2i(-w, h);
-        glVertex2i( w, h);
-        glVertex2i( w,-h);
-        glEnd();
+void drawBox(Flt width, Flt height)
+{
+	int w = width;
+	int h = height;
+	glBegin(GL_QUADS);
+	glVertex2i(-w,-h);
+    glVertex2i(-w, h);
+    glVertex2i( w, h);
+    glVertex2i( w,-h);
+    glEnd();
 
 } 
 void render(void)
@@ -492,17 +502,17 @@ void render(void)
 	r.bot = yres - 20;
 	r.left = 10;
 	r.center = 0;
-	ggprint8b(&r, 16, 0x0000000, "cs335 - Collision Demo");
-	ggprint8b(&r, 16, 0x0000000, "Arrows/mouse to move");
-	ggprint8b(&r, 16, 0x0000000, "S - Slow down movement");
+	ggprint8b(&r, 16, 0x0000000, "Ultimate Punch Frenzy: Immortal Peacetime: Fighters in the Street");
+	ggprint8b(&r, 16, 0x0000000, "Arrows/WASD to move");
+	//ggprint8b(&r, 16, 0x0000000, "S - Slow down movement");
 	//
 	r.center = 1;
 	r.left = ball1.pos[0];
 	r.bot  = ball1.pos[1]-4;
-	ggprint8b(&r, 16, 0x00ffff00, "paddle");
+	ggprint8b(&r, 11, 0x00ffff00, "Player One");
 	r.left = ball2.pos[0];
 	r.bot  = ball2.pos[1]-4;
-	ggprint8b(&r, 16, 0x00ffff00, "puck");
+	ggprint8b(&r, 11, 0x00ffff00, "Player Two");
 }
 
 
