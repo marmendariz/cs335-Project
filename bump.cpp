@@ -45,6 +45,7 @@ int keys[65536];
 void initXWindows(void);
 void init_opengl(void);
 void init_players(void);
+void init_healthBars(void);
 void cleanupXWindows(void);
 void check_resize(XEvent *e);
 void check_mouse(XEvent *e);
@@ -65,6 +66,14 @@ typedef struct t_Player {
 } Player;
 Player play1;
 Player play2;
+
+typedef struct t_healthBar
+{
+	Vec pos;
+	float width, height;
+} healthBar;
+healthBar hbar1;
+healthBar hbar2;
 
 //-----------------------------------------------------------------------------
 //Setup timers
@@ -88,6 +97,7 @@ int main(void)
 	initXWindows();
 	init_opengl();
 	init_players();
+	init_healthBars();
 	clock_gettime(CLOCK_REALTIME, &timePause);
 	clock_gettime(CLOCK_REALTIME, &timeStart);
 	int done=0;
@@ -218,6 +228,19 @@ void init_players(void)
     play2.width = 70.0;
     play2.height= 120.0;
 	play2.mass = 1.0;
+}
+
+void init_healthBars()
+{
+	hbar1.pos[0] = 300;
+	hbar1.pos[1] = 600;
+	hbar1.width = 250;
+	hbar1.height = 20;
+
+	hbar2.pos[0] = xres - 300;
+	hbar2.pos[1] = 600;
+	hbar2.width = 250;
+	hbar2.height = 20;
 }
 
 void check_resize(XEvent *e)
@@ -456,7 +479,7 @@ void render(void)
 	Rect r;
 	glClear(GL_COLOR_BUFFER_BIT);
 	//
-	//draw balls
+	/*Draw Boxes*/
 	glColor3ub(30,60,90);
 	glPushMatrix();
 	glTranslatef(play1.pos[0], play1.pos[1], play1.pos[2]);
@@ -468,7 +491,22 @@ void render(void)
 	glTranslatef(play2.pos[0], play2.pos[1], play2.pos[2]);
 	drawBox(play2.width,play2.height);
 	glPopMatrix();
-	//
+
+	/*Draw Healthbars*/
+	glColor3ub(30,60,90);
+	glPushMatrix();
+	glTranslatef(hbar1.pos[0], hbar1.pos[1], hbar1.pos[2]);
+	drawBox(hbar1.width,hbar1.height);
+	glPopMatrix();
+
+	glColor3ub(30,60,90);
+	glPushMatrix();
+	glTranslatef(hbar2.pos[0], hbar2.pos[1], hbar2.pos[2]);
+	drawBox(hbar2.width,hbar2.height);
+	glPopMatrix();
+
+
+
 	r.bot = yres - 20;
 	r.left = 10;
 	r.center = 0;
