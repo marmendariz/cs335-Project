@@ -44,7 +44,7 @@ int keys[65536];
 
 void initXWindows(void);
 void init_opengl(void);
-void init_balls(void);
+void init_players(void);
 void cleanupXWindows(void);
 void check_resize(XEvent *e);
 void check_mouse(XEvent *e);
@@ -55,16 +55,16 @@ void render(void);
 int xres=1280, yres=680;
 int leftButtonDown=0;
 Vec leftButtonPos;
-typedef struct t_Ball {
+typedef struct t_Player {
 	Vec pos;
 	Vec vel;
         Vec center;
 	float radius;
 	float mass;
         float width,height;
-} Ball;
-Ball ball1;
-Ball ball2;
+} Player;
+Player play1;
+Player play2;
 
 //-----------------------------------------------------------------------------
 //Setup timers
@@ -83,12 +83,11 @@ void timeCopy(struct timespec *dest, struct timespec *source) {
 }
 //-----------------------------------------------------------------------------
 
-
 int main(void)
 {
 	initXWindows();
 	init_opengl();
-	init_balls();
+	init_players();
 	clock_gettime(CLOCK_REALTIME, &timePause);
 	clock_gettime(CLOCK_REALTIME, &timeStart);
 	int done=0;
@@ -138,7 +137,6 @@ void setup_screen_res(const int w, const int h)
 void initXWindows(void)
 {
 	GLint att[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
-	//GLint att[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, None };
 	XSetWindowAttributes swa;
 
 	setup_screen_res(1280, 680);
@@ -153,10 +151,6 @@ void initXWindows(void)
 		std::cout << "\n\tno appropriate visual found\n" << std::endl;
 		exit(EXIT_FAILURE);
 	} 
-	//else {
-	//	// %p creates hexadecimal output like in glxinfo
-	//	printf("\n\tvisual %p selected\n", (void *)vi->visualid);
-	//}
 	Colormap cmap = XCreateColormap(dpy, root, vi->visual, AllocNone);
 	swa.colormap = cmap;
 	swa.event_mask =
@@ -180,7 +174,6 @@ void reshape_window(int width, int height)
 {
 	//window has been resized.
 	setup_screen_res(width, height);
-	//
 	glViewport(0, 0, (GLint)width, (GLint)height);
 	glMatrixMode(GL_PROJECTION); glLoadIdentity();
 	glMatrixMode(GL_MODELVIEW); glLoadIdentity();
@@ -204,27 +197,27 @@ void init_opengl(void)
 	initialize_fonts();
 }
 
-void init_balls(void)
+void init_players(void)
 {
 	/*Player ONE*/
-	ball1.pos[0] = 350;
-	ball1.pos[1] = 200;
-	ball1.vel[0] = 0.0;
-	ball1.vel[1] = 0.0;
-	ball1.width = 70.0;
-    ball1.height= 120.0;
-    ball1.radius= 30.0;
-	ball1.mass = 1.0;
+	play1.pos[0] = 350;
+	play1.pos[1] = 200;
+	play1.vel[0] = 0.0;
+	play1.vel[1] = 0.0;
+	play1.width = 70.0;
+    play1.height= 120.0;
+    play1.radius= 30.0;
+	play1.mass = 1.0;
 
 	/*Player TWO*/
-	ball2.pos[0] = xres - 350;
-	ball2.pos[1] = 200;
-	ball2.vel[0] = 0.0;
-	ball2.vel[1] = 0.0;
-	ball2.radius = 30.0;
-    ball2.width = 70.0;
-    ball2.height= 120.0;
-	ball2.mass = 1.0;
+	play2.pos[0] = xres - 350;
+	play2.pos[1] = 200;
+	play2.vel[0] = 0.0;
+	play2.vel[1] = 0.0;
+	play2.radius = 30.0;
+    play2.width = 70.0;
+    play2.height= 120.0;
+	play2.mass = 1.0;
 }
 
 void check_resize(XEvent *e)
@@ -295,35 +288,35 @@ int check_keys(XEvent *e)
 				break;
 			/*
 			case XK_Left:
-				ball1.vel[0] -= 1.0;
+				play1.vel[0] -= 1.0;
 				break;
 			case XK_a:
-				ball2.vel[0] -= 1.0;
+				play2.vel[0] -= 1.0;
 				break;
 		    case XK_s:
-				ball2.vel[1] -= 1.0;
+				play2.vel[1] -= 1.0;
 				break;
                         case XK_d:
-				ball2.vel[0] += 1.0;
+				play2.vel[0] += 1.0;
 				break;
                        case XK_w:
-				ball2.vel[1] += 1.0;
+				play2.vel[1] += 1.0;
 				break;
 			case XK_Right:
-				ball1.vel[0] += 1.0;
+				play1.vel[0] += 1.0;
 				break;
 			case XK_Up:
-				ball1.vel[1] += 1.0;
+				play1.vel[1] += 1.0;
 				break;
 			case XK_Down:
-				ball1.vel[1] -= 1.0;
+				play1.vel[1] -= 1.0;
 				break;
 			case XK_x:
 				//press s to slow the balls
-				ball1.vel[0] *= 0;
-				ball1.vel[1] *= 0;
-				ball2.vel[0] *= 0;
-				ball2.vel[1] *= 0;
+				play1.vel[0] *= 0;
+				play1.vel[1] *= 0;
+				play2.vel[0] *= 0;
+				play2.vel[1] *= 0;
 				break;*/
 		}
 	return 0;
@@ -351,25 +344,25 @@ void physics(void)
 	Vec vcontact[2];
 	Vec vmove[2];
 	Flt dot0,dot1;
-	tx = ball1.pos[0] - ball2.pos[0];
+	tx = play1.pos[0] - play2.pos[0];
 	distance = sqrt(tx * tx);
 	double stepVel = 4.0;
 
 	/*CHECK KEYS*/
 	/*Player ONE*/
 	if(keys[XK_a])
-		ball1.pos[0] -= stepVel;	
+		play1.pos[0] -= stepVel;	
 	if(keys[XK_d])
-		ball1.pos[0] += stepVel;
+		play1.pos[0] += stepVel;
 
 	/*Player TWO*/
 	if(keys[XK_Left])
-		ball2.pos[0] -= stepVel;
+		play2.pos[0] -= stepVel;
 	if(keys[XK_Right])
-		ball2.pos[0] += stepVel;
+		play2.pos[0] += stepVel;
 	/*END CHECK KEYS*/
 
-	if (distance < ball1.width+(ball2.width)) {
+	if (distance < play1.width+(play2.width)) {
 		//We have a collision!
 		//vector from center to center.
 		vcontact[0][0] = tx;
@@ -378,10 +371,10 @@ void physics(void)
 		VecNormalize(vcontact[0]);
 		VecCopy(vcontact[0],vcontact[1]);
 		VecNegate(vcontact[1]);
-		movi[0] = ball1.vel[0];
-		movi[1] = ball1.vel[1];
-		movj[0] = ball2.vel[0];
-		movj[1] = ball2.vel[1];
+		movi[0] = play1.vel[0];
+		movi[1] = play1.vel[1];
+		movj[0] = play2.vel[0];
+		movj[1] = play2.vel[1];
 		vmove[0][0] = movi[0];
 		//vmove[0][1] = movi[1];
 		vmove[0][2] = 0.0;
@@ -401,72 +394,49 @@ void physics(void)
 		speed = speed0 + speed1;
 		if (speed < 0.0) {
 			//Normalize the mass of each object...
-			massFactor = 2.0 / (ball1.mass + ball2.mass);
-			massi = ball1.mass * massFactor;
-			massj = ball2.mass * massFactor;
-			ball2.vel[0] += vcontact[0][0] * speed * massi;
-			ball2.vel[1] += vcontact[0][1] * speed * massi;
-			ball1.vel[0] += vcontact[1][0] * speed * massj;
-			ball1.vel[1] += vcontact[1][1] * speed * massj;
+			massFactor = 2.0 / (play1.mass + play2.mass);
+			massi = play1.mass * massFactor;
+			massj = play2.mass * massFactor;
+			play2.vel[0] += vcontact[0][0] * speed * massi;
+			play2.vel[1] += vcontact[0][1] * speed * massi;
+			play1.vel[0] += vcontact[1][0] * speed * massj;
+			play1.vel[1] += vcontact[1][1] * speed * massj;
 		}
 	}
 
 	//Update position
-	while(ball1.pos[0]+2*ball1.width>=ball2.pos[0])
+	while(play1.pos[0]+2*play1.width>=play2.pos[0])
 	{
-		ball1.pos[0]-= 2;
-        ball2.pos[0]+= 2;
+		play1.pos[0]-= 2;
+        play2.pos[0]+= 2;
     }
-    if(ball1.pos[0]<(30+ball2.pos[0]))
+    if(play1.pos[0]<(30+play2.pos[0]))
     {
-    	ball1.pos[0] += ball1.vel[0];
-    	ball2.pos[0] += ball2.vel[0];
+    	play1.pos[0] += play1.vel[0];
+    	play2.pos[0] += play2.vel[0];
     }
 
     //steps
-    ball1.vel[0] = 0;
-    ball2.vel[0] = 0;
+    play1.vel[0] = 0;
+    play2.vel[0] = 0;
 
 	//Check for collision with window edges
-	if ((ball1.pos[0] < ball1.width && ball1.vel[0] < 0.0) ||
-		(ball1.pos[0] >= (Flt)xres-ball1.width && ball1.vel[0] > 0.0)) {
-		ball1.vel[0] = -ball1.vel[0];
+	if ((play1.pos[0] < play1.width && play1.vel[0] < 0.0) ||
+		(play1.pos[0] >= (Flt)xres-play1.width && play1.vel[0] > 0.0)) {
+		play1.vel[0] = -play1.vel[0];
 	}
-	if ((ball1.pos[1] < ball1.width && ball1.vel[1] < 0.0) ||
-		(ball1.pos[1] >= (Flt)yres-ball1.width && ball1.vel[1] > 0.0)) {
-		ball1.vel[1] = -ball1.vel[1];
+	if ((play1.pos[1] < play1.width && play1.vel[1] < 0.0) ||
+		(play1.pos[1] >= (Flt)yres-play1.width && play1.vel[1] > 0.0)) {
+		play1.vel[1] = -play1.vel[1];
 	}
-	if ((ball2.pos[0] < ball2.radius && ball2.vel[0] < 0.0) ||
-		(ball2.pos[0] >= (Flt)xres-ball2.radius && ball2.vel[0] > 0.0)) {
-		ball2.vel[0] = -ball2.vel[0];
+	if ((play2.pos[0] < play2.radius && play2.vel[0] < 0.0) ||
+		(play2.pos[0] >= (Flt)xres-play2.radius && play2.vel[0] > 0.0)) {
+		play2.vel[0] = -play2.vel[0];
 	}
-	if ((ball2.pos[1] < ball2.radius && ball2.vel[1] < 0.0) ||
-		(ball2.pos[1] >= (Flt)yres-ball2.radius && ball2.vel[1] > 0.0)) {
-		ball2.vel[1] = -ball2.vel[1];
+	if ((play2.pos[1] < play2.radius && play2.vel[1] < 0.0) ||
+		(play2.pos[1] >= (Flt)yres-play2.radius && play2.vel[1] > 0.0)) {
+		play2.vel[1] = -play2.vel[1];
 	}
-}
-
-void drawBall(Flt rad)
-{
-	int i;
-	static int firsttime=1;
-	static Flt verts[32][2];
-	static int n=32;
-	if (firsttime) {
-		Flt ang=0.0;
-		Flt inc = 3.14159 * 2.0 / (Flt)n;
-		for (i=0; i<n; i++) {
-			verts[i][0] = sin(ang);
-			verts[i][1] = cos(ang);
-			ang += inc;
-		}
-		firsttime=0;
-	}
-	glBegin(GL_TRIANGLE_FAN);
-		for (i=0; i<n; i++) {
-			glVertex2f(verts[i][0]*rad, verts[i][1]*rad);
-		}
-	glEnd();
 }
 
 void drawBox(Flt width, Flt height)
@@ -489,14 +459,14 @@ void render(void)
 	//draw balls
 	glColor3ub(30,60,90);
 	glPushMatrix();
-	glTranslatef(ball1.pos[0], ball1.pos[1], ball1.pos[2]);
-	drawBox(ball1.width,ball1.height);
+	glTranslatef(play1.pos[0], play1.pos[1], play1.pos[2]);
+	drawBox(play1.width,play1.height);
 	glPopMatrix();
 
 	glColor3ub(30,60,90);
 	glPushMatrix();
-	glTranslatef(ball2.pos[0], ball2.pos[1], ball2.pos[2]);
-	drawBox(ball2.width,ball2.height);
+	glTranslatef(play2.pos[0], play2.pos[1], play2.pos[2]);
+	drawBox(play2.width,play2.height);
 	glPopMatrix();
 	//
 	r.bot = yres - 20;
@@ -507,11 +477,11 @@ void render(void)
 	//ggprint8b(&r, 16, 0x0000000, "S - Slow down movement");
 	//
 	r.center = 1;
-	r.left = ball1.pos[0];
-	r.bot  = ball1.pos[1]-4;
+	r.left = play1.pos[0];
+	r.bot  = play1.pos[1]-4;
 	ggprint8b(&r, 11, 0x00ffff00, "Player One");
-	r.left = ball2.pos[0];
-	r.bot  = ball2.pos[1]-4;
+	r.left = play2.pos[0];
+	r.bot  = play2.pos[1]-4;
 	ggprint8b(&r, 11, 0x00ffff00, "Player Two");
 }
 
