@@ -56,24 +56,24 @@ void render(void);
 int xres=1280, yres=680;
 int leftButtonDown=0;
 Vec leftButtonPos;
-typedef struct t_Player {
-	Vec pos;
-	Vec vel;
-        Vec center;
-	float radius;
-	float mass;
-        float width,height;
-} Player;
-Player play1;
-Player play2;
 
 typedef struct t_healthBar
 {
 	Vec pos;
 	float width, height;
 } healthBar;
-healthBar hbar1;
-healthBar hbar2;
+
+typedef struct t_Player {
+	Vec pos;
+	Vec vel;
+        Vec center;
+	float radius;
+	float mass;
+	float width,height;
+	healthBar hbar;
+} Player;
+Player play1;
+Player play2;
 
 //-----------------------------------------------------------------------------
 //Setup timers
@@ -97,7 +97,6 @@ int main(void)
 	initXWindows();
 	init_opengl();
 	init_players();
-	init_healthBars();
 	clock_gettime(CLOCK_REALTIME, &timePause);
 	clock_gettime(CLOCK_REALTIME, &timeStart);
 	int done=0;
@@ -228,19 +227,21 @@ void init_players(void)
     play2.width = 70.0;
     play2.height= 120.0;
 	play2.mass = 1.0;
+
+	init_healthBars();
 }
 
 void init_healthBars()
 {
-	hbar1.pos[0] = 300;
-	hbar1.pos[1] = 600;
-	hbar1.width = 250;
-	hbar1.height = 20;
+	play1.hbar.pos[0] = 250;
+	play1.hbar.pos[1] = 620;
+	play1.hbar.width = 235;
+	play1.hbar.height = 20;
 
-	hbar2.pos[0] = xres - 300;
-	hbar2.pos[1] = 600;
-	hbar2.width = 250;
-	hbar2.height = 20;
+	play2.hbar.pos[0] = xres - 250;
+	play2.hbar.pos[1] = 620;
+	play2.hbar.width = 235;
+	play2.hbar.height = 20;
 }
 
 void check_resize(XEvent *e)
@@ -478,7 +479,7 @@ void render(void)
 {
 	Rect r;
 	glClear(GL_COLOR_BUFFER_BIT);
-	//
+
 	/*Draw Boxes*/
 	glColor3ub(30,60,90);
 	glPushMatrix();
@@ -493,25 +494,23 @@ void render(void)
 	glPopMatrix();
 
 	/*Draw Healthbars*/
-	glColor3ub(30,60,90);
+	glColor3ub(200,0,0);
 	glPushMatrix();
-	glTranslatef(hbar1.pos[0], hbar1.pos[1], hbar1.pos[2]);
-	drawBox(hbar1.width,hbar1.height);
+	glTranslatef(play1.hbar.pos[0], play1.hbar.pos[1], play1.hbar.pos[2]);
+	drawBox(play1.hbar.width,play1.hbar.height);
 	glPopMatrix();
 
-	glColor3ub(30,60,90);
+	glColor3ub(200,0,0);
 	glPushMatrix();
-	glTranslatef(hbar2.pos[0], hbar2.pos[1], hbar2.pos[2]);
-	drawBox(hbar2.width,hbar2.height);
+	glTranslatef(play2.hbar.pos[0], play2.hbar.pos[1], play2.hbar.pos[2]);
+	drawBox(play2.hbar.width,play2.hbar.height);
 	glPopMatrix();
-
-
 
 	r.bot = yres - 20;
 	r.left = 10;
 	r.center = 0;
-	ggprint8b(&r, 16, 0x0000000, "Ultimate Punch Frenzy: Immortal Peacetime: Fighters in the Street");
-	ggprint8b(&r, 16, 0x0000000, "Arrows/WASD to move");
+	//ggprint8b(&r, 16, 0x0000000, "Ultimate Punch Frenzy: Immortal Peacetime: Fighters in the Street");
+	//ggprint8b(&r, 16, 0x0000000, "Arrows/WASD to move");
 	//ggprint8b(&r, 16, 0x0000000, "S - Slow down movement");
 	//
 	r.center = 1;
