@@ -475,23 +475,15 @@ void physics(void)
     play1.vel[0] = 0;
     play2.vel[0] = 0;
 
-	//Check for collision with window edges
-	if ((play1.pos[0] < play1.width && play1.vel[0] < 0.0) ||
-		(play1.pos[0] >= (Flt)xres-play1.width && play1.vel[0] > 0.0)) {
-		play1.vel[0] = -play1.vel[0];
-	}
-	if ((play1.pos[1] < play1.width && play1.vel[1] < 0.0) ||
-		(play1.pos[1] >= (Flt)yres-play1.width && play1.vel[1] > 0.0)) {
-		play1.vel[1] = -play1.vel[1];
-	}
-	if ((play2.pos[0] < play2.radius && play2.vel[0] < 0.0) ||
-		(play2.pos[0] >= (Flt)xres-play2.radius && play2.vel[0] > 0.0)) {
-		play2.vel[0] = -play2.vel[0];
-	}
-	if ((play2.pos[1] < play2.radius && play2.vel[1] < 0.0) ||
-		(play2.pos[1] >= (Flt)yres-play2.radius && play2.vel[1] > 0.0)) {
-		play2.vel[1] = -play2.vel[1];
-	}
+	
+    while(play1.pos[0] - play1.width  < 0){
+	play1.pos[0] += 2;
+    }
+
+    while(play2.pos[0] + play2.width > xres) {
+	play2.pos[0] -= 2;
+    }
+    
 }
 
 void drawBox(Flt width, Flt height)
