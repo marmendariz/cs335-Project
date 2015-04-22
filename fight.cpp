@@ -513,7 +513,7 @@ void physics(void)
         play2.pos[0] += stepVel;
     /*END CHECK KEYS*/
 
-    play1.atk.posPunch[0] = play1.pos[0] + play1.width; 
+    play1.atk.posPunch[0] = play1.pos[0]; 
     play1.atk.posPunch[1] = play1.pos[1] + play1.height - 100;
     
 
@@ -560,12 +560,12 @@ void physics(void)
     }
 
     //Update position
-    while(play1.pos[0]+2*play1.width>=play2.pos[0])
+    while(play1.pos[0] >= play2.pos[0])
     {
         play1.pos[0]-= 2;
         play2.pos[0]+= 2;
     }
-    if(play1.pos[0]<(30+play2.pos[0]))
+    if(play1.pos[0]>(30 + play2.pos[0]))
     {
         play1.pos[0] += play1.vel[0];
         play2.pos[0] += play2.vel[0];
@@ -587,7 +587,7 @@ void physics(void)
     //}
 
     //Update position
-    while(play1.pos[0]+2*play1.width>=play2.pos[0])
+    while(play1.pos[0]+play1.width>=play2.pos[0])
     {
 	play1.pos[0]-= 2;
 	play2.pos[0]+= 2;
