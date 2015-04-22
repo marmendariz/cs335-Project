@@ -9,9 +9,9 @@ typedef struct t_ppmimage {
 	void *data;
 } Ppmimage;
 
+extern Ppmimage *ppm1CreateImage(int width, int height);
 extern Ppmimage *ppm1GetImage(char *filename);
 extern void ppm1CleanupImage(Ppmimage *image);
-extern Ppmimage *ppm1CreateImage(int width, int height);
 extern void ppm1SaveImage(Ppmimage *image, char *filename);
 extern void ppm1ClearImage(Ppmimage *image, unsigned char color);
 extern void ppm1Setpixel(Ppmimage *image, int x, int y, unsigned char val);
@@ -24,7 +24,8 @@ extern void ppm3Setpixel(Ppmimage *image, int x, int y, int channel, unsigned ch
 extern void ppm3CleanupImage(Ppmimage *image);
 //
 extern Ppmimage *ppm6CreateImage(int width, int height);
-extern Ppmimage *ppm6GetImage(char *filename);
+//extern Ppmimage *ppm6GetImage(char *filename);
+extern Ppmimage *ppm6GetImage(Ppmimage *image, char *filename);
 extern void ppm6ClearImage(Ppmimage *image, unsigned char r, unsigned char g, unsigned char b);
 extern void ppm6SaveImage(Ppmimage *image, char *filename);
 extern void ppm6Setpixel(Ppmimage *image, int x, int y, int channel, unsigned char val);

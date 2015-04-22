@@ -58,9 +58,10 @@ zzAzzAzzAzzAzzAzzAzzAzzAzzAzzAzzAzzAzzAzzAzzAzzA
 
 Ppmimage *ppm1GetImage(char *filename)
 {
-	int i, j, width, height, size, ntries;
+	int i, j, k, width, height, size, ntries;
 	char ts[4096];
 	unsigned int color;
+	char *rc;
 	unsigned char c;
 	unsigned char *p;
 	FILE *fpi;
@@ -75,7 +76,8 @@ Ppmimage *ppm1GetImage(char *filename)
 		exit(EXIT_FAILURE);
 	}
 	image->data=NULL;
-	fgets(ts, 4, fpi);
+	rc = fgets(ts, 4, fpi);
+	if (rc) {}
 	if (strncmp(ts, "P1" ,2) != 0) {
 		printf("ERROR: File is not ppm format.\n");
 		exit(EXIT_FAILURE);
@@ -99,7 +101,7 @@ Ppmimage *ppm1GetImage(char *filename)
 		}
 	}
 	ungetc(c, fpi);
-	fscanf(fpi, "%u %u", &width, &height);
+	k = fscanf(fpi, "%u %u", &width, &height);
 	//
 	size = width * height * 3;
 	image->data = (unsigned char *)malloc(size);
@@ -109,10 +111,11 @@ Ppmimage *ppm1GetImage(char *filename)
 	}
 	image->width = width;
 	image->height = height;
-	p = (unsigned char *)image->data;
+	p = (unsigned char*)image->data;
 	for (i=0; i<height; i++) {
 		for (j=0; j<width; j++) {
-			fscanf(fpi, "%u",&color);
+			k = fscanf(fpi, "%u",&color);
+			if (k) {}
 			*p = color;
 			p++;
 		}
@@ -188,9 +191,10 @@ void ppm1Setpixel(Ppmimage *image, int x, int y, unsigned char val) {
 
 Ppmimage *ppm3GetImage(char *filename)
 {
-	int i, j, width, height, size, maxval, ntries;
+	int i, j, k, width, height, size, maxval, ntries;
 	char ts[4096];
 	unsigned int rgb[3];
+	char *rc;
 	unsigned char c;
 	unsigned char *p;
 	FILE *fpi;
@@ -205,7 +209,8 @@ Ppmimage *ppm3GetImage(char *filename)
 		exit(EXIT_FAILURE);
 	}
 	image->data=NULL;
-	fgets(ts, 4, fpi);
+	rc = fgets(ts, 4, fpi);
+	if (rc) {}
 	if (strncmp(ts, "P3" ,2) != 0) {
 		printf("ERROR: File is not ppm ASCII format.\n");
 		exit(EXIT_FAILURE);
@@ -229,7 +234,8 @@ Ppmimage *ppm3GetImage(char *filename)
 		}
 	}
 	ungetc(c, fpi);
-	fscanf(fpi, "%u%u%u", &width, &height, &maxval);
+	k = fscanf(fpi, "%u%u%u", &width, &height, &maxval);
+	if (k) {}
 	//
 	size = width * height * 3;
 	image->data = (unsigned char *)malloc(size);
@@ -239,10 +245,11 @@ Ppmimage *ppm3GetImage(char *filename)
 	}
 	image->width = width;
 	image->height = height;
-	p = (unsigned char *)image->data;
+	p = (unsigned char*)image->data;
 	for (i=0; i<height; i++) {
 		for (j=0; j<width; j++) {
-			fscanf(fpi, "%u%u%u",&rgb[0],&rgb[1],&rgb[2]);
+			k = fscanf(fpi, "%u%u%u",&rgb[0],&rgb[1],&rgb[2]);
+			if (k) {}
 			*p = rgb[0]; p++;
 			*p = rgb[1]; p++;
 			*p = rgb[2]; p++;
@@ -336,18 +343,29 @@ void ppm3Setpixel(Ppmimage *image, int x, int y, int channel, unsigned char val)
 //
 //
 
-Ppmimage *ppm6GetImage(char *filename)
+Ppmimage *ppm6GetImage(Ppmimage *image, char *filename)
 {
+	//notes:
+	//This function was changed: Oct 20, 2013
+	//The first parameter, Ppmimage *image
+	//			if not null: use it as an existing image, and return null.
+	//          if null: create new image, and return the new image pointer.
+	//Very handy and efficient for getting images for playback in a loop.
+	//
 	int i, j, width, height, size, maxval, ntries;
 	char ts[4096];
-	//unsigned int rgb[3];
+	char *rc;
 	unsigned char c;
 	unsigned char *p;
 	FILE *fpi;
-	Ppmimage *image = (Ppmimage *)malloc(sizeof(Ppmimage));
-	if (!image) {
-		printf("ERROR: out of memory\n");
-		exit(EXIT_FAILURE);
+	Ppmimage *return_image=NULL;
+	if (image == NULL) {
+		image = (Ppmimage *)malloc(sizeof(Ppmimage));
+		if (!image) {
+			printf("ERROR: out of memory\n");
+			exit(EXIT_FAILURE);
+		}
+		return_image = image;
 	}
 	fpi = fopen(filename, "r");
 	if (!fpi) {
@@ -355,7 +373,8 @@ Ppmimage *ppm6GetImage(char *filename)
 		exit(EXIT_FAILURE);
 	}
 	image->data=NULL;
-	fgets(ts, 4, fpi);
+	rc = fgets(ts, 4, fpi);
+	if (rc) {}
 	if (strncmp(ts, "P6" ,2) != 0) {
 		printf("ERROR: File is not ppm RAW format.\n");
 		exit(EXIT_FAILURE);
@@ -379,7 +398,8 @@ Ppmimage *ppm6GetImage(char *filename)
 		}
 	}
 	ungetc(c, fpi);
-	fscanf(fpi, "%u%u%u", &width, &height, &maxval);
+	j = fscanf(fpi, "%u%u%u", &width, &height, &maxval);
+	if (j) {}
 	//
 	//get past any newline or carrage-return
 	ntries=0;
@@ -404,7 +424,7 @@ Ppmimage *ppm6GetImage(char *filename)
 	}
 	image->width = width;
 	image->height = height;
-	p = (unsigned char *)image->data;
+	p = (unsigned char*)image->data;
 	for (i=0; i<height; i++) {
 		for (j=0; j<width; j++) {
 			*p = fgetc(fpi); p++;
@@ -413,7 +433,7 @@ Ppmimage *ppm6GetImage(char *filename)
 		}
 	}
 	fclose(fpi);
-	return image;
+	return return_image;
 }
 
 void ppm6CleanupImage(Ppmimage *image)
@@ -429,6 +449,7 @@ Ppmimage *ppm6CreateImage(int width, int height)
 {
 	//printf("ppm6_create_image()...\n");
 	int size = width * height * 3;
+	//printf("size: %i\n",size);
 	Ppmimage *image = (Ppmimage *)malloc(sizeof(Ppmimage));
 	if (!image) {
 		printf("ERROR: no memory for image.\n");
@@ -441,6 +462,7 @@ Ppmimage *ppm6CreateImage(int width, int height)
 	}
 	image->width = width;
 	image->height = height;
+	//printf("returning\n");
 	return image;
 }  
 
