@@ -58,7 +58,11 @@ int leftButtonDown=0;
 Vec leftButtonPos;
 
 bool punch = false;
-
+//----------
+Ppmimage *forestImage=NULL;  
+int forest =1;
+GLuint forestTexture;
+//----------
 typedef struct t_healthBar
 {
 	Vec pos;
@@ -215,6 +219,20 @@ void init_opengl(void)
 	//Do this to allow fonts
 	glEnable(GL_TEXTURE_2D);
 	initialize_fonts();
+
+	// load the image into a ppm structure
+	forestImage = ppm6GetImage("./images/forest.ppm");
+
+	//create opengl texture elements
+	glGenTextures(1, &forestTexture);
+	glBindTexture(GL_TEXTURE_2D, forestTexture);
+	//
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3,
+							forestImage->width, forestImage->height,
+							0, GL_RGB, GL_UNSIGNED_BYTE, forestImage->data);
+	
 }
 
 void init_players(void)
@@ -335,7 +353,9 @@ int check_keys(XEvent *e)
 			case XK_Escape:
 				return 1;
 				break;
-
+			case XK_b:
+				forest ^=1;
+				break;
 			/*
 			case XK_Left:
 				play1.vel[0] -= 1.0;
@@ -571,6 +591,19 @@ void render(void)
 	r.left = play2.pos[0];
 	r.bot  = play2.pos[1]-4;
 	ggprint8b(&r, 11, 0x00ffff00, "Player Two");
+//draw a quad with texture
+//float wid = 120.0f;
+	glColor3f(1.0, 1.0, 1.0);
+	if (forest) {
+		glBindTexture(GL_TEXTURE_2D, forestTexture);
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+			glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres);
+			glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
+			glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
+		glEnd();
+	}
+
 }
 
 

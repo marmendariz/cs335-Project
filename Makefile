@@ -10,8 +10,8 @@ asteroids: asteroids.cpp ppm.c log.c
 bump: bump.cpp
 	g++ bump.cpp -Wall -Wextra -obump -lX11 -lGL -lGLU -lm -lrt ./libggfonts.so
 
-fight: fight.cpp
-	g++ fight.cpp -Wall -Wextra -ofight -lX11 -lGL -lGLU -lm -lrt ./libggfonts.so
+fight: fight.cpp ppm.c ppm.h
+	g++ fight.cpp -Wall -Wextra -ofight -lX11 -lGL -lGLU -lm -lrt ./libggfonts.so ppm.c ppm.h
 
 clean:
 	rm -f asteroids
