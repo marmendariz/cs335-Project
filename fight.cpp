@@ -56,6 +56,7 @@ void render(void);
 
 int xres=1280, yres=680;
 int leftButtonDown=0;
+int punchDamage = 10;
 Vec leftButtonPos;
 
 bool punch = false;
@@ -740,13 +741,19 @@ glColor3f(1.0, 1.0, 1.0);
 	drawBox(play1.atk.wPunch,play1.atk.hPunch,0);
 	glPopMatrix();
 
+	/*stager back and subtract health*/
 	if(play1.atk.posPunch[0] + play1.atk.wPunch*1.5 >= play2.pos[0])
 	{
 	    play2.pos[0] += 100;
+	    play2.hbar.width -= punchDamage;
+	    play2.hbar.pos[0] += punchDamage;
 	}
+	
+    }
 
-
-
+    if(play2.hbar.width <= 0){
+	play2.hbar.width = 0;
+	punchDamage = 0;
     }
 
     glEnable(GL_TEXTURE_2D);
