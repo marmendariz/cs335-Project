@@ -706,7 +706,7 @@ void render(void)
     glPushMatrix();
     glTranslatef(play1.pos[0], play1.pos[1], play1.pos[2]);
     if(!punch1)
-    drawBox(play1.width,play1.height,1);
+    	drawBox(play1.width,play1.height,1);
     glPopMatrix();
     /*Draw Player Two*/
     glPushMatrix();
@@ -768,7 +768,7 @@ void render(void)
     }
 
     t = float( clock () - begin_time ) /  CLOCKS_PER_SEC;
-    if(punch1)
+    if(punch1 && !hit)
     {
         if(clk)
         {
@@ -776,14 +776,15 @@ void render(void)
 
         }
         animatePlayerOne(play1.width,play1.height);
-
-
-       if(!punch1 && hit)
-       {
-        play2.hbar.width -= punchDamage;
-        hit = false;
-        }
     }
+
+    if(!punch1 && hit){
+	play2.pos[0] += 100;
+	play2.hbar.pos[0] += punchDamage;
+	play2.hbar.width -= punchDamage;
+	hit = false;
+    }
+
 
 
 if(play2.hbar.width <= 0){
@@ -806,103 +807,55 @@ if(play2.hbar.width <= 0){
 void animatePlayerOne(Flt width, Flt height)
 {
     clk =false;
-    
+
     int w, h;
+    float x_val;
     w = width;
     h = height;
-    
+
     printf("%f\n",t);
-    if(t>=0 && t<.005)
-    {
-        glPushMatrix();
-        glTranslatef(play1.pos[0], play1.pos[1], play1.pos[2]);
 
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, play1Texture);
-        glEnable(GL_ALPHA_TEST);
-        glAlphaFunc(GL_GREATER,0.1f);
-        glColor4ub(255,255,255,255);
+    if(t < 0.005)
+	x_val = 0.2f;
+    else if (t>=0.005 && t<.01)
+	x_val = 0.4f;
+    else if (t>=0.01 && t<.015)
+	x_val = 0.6f;
+    else if (t>=0.015 && t<.02){
+	x_val = 0.8f;
 
-        glBegin(GL_QUADS);
-        glTexCoord2f(0.2f, 0.5f); glVertex2i(-w, -h);
-        glTexCoord2f(0.2f, 0.0f); glVertex2i(-w, h);
-        glTexCoord2f(0.4f, 0.0f); glVertex2i(w, h);
-        glTexCoord2f(0.4f, 0.5f); glVertex2i(w, -h); 
-        glEnd();
-        glPopMatrix();
-    }
-    else if(t>=0.005 && t<.01)
-    {
-        glPushMatrix();
-        glTranslatef(play1.pos[0], play1.pos[1], play1.pos[2]);
+	if (play1.pos[0] + (1.7*play1.width) >= play2.pos[0] && t > .019)
+	{
+	    hit = true;
+	    punch1 = false;
+	    clk = true;
+	}
 
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, play1Texture);
-        glEnable(GL_ALPHA_TEST);
-        glAlphaFunc(GL_GREATER,0.1f);
-        glColor4ub(255,255,255,255);
+    } else {
+	punch1 = false;
+	clk = true;
 
-        glBegin(GL_QUADS);
-        glTexCoord2f(0.4f, 0.5f); glVertex2i(-w, -h);
-        glTexCoord2f(0.4f, 0.0f); glVertex2i(-w, h);
-        glTexCoord2f(0.6f, 0.0f); glVertex2i(w, h);
-        glTexCoord2f(0.6f, 0.5f); glVertex2i(w, -h); 
-        glEnd();
-        glPopMatrix();
-    }
-    else if(t>=0.01 && t<.015)
-    {
-        glPushMatrix();
-        glTranslatef(play1.pos[0], play1.pos[1], play1.pos[2]);
 
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, play1Texture);
-        glEnable(GL_ALPHA_TEST);
-        glAlphaFunc(GL_GREATER,0.1f);
-        glColor4ub(255,255,255,255);
-
-        glBegin(GL_QUADS);
-        glTexCoord2f(0.6f, 0.5f); glVertex2i(-w, -h);
-        glTexCoord2f(0.6f, 0.0f); glVertex2i(-w, h);
-        glTexCoord2f(0.8f, 0.0f); glVertex2i(w, h);
-        glTexCoord2f(0.8f, 0.5f); glVertex2i(w, -h); 
-        glEnd();
-        glPopMatrix();
-    }
-    else if(t>=0.015 && t<.02)
-    {
-        glPushMatrix();
-        glTranslatef(play1.pos[0], play1.pos[1], play1.pos[2]);
-
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, play1Texture);
-        glEnable(GL_ALPHA_TEST);
-        glAlphaFunc(GL_GREATER,0.1f);
-        glColor4ub(255,255,255,255);
-
-        glBegin(GL_QUADS);
-        glTexCoord2f(0.8f, 0.5f); glVertex2i(-w, -h);
-        glTexCoord2f(0.8f, 0.0f); glVertex2i(-w, h);
-        glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
-        glTexCoord2f(1.0f, 0.5f); glVertex2i(w, -h); 
-        glEnd();
-        glPopMatrix();
-/*stager back and subtract health*/
-    if(play1.pos[0] + (1.7*play1.width) >= play2.pos[0])
-    {
-        hit = true;
-         play2.pos[0] += 100;
-        play2.hbar.pos[0] += 1.15*punchDamage;
-        play2.hbar.width -= punchDamage;
     }
 
-       
-    }
-    else{
-       punch1 = false;
-       clk = true;
-   }
+    glPushMatrix();
+    glTranslatef(play1.pos[0], play1.pos[1], play1.pos[2]);
 
-  
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, play1Texture);
+    glEnable(GL_ALPHA_TEST);
+    glAlphaFunc(GL_GREATER,0.1f);
+    glColor4ub(255,255,255,255);
+
+    glBegin(GL_QUADS);
+    glTexCoord2f(x_val, 0.5f); glVertex2i(-w, -h);
+    glTexCoord2f(x_val, 0.0f); glVertex2i(-w, h);
+    glTexCoord2f(x_val + 0.2, 0.0f); glVertex2i(w, h);
+    glTexCoord2f(x_val + 0.2, 0.5f); glVertex2i(w, -h); 
+    glEnd();
+    glPopMatrix();
+
+
+
 }
 
