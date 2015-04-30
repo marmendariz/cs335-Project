@@ -27,7 +27,8 @@
 extern "C" {
 #include "fonts.h"
 }
-bool title_flag = true; 
+bool play = false; 
+bool background = true;
 typedef float Flt;
 typedef Flt Vec[3];
 #define MakeVector(x,y,z,v) (v)[0]=(x),(v)[1]=(y),(v)[2]=(z)
@@ -55,6 +56,9 @@ int check_keys(XEvent *e);
 void physics(void);
 void render(void);
 void animatePlayerOne(Flt, Flt);
+void drawmenu_button(Flt, Flt, int);
+void init_menu();
+void menu_render();
 
 int xres=1280, yres=680;
 int leftButtonDown=0;
@@ -137,7 +141,8 @@ void timeCopy(struct timespec *dest, struct timespec *source) {
 int main(void)
 {
     initXWindows();
-    init_players();
+    init_menu();
+	init_players();
     init_opengl();
     clock_gettime(CLOCK_REALTIME, &timePause);
     clock_gettime(CLOCK_REALTIME, &timeStart);
@@ -158,7 +163,12 @@ int main(void)
 	    physics();
 	    physicsCountdown -= physicsRate;
 	}
-	render();
+
+	if (play == false) 
+		menu_render();
+	else if (play == true) 
+		render();
+
 	glXSwapBuffers(dpy, win);
     }
     cleanupXWindows();
@@ -232,6 +242,40 @@ void reshape_window(int width, int height)
     set_title();
 }
 
+void init_menu(void)
+{
+	
+	glViewport(0, 0, xres, yres);
+    //Initialize matrices
+    glMatrixMode(GL_PROJECTION); glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW); glLoadIdentity();
+    //This sets 2D mode (no perspective)
+    glOrtho(0, xres, 0, yres, -1, 1);
+
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_FOG);
+    glDisable(GL_CULL_FACE);
+
+    glClearColor(1.0, 1.0, 1.0, 1.0);
+    //Do this to allow fonts
+    glEnable(GL_TEXTURE_2D);
+    initialize_fonts();
+	
+	char x[] = "./images/title.ppm";
+	titleImage = ppm6GetImage(titleImage,x);
+	
+    //create opengl texture elements
+    glGenTextures(1, &titleTexture);
+    glBindTexture(GL_TEXTURE_2D, titleTexture);
+    //
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, 3,
+                            titleImage->width, titleImage->height,
+                            0, GL_RGB, GL_UNSIGNED_BYTE, titleImage->data);
+}   	
+
 /*I changed this function!!*/
 void init_opengl(void)
 {
@@ -252,7 +296,7 @@ void init_opengl(void)
     glEnable(GL_TEXTURE_2D);
     initialize_fonts();
 
-    /*************************************************************/	
+    /*************************************************************
 		char x[] = "./images/title.ppm";
 	titleImage = ppm6GetImage(titleImage,x);
 	
@@ -266,10 +310,10 @@ void init_opengl(void)
                             titleImage->width, titleImage->height,
                             0, GL_RGB, GL_UNSIGNED_BYTE, titleImage->data);
    	
-    /*******************************************/
-   	if (title_flag) { 
+    ******************************************/
+   	//if (title_flag) { 
 		/*load the images file into a ppm structure*/
-    	 char x[] = "./images/sprite1.ppm";
+    	char x[] = "./images/sprite1.ppm";
     	play1Image = ppm6GetImage(play1Image,x);
 
     	/*Create opengl texture elements*/
@@ -308,11 +352,11 @@ void init_opengl(void)
 
    
 	/******************************************************************/
-    	char z[] = "./images/forest.ppm";
-
+    	
+		//if (forest == true) {
+		char z[] = "./images/forest.ppm";
+	    	//create opengl texture elements
     	forestImage = ppm6GetImage(forestImage,z);
-
-    	//create opengl texture elements
     	glGenTextures(1, &forestTexture);
     	glBindTexture(GL_TEXTURE_2D, forestTexture);
     	//
@@ -321,9 +365,22 @@ void init_opengl(void)
     	glTexImage2D(GL_TEXTURE_2D, 0, 3,
                             forestImage->width, forestImage->height,
                             0, GL_RGB, GL_UNSIGNED_BYTE, forestImage->data);
-    
-	/****************************************************************/
-	}
+    	
+		/*else if (background2 == true)
+		*************************z[] = ************
+		forestImage = ppm6GetImage(forestImage,z);
+    	glGenTextures(1, &forestTexture);
+    	glBindTexture(GL_TEXTURE_2D, forestTexture);
+    	//
+    	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    	glTexImage2D(GL_TEXTURE_2D, 0, 3,
+                            forestImage->width, forestImage->height,
+                            0, GL_RGB, GL_UNSIGNED_BYTE, forestImage->data);
+		}
+     
+	****************************************************************/
+	//}
 }
 
 unsigned char *buildAlphaData(Ppmimage *img)
@@ -469,9 +526,16 @@ int check_keys(XEvent *e)
 	    break;
     case XK_b:
         forest ^=1;
+		if (forest == true)
+			
         break;
 	case XK_p:
-		title ^=1;
+		if (play == true) //{// they are playing 
+			play = false;
+			//}
+		else if (play == false) {
+			play = true;
+			}
 		break;
 	    /*
 	       case XK_Left:
@@ -707,14 +771,61 @@ void drawBox(Flt width, Flt height, int x)
     glEnd();
 
 } 
+
+void drawmenu_button(Flt width, Flt height, int x) 
+{
+	int w = width;
+	int h = height;
+	glBegin(GL_QUADS);
+		glColor3f(1.0,0.0,0.0); // yellow
+		glVertex2i(-w, -h);
+		glColor3f(0.0,0.0,1.0); // cyan
+		glVertex2i(-w, h);
+		glColor3f(1.0,0.0,0.0); // red
+		glVertex2i(w, h);
+		glColor3f(0.0,0.0,1.0); // magenta
+		glVertex2i(w, -h);
+	glEnd();
+}
+
+void menu_render(void) 
+{
+	int w = (xres/2);
+	int y = (yres/8);
+/***************************************/
+	 //Draw title screen background 
+
+	glColor3f(1.0, 1.0, 1.0);
+    if (title) {
+        glBindTexture(GL_TEXTURE_2D, titleTexture);
+        glBegin(GL_QUADS);
+            glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+            glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres);
+            glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
+            glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
+        glEnd();
+    }
+
+	
+	/*Draw the play button*/
+	glColor3f(1.0,1.0,1.0);
+	glPushMatrix();
+
+	glTranslatef(w,y,1);
+	drawmenu_button(150,50,1);
+	glPopMatrix();
+	
+	/******************************************************/
+}
+
 void render(void)
 {
     Rect r;
     glClearColor(1.0, 1.0, 1.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    /***************************************/
-	/* Draw title screen background */
+    /***************************************
+	 Draw title screen background 
 
 	glColor3f(1.0, 1.0, 1.0);
     if (title) {
@@ -727,7 +838,7 @@ void render(void)
         glEnd();
     } else {
 
-	/******************************************************/
+	******************************************************/
     glColor3f(1.0, 1.0, 1.0);
     if (forest) {
         glBindTexture(GL_TEXTURE_2D, forestTexture);
@@ -840,8 +951,6 @@ if(play2.hbar.width <= 0){
     r.bot  = play2.hbar.posOut[1]-10;
     ggprint16(&r, 20, 0x00ffff00, "Player Two");
 }
-}
-
 
 void animatePlayerOne(Flt width, Flt height)
 {
@@ -873,8 +982,6 @@ void animatePlayerOne(Flt width, Flt height)
     } else {
 	punch1 = false;
 	clk = true;
-
-
     }
 
     glPushMatrix();
