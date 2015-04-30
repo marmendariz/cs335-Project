@@ -27,7 +27,7 @@
 extern "C" {
 #include "fonts.h"
 }
-
+bool title_flag = true; 
 typedef float Flt;
 typedef Flt Vec[3];
 #define MakeVector(x,y,z,v) (v)[0]=(x),(v)[1]=(y),(v)[2]=(z)
@@ -106,6 +106,10 @@ Vec dim;
 Ppmimage *forestImage=NULL;
 GLuint forestTexture;
 int forest =1;
+
+Ppmimage *titleImage=NULL;
+int title =1;
+GLuint titleTexture;
 
 /*****/
 clock_t begin_time;
@@ -248,62 +252,79 @@ void init_opengl(void)
     glEnable(GL_TEXTURE_2D);
     initialize_fonts();
 
-    /*******************************************/
-    /*load the images file into a ppm structure*/
-    char x[] = "./images/sprite1.ppm";
-    play1Image = ppm6GetImage(play1Image,x);
-
-    /*Create opengl texture elements*/
-    glGenTextures(1, &play1Texture);
-    glBindTexture(GL_TEXTURE_2D, play1Texture);
-
-    //glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-    int w = play1Image->width;
-    int h = play1Image->height;
-    //must build a new set of data...
-    unsigned char *play1Data = buildAlphaData(play1Image);	
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, play1Data);
-    delete [] play1Data;
-    /*****************************************/
-
-    char y[] = "./images/metal.ppm";
-    //play1Image = ppm6GetImage("./images/anim-1.ppm");
-    //
-    metalImage = ppm6GetImage(metalImage,y);
+    /*************************************************************/	
+		char x[] = "./images/title.ppm";
+	titleImage = ppm6GetImage(titleImage,x);
+	
     //create opengl texture elements
-    glGenTextures(1, &metalTexture);
-
-    glBindTexture(GL_TEXTURE_2D, metalTexture);
-    //
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-    w = metalImage->width;
-    h = metalImage->height;
-    //must build a new set of data...
-    unsigned char *metalData = buildAlphaData(metalImage);	
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-	    GL_RGBA, GL_UNSIGNED_BYTE, metalData);
-    delete [] metalData;
-
-/********************************************************/
-        char z[] = "./images/forest.ppm";
-
-    forestImage = ppm6GetImage(forestImage,z);
-
-    //create opengl texture elements
-    glGenTextures(1, &forestTexture);
-    glBindTexture(GL_TEXTURE_2D, forestTexture);
+    glGenTextures(1, &titleTexture);
+    glBindTexture(GL_TEXTURE_2D, titleTexture);
     //
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, 3,
+                            titleImage->width, titleImage->height,
+                            0, GL_RGB, GL_UNSIGNED_BYTE, titleImage->data);
+   	
+    /*******************************************/
+   	if (title_flag) { 
+		/*load the images file into a ppm structure*/
+    	 char x[] = "./images/sprite1.ppm";
+    	play1Image = ppm6GetImage(play1Image,x);
+
+    	/*Create opengl texture elements*/
+    	glGenTextures(1, &play1Texture);
+    	glBindTexture(GL_TEXTURE_2D, play1Texture);
+
+    	//glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    	int w = play1Image->width;
+    	int h = play1Image->height;
+    	//must build a new set of data...
+    	unsigned char *play1Data = buildAlphaData(play1Image);	
+    	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, play1Data);
+    	delete [] play1Data;
+    /*****************************************/
+
+    	char y[] = "./images/metal.ppm";
+    	//play1Image = ppm6GetImage("./images/anim-1.ppm");
+    	//
+    	metalImage = ppm6GetImage(metalImage,y);
+    	//create opengl texture elements
+    	glGenTextures(1, &metalTexture);
+
+    	glBindTexture(GL_TEXTURE_2D, metalTexture);
+    	//
+    	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    	w = metalImage->width;
+    	h = metalImage->height;
+    	//must build a new set of data...
+    	unsigned char *metalData = buildAlphaData(metalImage);	
+    	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, metalData);
+	    delete [] metalData;
+
+   
+	/******************************************************************/
+    	char z[] = "./images/forest.ppm";
+
+    	forestImage = ppm6GetImage(forestImage,z);
+
+    	//create opengl texture elements
+    	glGenTextures(1, &forestTexture);
+    	glBindTexture(GL_TEXTURE_2D, forestTexture);
+    	//
+    	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    	glTexImage2D(GL_TEXTURE_2D, 0, 3,
                             forestImage->width, forestImage->height,
                             0, GL_RGB, GL_UNSIGNED_BYTE, forestImage->data);
-    /****************************************************************/
+    
+	/****************************************************************/
+	}
 }
-
 
 unsigned char *buildAlphaData(Ppmimage *img)
 {
@@ -449,6 +470,9 @@ int check_keys(XEvent *e)
     case XK_b:
         forest ^=1;
         break;
+	case XK_p:
+		title ^=1;
+		break;
 	    /*
 	       case XK_Left:
 	       play1.vel[0] -= 1.0;
@@ -688,7 +712,22 @@ void render(void)
     Rect r;
     glClearColor(1.0, 1.0, 1.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
-    
+
+    /***************************************/
+	/* Draw title screen background */
+
+	glColor3f(1.0, 1.0, 1.0);
+    if (title) {
+        glBindTexture(GL_TEXTURE_2D, titleTexture);
+        glBegin(GL_QUADS);
+            glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+            glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres);
+            glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
+            glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
+        glEnd();
+    } else {
+
+	/******************************************************/
     glColor3f(1.0, 1.0, 1.0);
     if (forest) {
         glBindTexture(GL_TEXTURE_2D, forestTexture);
@@ -801,7 +840,7 @@ if(play2.hbar.width <= 0){
     r.bot  = play2.hbar.posOut[1]-10;
     ggprint16(&r, 20, 0x00ffff00, "Player Two");
 }
-
+}
 
 
 void animatePlayerOne(Flt width, Flt height)
