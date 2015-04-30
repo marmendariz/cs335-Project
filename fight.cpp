@@ -63,6 +63,12 @@ Vec leftButtonPos;
 
 bool punch1 = false;
 bool punch2 = false;
+bool finishpunch = false;
+
+bool p1control = false;
+bool p2control = false;
+
+bool draw = true;
 
 typedef struct t_healthBar
 {
@@ -94,6 +100,9 @@ Player play2;
 /*TEXTURE STUFF*/
 Ppmimage *play1Image=NULL;
 GLuint play1Texture;
+
+Ppmimage *play2Image=NULL;
+GLuint play2Texture;
 
 Ppmimage *metalImage=NULL;
 GLuint metalTexture;
@@ -285,6 +294,24 @@ void init_opengl(void)
     	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 	    GL_RGBA, GL_UNSIGNED_BYTE, play1Data);
     	delete [] play1Data;
+
+    	/*Player two texture*/
+	char b[] = "./images/sprite2.ppm";
+    	play2Image = ppm6GetImage(play2Image,b);
+
+    	/*Create opengl texture elements*/
+    	glGenTextures(1, &play2Texture);
+    	glBindTexture(GL_TEXTURE_2D, play2Texture);
+
+    	//glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    	w = play2Image->width;
+    	h = play2Image->height;
+    	//must build a new set of data...
+    	unsigned char *play2Data = buildAlphaData(play2Image);	
+    	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, play2Data);
+
     /*****************************************/
 
     	char y[] = "./images/metal.ppm";
@@ -470,9 +497,11 @@ int check_keys(XEvent *e)
     case XK_b:
         forest ^=1;
         break;
-	case XK_p:
-		title ^=1;
-		break;
+    case XK_p:
+	title ^=1;
+	p1control = true;
+	p2control = true;
+	break;
 	    /*
 	       case XK_Left:
 	       play1.vel[0] -= 1.0;
@@ -538,21 +567,39 @@ void physics(void)
 
     /*CHECK KEYS*/
     /*Player ONE*/
-    if(keys[XK_a])
-        play1.pos[0] -= stepVel;    
-    if(keys[XK_d])
-        play1.pos[0] += stepVel;
+    if(p1control){
+	if(keys[XK_a])
+	    play1.pos[0] -= stepVel;    
+	if(keys[XK_d])
+	    play1.pos[0] += stepVel;
+	if(keys[XK_f]){
+	    punch1 = true;
+	    /*
+	       glColor3ub(200,0,0);
+	       glPushMatrix();
+	       glTranslatef(play1.atk.posPunch[0], 
+	       play1.atk.posPunch[1], play1.atk.posPunch[2]);
+	       drawBox(play1.atk.wPunch,play1.atk.hPunch,0);
+	       glPopMatrix();
+	       */
+
+
+	}
+    }
+
 
     /*Player TWO*/
-    if(keys[XK_Left])
-        play2.pos[0] -= stepVel;
-    if(keys[XK_Right])
-        play2.pos[0] += stepVel;
+    if(p2control){
+	if(keys[XK_Left])
+	    play2.pos[0] -= stepVel;
+	if(keys[XK_Right])
+	    play2.pos[0] += stepVel;
+    }
     /*END CHECK KEYS*/
 
     play1.atk.posPunch[0] = play1.pos[0]; 
     play1.atk.posPunch[1] = play1.pos[1] + play1.height - 100;
-    
+
 
     if (distance < play1.width+(play2.width)) {
         //We have a collision!
@@ -624,7 +671,7 @@ void physics(void)
     //}
 
     //Update position
-    while(play1.pos[0]+play1.width>=play2.pos[0])
+    while(play1.pos[0]+play1.width>=play2.pos[0]+play2.width)
     {
 	play1.pos[0]-= 2;
 	play2.pos[0]+= 2;
@@ -672,6 +719,14 @@ void drawBox(Flt width, Flt height, int x)
         glAlphaFunc(GL_GREATER,0.1f);
         glColor4ub(255,255,255,255);
     }
+    if(x==3)
+    {
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, play2Texture);
+        glEnable(GL_ALPHA_TEST);
+        glAlphaFunc(GL_GREATER,0.1f);
+        glColor4ub(255,255,255,255);
+    }
 
     /*If x==0, setup metal texture for healthbar*/
     if(x==0)
@@ -683,12 +738,12 @@ void drawBox(Flt width, Flt height, int x)
 
     glBegin(GL_QUADS);
 
-    if(x==1)
+    if(x==1 || x==3)
     {
-    glTexCoord2f(0.0f, 0.5f); glVertex2i(-w, -h);
+    glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
     glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
-    glTexCoord2f(0.2f, 0.0f); glVertex2i(w, h);
-    glTexCoord2f(0.2f, 0.5f); glVertex2i(w, -h);    
+    glTexCoord2f(0.1f, 0.0f); glVertex2i(w, h);
+    glTexCoord2f(0.1f, 1.0f); glVertex2i(w, -h);    
     }
     if(x==0)
     {
@@ -744,13 +799,13 @@ void render(void)
     glColor3f(1.0, 1.0, 1.0);
     glPushMatrix();
     glTranslatef(play1.pos[0], play1.pos[1], play1.pos[2]);
-    if(!punch1)
+    if(draw)
     	drawBox(play1.width,play1.height,1);
     glPopMatrix();
     /*Draw Player Two*/
     glPushMatrix();
     glTranslatef(play2.pos[0], play2.pos[1], play2.pos[2]);
-    drawBox(play2.width,play2.height,1);
+    drawBox(play2.width,play2.height,3);
     glPopMatrix();
     /***************************************/
 
@@ -791,29 +846,17 @@ void render(void)
     glPopMatrix();
     /*****************END DRAW HEALTHBARS***********************/
 
-    /*Draw Rectable for temporary punch*/
-    if(keys[XK_f]){
-        punch1 = true;
-        /*
-	glColor3ub(200,0,0);
-	glPushMatrix();
-	glTranslatef(play1.atk.posPunch[0], 
-		play1.atk.posPunch[1], play1.atk.posPunch[2]);
-	drawBox(play1.atk.wPunch,play1.atk.hPunch,0);
-	glPopMatrix();
-    */
-    
-	
-    }
 
     t = float( clock () - begin_time ) /  CLOCKS_PER_SEC;
-    if(punch1 && !hit)
+    if((punch1 && !hit) || finishpunch)
     {
         if(clk)
         {
             begin_time = clock();
 
         }
+	p1control = false;
+	draw = false;
         animatePlayerOne(play1.width,play1.height);
     }
 
@@ -855,25 +898,38 @@ void animatePlayerOne(Flt width, Flt height)
     printf("%f\n",t);
 
     if(t < 0.005)
+	x_val = 0.1f;
+    else if (t>=0.003 && t<.006)
 	x_val = 0.2f;
-    else if (t>=0.005 && t<.01)
+    else if (t>=0.006 && t<.009)
+	x_val = 0.3f;
+    else if (t>=0.009 && t<.012)
 	x_val = 0.4f;
-    else if (t>=0.01 && t<.015)
-	x_val = 0.6f;
-    else if (t>=0.015 && t<.02){
-	x_val = 0.8f;
-
-	if (play1.pos[0] + (1.7*play1.width) >= play2.pos[0] && t > .019)
+    else if (t>=0.012 && t<.015){
+	x_val = 0.5f;
+	if (play1.pos[0] + (1.7*play1.width) >= play2.pos[0]+play2.width && t > .014)
 	{
 	    hit = true;
 	    punch1 = false;
-	    clk = true;
+	    p1control = true;
+	    finishpunch = true;
 	}
-
-    } else {
+    }
+    else if (t>=0.015 && t<.018)
+	x_val = 0.6f;
+    else if (t>=0.018 && t<.021)
+	x_val = 0.7f;
+    else if (t>=0.021 && t<.024)
+	x_val = 0.8f;
+    else if (t>=0.024 && t<.027){
+	x_val = 0.9f;
+    }
+    else {
 	punch1 = false;
 	clk = true;
-
+	p1control = true;
+	finishpunch = false;
+	draw = true;
 
     }
 
@@ -887,10 +943,10 @@ void animatePlayerOne(Flt width, Flt height)
     glColor4ub(255,255,255,255);
 
     glBegin(GL_QUADS);
-    glTexCoord2f(x_val, 0.5f); glVertex2i(-w, -h);
+    glTexCoord2f(x_val, 1.0f); glVertex2i(-w, -h);
     glTexCoord2f(x_val, 0.0f); glVertex2i(-w, h);
-    glTexCoord2f(x_val + 0.2, 0.0f); glVertex2i(w, h);
-    glTexCoord2f(x_val + 0.2, 0.5f); glVertex2i(w, -h); 
+    glTexCoord2f(x_val + 0.1, 0.0f); glVertex2i(w, h);
+    glTexCoord2f(x_val + 0.1, 1.0f); glVertex2i(w, -h); 
     glEnd();
     glPopMatrix();
 
