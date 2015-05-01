@@ -553,8 +553,6 @@ int check_keys(XEvent *e)
 	    break;
     case XK_b:
         forest ^=1;
-		if (forest == true)
-			
         break;
 	case XK_p:
 		if (play == true) { // they are playing 
