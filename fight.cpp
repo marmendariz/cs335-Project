@@ -347,7 +347,7 @@ void init_character_select(void)
 	glEnable(GL_TEXTURE_2D);
 	initialize_fonts();
 
-	char a[] = "./images/characterselect.ppm";
+	char a[] = "./images/characterselect2.ppm";
 	selectcharacter_Image = ppm6GetImage(selectcharacter_Image,a);
 
 	//create opengl texture elements
