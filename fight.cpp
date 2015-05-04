@@ -139,8 +139,8 @@ GLuint metalTexture;
 
 Ppmimage *metal2Image=NULL;
 GLuint metal2Texture;
-Vec pos;
-Vec dim; 
+Flt metal2Pos[4];
+Flt metal2Dim[4];  
 
 Ppmimage *forestImage=NULL;
 GLuint forestTexture;
@@ -456,6 +456,21 @@ void init_opengl(void)
 	delete [] metalData;
 
 
+	char c[] = "./images/metal3.ppm";
+	metal2Image = ppm6GetImage(metal2Image,c);
+    	glGenTextures(1, &metal2Texture);
+    	glBindTexture(GL_TEXTURE_2D, metal2Texture);
+    	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    	w = metal2Image->width;
+    	h = metal2Image->height;
+    	//must build a new set of data...
+    	unsigned char *metal2Data = buildAlphaData(metal2Image);	
+    	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	    GL_RGBA, GL_UNSIGNED_BYTE, metal2Data);
+	delete [] metal2Data;
+
+
 	/******************************************************************/
 	char z[] = "./images/forest.ppm";
 
@@ -527,25 +542,25 @@ void init_players(void)
 
 void init_healthBars()
 {
-	play1.hbar.pos[0] = 250;
-	play1.hbar.pos[1] = 620;
-	play1.hbar.width = 235;
-	play1.hbar.height = 20;
+  metal2Pos[0] = play1.hbar.pos[0] = 250;
+    metal2Pos[1] = play1.hbar.pos[1] = 620;
+    metal2Dim[0] = play1.hbar.width = 235;
+    metal2Dim[1] = play1.hbar.height = 20;
 
-	play1.hbar.posOut[0] = 250;
-	play1.hbar.posOut[1] = 620;
-	play1.hbar.wOut = 240;
-	play1.hbar.hOut =25;
+    play1.hbar.posOut[0] = 250;
+    play1.hbar.posOut[1] = 620;
+    play1.hbar.wOut = 240;
+    play1.hbar.hOut =25;
 
-	play2.hbar.pos[0] = xres - 250;
-	play2.hbar.pos[1] = 620;
-	play2.hbar.width = 235;
-	play2.hbar.height = 20;
+    metal2Pos[2] = play2.hbar.pos[0] = xres - 250;
+    metal2Pos[3] = play2.hbar.pos[1] = 620;
+    metal2Dim[2] = play2.hbar.width = 235;
+    metal2Dim[3] = play2.hbar.height = 20;
 
-	play2.hbar.posOut[0] = xres - 250;
-	play2.hbar.posOut[1] = 620;
-	play2.hbar.wOut = 240;
-	play2.hbar.hOut = 25;
+    play2.hbar.posOut[0] = xres - 250;
+    play2.hbar.posOut[1] = 620;
+    play2.hbar.wOut = 240;
+    play2.hbar.hOut = 25;
 
 }
 
@@ -886,59 +901,60 @@ if ((play2.pos[1] < play2.radius && play2.vel[1] < 0.0) ||
 
 void drawBox(Flt width, Flt height, int x)
 {
-	int w = width;
-	int h = height;
+	 int w = width;
+    int h = height;
 
-	/*If x==1, setup player texture setting*/
-	if(x==1)
-	{
-		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, play1Texture);
-		glEnable(GL_ALPHA_TEST);
-		glAlphaFunc(GL_GREATER,0.1f);
-		glColor4ub(255,255,255,255);
-	}
-	if(x==3)
-	{
-		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, play2Texture);
-		glEnable(GL_ALPHA_TEST);
-		glAlphaFunc(GL_GREATER,0.1f);
-		glColor4ub(255,255,255,255);
-	}
+    /*If x==1, setup player texture setting*/
+    if(x==1)
+    {
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, play1Texture);
+        glEnable(GL_ALPHA_TEST);
+        glAlphaFunc(GL_GREATER,0.1f);
+        glColor4ub(255,255,255,255);
+    }
+    if(x==3)
+    {
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, play2Texture);
+        glEnable(GL_ALPHA_TEST);
+        glAlphaFunc(GL_GREATER,0.1f);
+        glColor4ub(255,255,255,255);
+    }
 
-	/*If x==0, setup metal texture for healthbar*/
-	if(x==0)
-		glBindTexture(GL_TEXTURE_2D, metalTexture);
+    /*If x==0, setup metal texture for healthbar*/
+    if(x==0)
+        glBindTexture(GL_TEXTURE_2D, metalTexture);
+    if(x==4)
+        glBindTexture(GL_TEXTURE_2D, metal2Texture);
+    /*If x==2, Draw red bars - No texture*/
+    if(x==2)
+        glDisable(GL_TEXTURE_2D);
 
-	/*If x==2, Draw red bars - No texture*/
-	if(x==2)
-		glDisable(GL_TEXTURE_2D);
+    glBegin(GL_QUADS);
 
-	glBegin(GL_QUADS);
-
-	if(x==1 || x==3)
-	{
-		glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
-		glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
-		glTexCoord2f(0.1f, 0.0f); glVertex2i(w, h);
-		glTexCoord2f(0.1f, 1.0f); glVertex2i(w, -h);    
-	}
-	if(x==0)
-	{
-		glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
-		glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
-		glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
-		glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);	
-	}
-	else /*Draw non-textured rectangle*/
-	{
-		glVertex2i(-w, -h);
-		glVertex2i(-w, h);
-		glVertex2i(w, h);
-		glVertex2i(w, -h);     
-	}
-	glEnd();
+    if(x==1 || x==3)
+    {
+    glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
+    glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
+    glTexCoord2f(0.1f, 0.0f); glVertex2i(w, h);
+    glTexCoord2f(0.1f, 1.0f); glVertex2i(w, -h);    
+    }
+    if(x==0 || x==4)
+    {
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);	
+    }
+    else /*Draw non-textured rectangle*/
+    {
+        glVertex2i(-w, -h);
+        glVertex2i(-w, h);
+        glVertex2i(w, h);
+        glVertex2i(w, -h);     
+    }
+    glEnd();
 
 } 
 void drawmenu_button(Flt width, Flt height, int x) 
@@ -1078,6 +1094,23 @@ void render(void)
 	drawBox(play2.hbar.wOut,play2.hbar.hOut,0);
 	glPopMatrix();
 	/****/
+
+    /*Draw inner metal frames second*/
+    glDisable(GL_ALPHA_TEST);
+    glColor3f(1.0, 1.0, 1.0);
+    glPushMatrix();
+    glTranslatef(metal2Pos[0], metal2Pos[1], 0.0);
+    drawBox(metal2Dim[0],metal2Dim[1],4);
+    glPopMatrix();
+
+    glDisable(GL_ALPHA_TEST);
+    glColor3f(1.0, 1.0, 1.0);
+    glPushMatrix();
+    glTranslatef(metal2Pos[2], metal2Pos[3], 0.0);
+    drawBox(metal2Dim[2],metal2Dim[3],4);
+    glPopMatrix();
+    /****/
+
 
 	/****/
 	/*Draw inner-red bar*/
