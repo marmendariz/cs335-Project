@@ -115,6 +115,7 @@ typedef struct t_Player {
     float width,height;
     healthBar hbar;
     Attacks atk;
+    char name[30];
 } Player;
 Player play1;
 Player play2;
@@ -145,6 +146,9 @@ GLuint titleTexture;
 Ppmimage *selectcharacter_Image=NULL;
 int selchar=1;
 GLuint selectTexture;
+
+char names[2][30];
+
 
 /*****/
 clock_t begin_time;
@@ -310,6 +314,9 @@ void init_menu(void)
     glTexImage2D(GL_TEXTURE_2D, 0, 3,
 	    titleImage->width, titleImage->height,
 	    0, GL_RGB, GL_UNSIGNED_BYTE, titleImage->data);
+
+    strcpy(names[0],"Guile");
+    strcpy(names[1],"Bizarro Guile");
 }  
 
 void init_character_select(void)
@@ -602,6 +609,15 @@ int check_keys(XEvent *e)
 	    break;
 	case XK_c:
 	    two_players=true;
+	    break;
+	/*Use numbers to select players*/
+	case XK_1:
+	    if(go_selchar)
+	    strcpy(play1.name,names[0]);
+	    break;
+	case XK_2:
+	    if(go_selchar)
+	    strcpy(play2.name,names[1]);
 	    break;
     }
     return 0;
@@ -1026,10 +1042,11 @@ void render(void)
     r.center = 5;
     r.left = play1.hbar.posOut[0]-180;
     r.bot  = play1.hbar.posOut[1]-10;
-    ggprint16(&r, 20, 0x00ffff00, "Player One");
+    ggprint16(&r, 20, 0x00ffff00, play1.name);
+
     r.left = play2.hbar.posOut[0]+180;
     r.bot  = play2.hbar.posOut[1]-10;
-    ggprint16(&r, 20, 0x00ffff00, "Player Two");
+    ggprint16(&r, 20, 0x00ffff00, play2.name);
     }
 
 void animatePlayerOne(Flt width, Flt height)
