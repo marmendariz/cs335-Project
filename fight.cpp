@@ -21,14 +21,17 @@
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <GL/glx.h>
+#include "audio.h"
 #include "ppm.h"
 #include "log.h"
+#include "defs.h"
+#include "animations.h"
 extern "C" {
 #include "fonts.h"
 }
 
-typedef float Flt;
-typedef Flt Vec[3];
+//typedef float Flt;
+//typedef Flt Vec[3];
 #define MakeVector(x,y,z,v) (v)[0]=(x),(v)[1]=(y),(v)[2]=(z)
 #define VecNegate(a) (a)[0]=(-(a)[0]); (a)[1]=(-(a)[1]); (a)[2]=(-(a)[2]);
 #define VecDot(a,b) ((a)[0]*(b)[0]+(a)[1]*(b)[1]+(a)[2]*(b)[2])
@@ -80,43 +83,12 @@ bool draw = true;
 bool two_players = false;
 bool play_game = false;
 bool go_selchar=false;
+bool sound_p = false;
 
-struct Vector
-{
-    float x,y,z;
-};
+#ifdef USE_SOUND
+int play_sounds = 0;
+#endif
 
-struct box
-{
-    float width,height;
-    Vector center;
-};
-
-typedef struct t_healthBar
-{
-    Vec pos;
-    Vec posOut;
-    float width, height;
-    float wOut, hOut;
-} healthBar;
-
-typedef struct t_attacks
-{
-    Vec posPunch;
-    float wPunch, hPunch;
-}Attacks;
-
-typedef struct t_Player {
-    Vec pos;
-    Vec vel;
-    Vec center;
-    float radius;
-    float mass;
-    float width,height;
-    healthBar hbar;
-    Attacks atk;
-    char name[30];
-} Player;
 Player play1;
 Player play2;
 
@@ -172,17 +144,18 @@ void timeCopy(struct timespec *dest, struct timespec *source) {
     memcpy(dest, source, sizeof(struct timespec));
 }
 //-----------------------------------------------------------------------------
-
 int main(void)
 {
     initXWindows();
     init_menu();
     init_character_select();
     init_players();
+    init_sounds();
     init_opengl();
     clock_gettime(CLOCK_REALTIME, &timePause);
     clock_gettime(CLOCK_REALTIME, &timeStart);
     int done=0;
+    int i=1;
     while(!done) {
 	while(XPending(dpy)) {
 	    XEvent e;
@@ -202,13 +175,26 @@ int main(void)
 
 	if(play_game == false && two_players==false){
 	    menu_render();
-	    if(go_selchar == true)
+	    if(go_selchar == true){
+		if(i==1)
+		{
+		sound_p= true;
+		let_the_music_play();
+		i++;
+		}
 		character_select();
+	    }
 	}
 	else if(play_game==false && two_players == true && go_selchar==false){
 	    menu_render();
 	}
 	else if(play_game ==true && two_players==true && go_selchar==false){
+	    if(i==2)
+	    {
+		sound_p=false;
+		let_the_music_play();
+		i++;
+	    }
 	    render();
 	}
 	glXSwapBuffers(dpy, win);
@@ -1048,68 +1034,4 @@ void render(void)
     r.bot  = play2.hbar.posOut[1]-10;
     ggprint16(&r, 20, 0x00ffff00, play2.name);
     }
-
-void animatePlayerOne(Flt width, Flt height)
-{
-    clk =false;
-
-    int w, h;
-    float x_val;
-    w = width;
-    h = height;
-
-    printf("%f\n",t);
-
-    if(t < 0.005)
-	x_val = 0.1f;
-    else if (t>=0.003 && t<.006)
-	x_val = 0.2f;
-    else if (t>=0.006 && t<.009)
-	x_val = 0.3f;
-    else if (t>=0.009 && t<.012)
-	x_val = 0.4f;
-    else if (t>=0.012 && t<.015){
-	x_val = 0.5f;
-	if (play1.pos[0] + (1.7*play1.width) >= play2.pos[0]+play2.width && t > .014)
-	{
-	    hit = true;
-	    punch1 = false;
-	    p1control = true;
-	    finishpunch = true;
-	}
-    }
-    else if (t>=0.015 && t<.018)
-	x_val = 0.6f;
-    else if (t>=0.018 && t<.021)
-	x_val = 0.7f;
-    else if (t>=0.021 && t<.024)
-	x_val = 0.8f;
-    else if (t>=0.024 && t<.027){
-	x_val = 0.9f;
-    }
-    else {
-	punch1 = false;
-	clk = true;
-	p1control = true;
-	finishpunch = false;
-	draw = true;
-    }
-
-    glPushMatrix();
-    glTranslatef(play1.pos[0], play1.pos[1], play1.pos[2]);
-
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, play1Texture);
-    glEnable(GL_ALPHA_TEST);
-    glAlphaFunc(GL_GREATER,0.1f);
-    glColor4ub(255,255,255,255);
-
-    glBegin(GL_QUADS);
-    glTexCoord2f(x_val, 1.0f); glVertex2i(-w, -h);
-    glTexCoord2f(x_val, 0.0f); glVertex2i(-w, h);
-    glTexCoord2f(x_val + 0.1, 0.0f); glVertex2i(w, h);
-    glTexCoord2f(x_val + 0.1, 1.0f); glVertex2i(w, -h); 
-    glEnd();
-    glPopMatrix();
-}
 

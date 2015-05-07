@@ -21,7 +21,7 @@ typedef Flt	Matrix[4][4];
 #define SGN(a) (((a)<0)?(-1):(1))
 #define SGND(a) (((a)<0.0)?(-1.0):(1.0))
 
-typedef struct t_rect {
+/*typedef struct t_rect {
 	int left;
 	int top;
 	int right;
@@ -32,7 +32,7 @@ typedef struct t_rect {
 	int centerx;
 	int centery;
 } Rect;
-
+*/
 typedef struct t_mouse {
 	int x,y;
 	int lastx,lasty;
@@ -56,6 +56,7 @@ typedef struct t_texmap {
 	unsigned int *i;
 } Texmap;
 
+/*
 typedef struct t_screen {
 	int x_res, y_res;
 	int screen_x_res, screen_y_res;
@@ -63,6 +64,7 @@ typedef struct t_screen {
 	Flt xcenter, ycenter;
 	Flt fy_res, fx_res;
 } Screen;
+*/
 
 #define MAX_LIGHTS (4)
 typedef struct t_lights {
@@ -116,6 +118,46 @@ typedef struct t_frustum {
 	float glNearPlaneDistance;
 	Vec save_planes[6];
 } Frustum;
+
+typedef struct t_Vector
+{
+    float x,y,z;
+}Vector;
+
+typedef struct t_box
+{
+    float width,height;
+    Vector center;
+}box;
+
+typedef struct t_healthBar
+{
+    Vec pos;
+    Vec posOut;
+    float width, height;
+    float wOut, hOut;
+} healthBar;
+
+typedef struct t_attacks
+{
+    Vec posPunch;
+    float wPunch, hPunch;
+}Attacks;
+
+typedef struct t_Player {
+    Vec pos;
+    Vec vel;
+    Vec center;
+    float radius;
+    float mass;
+    float width,height;
+    healthBar hbar;
+    Attacks atk;
+    char name[30];
+} Player;
+
+
+
 
 #endif
 
