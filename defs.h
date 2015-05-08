@@ -21,18 +21,6 @@ typedef Flt	Matrix[4][4];
 #define SGN(a) (((a)<0)?(-1):(1))
 #define SGND(a) (((a)<0.0)?(-1.0):(1.0))
 
-/*typedef struct t_rect {
-	int left;
-	int top;
-	int right;
-	int bot;
-	int width;
-	int height;
-	int center;
-	int centerx;
-	int centery;
-} Rect;
-*/
 typedef struct t_mouse {
 	int x,y;
 	int lastx,lasty;
@@ -55,16 +43,6 @@ typedef struct t_texmap {
 	unsigned char *c;
 	unsigned int *i;
 } Texmap;
-
-/*
-typedef struct t_screen {
-	int x_res, y_res;
-	int screen_x_res, screen_y_res;
-	float gl_perspective_viewangle;
-	Flt xcenter, ycenter;
-	Flt fy_res, fx_res;
-} Screen;
-*/
 
 #define MAX_LIGHTS (4)
 typedef struct t_lights {
@@ -155,9 +133,5 @@ typedef struct t_Player {
     Attacks atk;
     char name[30];
 } Player;
-
-
-
-
 #endif
 

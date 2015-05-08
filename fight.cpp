@@ -121,14 +121,12 @@ GLuint selectTexture;
 /*Holds character names*/
 char names[2][30];
 
-/*****/
 clock_t begin_time;
 bool clk = true;
 float t;
 bool hit = false;
 
-/*********************************/
-/* Setup timers */
+/***********Setup timers **********/
 const double physicsRate = 1.0 / 60.0;
 const double oobillion = 1.0 / 1e9;
 struct timespec timeStart, timeCurrent;
@@ -142,8 +140,9 @@ double timeDiff(struct timespec *start, struct timespec *end) {
 void timeCopy(struct timespec *dest, struct timespec *source) {
     memcpy(dest, source, sizeof(struct timespec));
 }
-/***********************************/
+/**************************************/
 
+/***************MAIN*******************/
 int main(void)
 {
     initXWindows();
@@ -670,10 +669,9 @@ if ((play2.pos[1] < play2.radius && play2.vel[1] < 0.0) ||
 
 void drawBox(Flt width, Flt height, int x)
 {
-    int w = width;
-    int h = height;
+    int w = width, h = height;
 
-    /*If x==1, setup player texture setting*/
+    /*x= 1 or 3 - Bind player1 and player2 textures*/
     if(x==1)
     {
 	glEnable(GL_TEXTURE_2D);
@@ -691,17 +689,18 @@ void drawBox(Flt width, Flt height, int x)
 	glColor4ub(255,255,255,255);
     }
 
-    /*If x==0, setup metal texture for healthbar*/
+    /*x=0, bind metal texture for healthbar*/
     if(x==0)
 	glBindTexture(GL_TEXTURE_2D, metalTexture);
     if(x==4)
 	glBindTexture(GL_TEXTURE_2D, metal2Texture);
-    /*If x==2, Draw red bars - No texture*/
+
+    /*If x=2, Draw red bars - No texture*/
     if(x==2)
 	glDisable(GL_TEXTURE_2D);
 
     glBegin(GL_QUADS);
-
+    /*Draw player1/player2 with texture*/
     if(x==1 || x==3)
     {
 	glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
@@ -709,6 +708,7 @@ void drawBox(Flt width, Flt height, int x)
 	glTexCoord2f(0.1f, 0.0f); glVertex2i(w, h);
 	glTexCoord2f(0.1f, 1.0f); glVertex2i(w, -h);    
     }
+    /*Draw regular full size of texture*/
     if(x==0 || x==4)
     {
 	glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
@@ -716,7 +716,8 @@ void drawBox(Flt width, Flt height, int x)
 	glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
 	glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);	
     }
-    else /*Draw non-textured rectangle*/
+    /*Draw non-textured rectangle*/
+    else
     {
 	glVertex2i(-w, -h);
 	glVertex2i(-w, h);
@@ -724,12 +725,11 @@ void drawBox(Flt width, Flt height, int x)
 	glVertex2i(w, -h);     
     }
     glEnd();
-
 } 
 void drawmenu_button(Flt width, Flt height) 
 {
-    int w = width;
-    int h = height;
+    int w = width, h = height;
+
     glBegin(GL_QUADS);
     glColor3f(1.0,0.0,0.0); 
     glVertex2i(-w, -h);
@@ -760,6 +760,7 @@ void menu_render(void)
     }
     /*Draw the play button*/
     glColor3f(1.0,1.0,1.0);
+/*****/
     glPushMatrix();
     glTranslatef(w,y,1);
     drawmenu_button(150,50);
