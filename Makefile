@@ -19,8 +19,6 @@ fight.o: fight.cpp  ppm.c fmod.c
 
 
 clean:
-	rm -f asteroids
-	rm -f bump
 	rm -f fight
 	rm -f *.o
  
