@@ -30,8 +30,6 @@ extern "C" {
 #include "fonts.h"
 }
 
-//typedef float Flt;
-//typedef Flt Vec[3];
 #define MakeVector(x,y,z,v) (v)[0]=(x),(v)[1]=(y),(v)[2]=(z)
 #define VecNegate(a) (a)[0]=(-(a)[0]); (a)[1]=(-(a)[1]); (a)[2]=(-(a)[2]);
 #define VecDot(a,b) ((a)[0]*(b)[0]+(a)[1]*(b)[1]+(a)[2]*(b)[2])
@@ -59,7 +57,7 @@ void character_select(void);
 void init_character_select(void);
 void render(void);
 void animatePlayerOne(Flt, Flt);
-void drawmenu_button(Flt, Flt, int);
+void drawmenu_button(Flt, Flt);
 void init_menu();
 void menu_render();
 
@@ -121,15 +119,14 @@ GLuint selectTexture;
 
 char names[2][30];
 
-
 /*****/
 clock_t begin_time;
 bool clk = true;
 float t;
 bool hit = false;
-/*****/
-//-----------------------------------------------------------------------------
-//Setup timers
+
+/*********************************/
+/* Setup timers */
 const double physicsRate = 1.0 / 60.0;
 const double oobillion = 1.0 / 1e9;
 struct timespec timeStart, timeCurrent;
@@ -143,7 +140,8 @@ double timeDiff(struct timespec *start, struct timespec *end) {
 void timeCopy(struct timespec *dest, struct timespec *source) {
     memcpy(dest, source, sizeof(struct timespec));
 }
-//-----------------------------------------------------------------------------
+/***********************************/
+
 int main(void)
 {
     initXWindows();
@@ -833,7 +831,7 @@ void drawBox(Flt width, Flt height, int x)
     glEnd();
 
 } 
-void drawmenu_button(Flt width, Flt height, int x) 
+void drawmenu_button(Flt width, Flt height) 
 {
     int w = width;
     int h = height;
@@ -869,7 +867,7 @@ void menu_render(void)
     glColor3f(1.0,1.0,1.0);
     glPushMatrix();
     glTranslatef(w,y,1);
-    drawmenu_button(150,50,1);
+    drawmenu_button(150,50);
     glPopMatrix();
     /******************************************************/
 }
