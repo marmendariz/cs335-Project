@@ -6,12 +6,13 @@ extern int play_sounds;
 
 void init_sounds(void)
 {
+    char file[] = "./sounds/zfc.mp3";
 #ifdef USE_SOUND
         if(fmod_init()){
                 printf("ERROR-fmod_init()\n\n");
                 return;
         }
-        if(fmod_createsound("./sounds/zfc.mp3",0)){
+        if(fmod_createsound(file,0)){
                 printf("ERROR-fmod_createsound()\n\n");
                 return;
         }

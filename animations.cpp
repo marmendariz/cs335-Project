@@ -20,7 +20,7 @@ void animatePlayerOne(Flt width, Flt height)
     w = width;
     h = height;
 
-    printf("%f\n",t);
+    //printf("%f\n",t);
 
     if(t < 0.005)
         x_val = 0.1f;
