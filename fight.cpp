@@ -118,6 +118,7 @@ Ppmimage *selectcharacter_Image=NULL;
 int selchar=1;
 GLuint selectTexture;
 
+/*Holds character names*/
 char names[2][30];
 
 /*****/

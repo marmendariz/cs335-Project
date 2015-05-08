@@ -1,4 +1,5 @@
-
+//Initialize textures
+//Mark Armendariz
 
 #include "init.h"
 #include "defs.h"
@@ -7,25 +8,21 @@ extern "C" {
 #include "fonts.h"
 }
 
-
-extern Ppmimage *play1Image;
-extern GLuint play1Texture;
-
-extern Ppmimage *play2Image;
-extern GLuint play2Texture;
-
-extern Ppmimage *metalImage;
-extern GLuint metalTexture;
-
-extern Ppmimage *metal2Image;
-extern GLuint metal2Texture;
-extern Flt metal2Pos[4];
-extern Flt metal2Dim[4];  
-
-extern Ppmimage *forestImage;
-extern GLuint forestTexture;
-extern int forest;
-extern int xres,yres;
+extern Ppmimage *play2Image,
+       *play1Image,
+       *metalImage,
+       *metal2Image,
+       *forestImage;
+extern GLuint play1Texture,
+       play2Texture,
+       metalTexture,
+       metal2Texture,
+       forestTexture;
+extern Flt metal2Pos[4],
+       metal2Dim[4];  
+extern int forest,
+       xres,
+       yres;
 
 
 void init_opengl(void)
@@ -116,7 +113,7 @@ void init_opengl(void)
 
 unsigned char *buildAlphaData(Ppmimage *img)
 {
-    //add 4th component to RGB stream...
+    /*add 4th component to RGB stream*/
     int a,b,c;
     unsigned char *newdata, *ptr;
     unsigned char *data = (unsigned char *)img->data;
