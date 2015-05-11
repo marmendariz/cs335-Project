@@ -21,13 +21,13 @@
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <GL/glx.h>
-#include "audio.h"
+#include "ZenaidaG.h"
 #include "ppm.h"
 #include "log.h"
 #include "defs.h"
-#include "animations.h"
-#include "init.h"
-#include "characterSelect.h"
+#include "KevinO.h"
+#include "MarkA.h"
+#include "SarahbethR.h"
 
 extern "C" {
 #include "fonts.h"
@@ -150,7 +150,8 @@ int main(void)
 {
     initXWindows();
     init_menu();
-    init_character_select();
+    init_character_boxes();
+	init_character_select();
     init_players();
     init_sounds();
     init_opengl();
@@ -184,7 +185,7 @@ int main(void)
 		let_the_music_play();
 		i++;
 		}
-		character_select();
+		character_select_render();
 	    }
 	}
 	else if(play_game==false && two_players == true && go_selchar==false){
