@@ -27,6 +27,8 @@
 #include "defs.h"
 #include "animations.h"
 #include "init.h"
+#include "characterSelect.h"
+
 extern "C" {
 #include "fonts.h"
 }
@@ -62,7 +64,7 @@ void drawmenu_button(Flt, Flt);
 void init_menu();
 void menu_render();
 
-void selectBox(Vec); 
+//void selectBox(Vec); 
 /*void drawCharbox(Flt,Flt,int);*/
 
 int xres=1280, yres=680;
@@ -117,6 +119,7 @@ GLuint titleTexture;
 Ppmimage *selectcharacter_Image=NULL;
 int selchar=1;
 GLuint selectTexture;
+
 
 /*Holds character names*/
 char names[2][30];
@@ -511,7 +514,7 @@ void VecNormalize(Vec v)
     v[1] *= len;
     v[2] *= len;
 }
-
+/*
 void selectBox(Vec leftButtonPos)
 {
     if (play_game == false) { // if in title screen
@@ -521,7 +524,7 @@ void selectBox(Vec leftButtonPos)
 		go_selchar = true;
 	}
     }
-}  
+} */ 
 
 void physics(void)
 {
