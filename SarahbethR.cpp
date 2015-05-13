@@ -12,6 +12,7 @@
 
  */
 
+#include <cstdio>
 #include "SarahbethR.h"
 #include "defs.h"
 
@@ -26,14 +27,21 @@ typedef struct t_charBox
     Vec pos;
 } charBox;
 
-charBox charBox1;
-
+charBox charBox1, charBox2, logoBox1;
 
 /********* Declare Textures **********/
 
 Ppmimage *guileImage=NULL;
 int guile=1;
 GLuint guileTexture;
+
+Ppmimage *bguileImage=NULL;
+int bguile=1;
+GLuint bguileTexture;
+
+Ppmimage *gLogoImage=NULL;
+int glogo=1;
+GLuint glogoTexture;
 
 extern Ppmimage *selectcharacter_Image;
 extern int selchar;
@@ -62,7 +70,7 @@ void init_character_boxes(void)
     glEnable(GL_TEXTURE_2D);
     initialize_fonts();
 
-    /*********** Initialize Textures *************************/
+    /*********** Initialize Textures **************/
     /*GUILE CHARACTER BOX TEXTURE*/
     char b[] = "./images/selectGuile.ppm"; 
     guileImage = ppm6GetImage(guileImage, b);
@@ -77,13 +85,42 @@ void init_character_boxes(void)
             GL_RGBA, GL_UNSIGNED_BYTE, guileData);
     delete [] guileData;
 
-    /********** Initialize Box Position (s) **********/
+    /* BIZARRO GUILE CHARACTER BOX TEXTURE */
+	
+	char c[] = "./images/selectBGuile.ppm";
+	bguileImage = ppm6GetImage(bguileImage, c);
+	glGenTextures(1, &bguileTexture);
+	glBindTexture(GL_TEXTURE_2D, bguileTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	w = bguileImage->width;
+	h = bguileImage->height;
+	unsigned char *bguileData = buildAlphaData(bguileImage);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, 
+			GL_RGBA, GL_UNSIGNED_BYTE, bguileData);
+	delete [] bguileData;
+	
+	/* 	GUILE LOGO TEXTURE	
 
+	char d[] = "./images/guileLogo.ppm";
+	glogoImage = ppm6GetImage(glogoImage, d);
+	glGenTextures(1, &glogoTexture);
+	glBindTexture(GL_TEXTURE_2D, glogoTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	w = */
+
+	/********** Initialize Box Position (s) **********/
+	
     charBox1.pos[0] = 200;
-    charBox1.pos[1] = 300;
-    charBox1.width = 200;
-    charBox1.height = 300;
-
+    charBox1.pos[1] = 450;
+    charBox1.width = 100;
+    charBox1.height = 150;
+	
+	charBox2.pos[0] = 500;
+	charBox2.pos[1] = 450;
+	charBox2.width = 100;
+	charBox2.height = 150;
 }
 
 void selectBox(Vec leftButtonPos)
@@ -102,23 +139,27 @@ void drawCharBox(Flt width, Flt height, int x)
     int w = width;
     int h = height;
 
-    /*If x == 1, setup Character Select guile texture */
-    /*if (x == 1) {
-      glEnable(GL_TEXTURE_2D);
-      glBindTexture(GL_TEXTURE_2D, guileTexture);
-      glEnable(GL_ALPHA_TEST);
-      glAlphaFunc(GL_GREATER, 0.1f);
-      glColor4ub(255,255,255,255);
-      }
-
-      glDisable(GL_TEXTURE_2D);
-     */
     glEnable(GL_TEXTURE_2D);
-    if (x ==1) 
+    
+	// Draw Guile Character Box //
+	if (x == 1) 
         glBindTexture(GL_TEXTURE_2D, guileTexture);
+    		
+	glBegin(GL_QUADS);
+ 	if (x == 1) {
+        glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
+        glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
+        glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
+        glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);
+    }
+    glEnd();
+ 
+ 	// Draw Bizarro Guile Character Box
+ 	if (x == 2) 
+        glBindTexture(GL_TEXTURE_2D, bguileTexture);
 
     glBegin(GL_QUADS);
-    if (x == 1) {
+    if (x == 2) {
         glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
         glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
         glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
@@ -151,12 +192,47 @@ void character_select_render(void)
 
     glDisable(GL_TEXTURE_2D);
 
-    //draw character box
+    //draw Guile character box
     glColor3f(1.0,1.0,1.0);
     glPushMatrix();
     glTranslatef(charBox1.pos[0], charBox1.pos[1], 0);
     drawCharBox(charBox1.width, charBox1.height, 1);
     glPopMatrix();
 
+	//draw BGuile character box
+	glColor3f(1.0,1.0,1.0);
+    glPushMatrix();
+    glTranslatef(charBox2.pos[0], charBox2.pos[1], 0);
+    drawCharBox(charBox2.width, charBox2.height, 2);
+    glPopMatrix();
+
 }
 
+/**************** UNDER DEVELOPMENT **********************/
+
+/*void animate_ReadySetGo(Flt width, Flt height)
+{
+	float timeDif = float(clock() - startTime) / CLOCKS_PER_SEC; 
+	startClk = false;
+
+	int w = width;
+	int h = height;
+	float x_val = 0.0f;
+	float y_top = 0.0f;
+	float y_bot = 1.0f/3.0f;
+	float inc = 0.1f;
+
+	if (timeDif < 2) {
+		play1.control = false;
+		play2.control = false;
+	}
+	if(timeDif < 1) 
+		x_val = 0.1f;
+	else if (timeDif >= 1 && timeDif < 2)
+		x_val = 0.2f;
+	else if (timeDif > 2) {
+		play1.control = true;
+		play2.control = true;
+	}
+
+*/	
