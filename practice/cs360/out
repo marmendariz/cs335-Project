@@ -1,0 +1,15 @@
+rt_sigprocmask(SIG_SETMASK, ~[INT RTMIN RT_1], NULL, 8) = 0
+rt_sigaction(SIGUSR1, {0x400aed, ~[INT RTMIN RT_1], SA_RESTORER|SA_RESTART, 0x7f043b722d40}, NULL, 8) = 0
+rt_sigprocmask(SIG_SETMASK, ~[INT USR1 RTMIN RT_1], NULL, 8) = 0
+Process 3587 attached
+[pid  3586] rt_sigsuspend(~[INT USR1 RTMIN RT_1] <unfinished ...>
+[pid  3587] kill(3586, SIGUSR1)         = 0
+[pid  3586] <... rt_sigsuspend resumed> ) = ? ERESTARTNOHAND (To be restarted if no handler)
+[pid  3587] kill(3586, SIGUSR2 <unfinished ...>
+[pid  3586] --- SIGUSR1 {si_signo=SIGUSR1, si_code=SI_USER, si_pid=3587, si_uid=1000} ---
+[pid  3587] <... kill resumed> )        = 0
+[pid  3586] rt_sigreturn()              = -1 EINTR (Interrupted system call)
+[pid  3587] +++ exited with 10 +++
+rt_sigprocmask(SIG_SETMASK, ~[INT USR1 CHLD RTMIN RT_1], NULL, 8) = 0
+--- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=3587, si_status=10, si_utime=0, si_stime=0} ---
++++ exited with 0 +++
