@@ -20,3 +20,5 @@ void init_character_boxes(void);
 void selectBox(Vec);
 void drawCharBox(Flt, Flt, int);
 void character_select_render(void);
+void menu_render(void);
+void drawmenu_button(Flt, Flt);

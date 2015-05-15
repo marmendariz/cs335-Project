@@ -9,7 +9,8 @@
     draw_char_boxes
     select_box
     character_select_render
-
+	menu_render
+	drawmenu_button
  */
 
 #include <cstdio>
@@ -42,6 +43,11 @@ GLuint bguileTexture;
 Ppmimage *gLogoImage=NULL;
 int glogo=1;
 GLuint glogoTexture;
+
+extern Ppmimage *titleImage;
+extern int title;
+extern GLuint titleTexture;
+
 
 extern Ppmimage *selectcharacter_Image;
 extern int selchar;
@@ -206,6 +212,48 @@ void character_select_render(void)
     drawCharBox(charBox2.width, charBox2.height, 2);
     glPopMatrix();
 
+}
+
+void menu_render(void)  
+{ 
+		int w = 1050; 
+		int y = 460; 
+		/***************************************/ 
+		/*Draw title screen background*/ 
+		glColor3f(1.0, 1.0, 1.0); 
+		if (title) { 
+				glBindTexture(GL_TEXTURE_2D, titleTexture); 
+				glBegin(GL_QUADS); 
+				glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0); 
+				glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres); 
+				glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres); 
+				glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0); 
+				glEnd(); 
+		} 
+		/*Draw the play button*/ 
+		glColor3f(1.0,1.0,1.0); 
+		/*****/ 
+		glPushMatrix(); 
+		glTranslatef(w,y,1); 
+		drawmenu_button(150,80); 
+		glPopMatrix(); 
+		/******************************************************/ 
+} 
+
+void drawmenu_button(Flt width, Flt height)
+{
+     int w = width, h = height;
+ 
+     glBegin(GL_QUADS);
+     glColor3f(0.0,0.5,0.0);
+     glVertex2i(-w, -h);
+     glColor3f(0.0,0.0,1.0);
+     glVertex2i(-w, h);
+     glColor3f(0.0,0.5,0.0);
+     glVertex2i(w, h);
+     glColor3f(0.0,0.0,1.0);
+     glVertex2i(w, -h);
+     glEnd();
 }
 
 /**************** UNDER DEVELOPMENT **********************/

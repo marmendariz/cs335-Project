@@ -55,7 +55,6 @@ void check_resize(XEvent *e);
 void check_mouse(XEvent *e);
 int check_keys(XEvent *e);
 void physics(void);
-void character_select(void);
 void init_character_select(void);
 void render(void);
 void animatePlayerOne(Flt, Flt);
@@ -63,23 +62,10 @@ void drawmenu_button(Flt, Flt);
 void init_menu();
 void menu_render();
 
-//void selectBox(Vec); 
-/*void drawCharbox(Flt,Flt,int);*/
-
 int xres=1280, yres=680;
 int leftButtonDown=0;
 int punchDamage = 5;
 Vec leftButtonPos;
-/*
-   bool punch1 = false;
-   bool punch2 = false;
-   bool finishpunch = false;
-
-   bool p1control = false;
-   bool p2control = false;
- */
-
-//bool draw = true;
 
 bool two_players = false;
 bool play_game = false;
@@ -116,18 +102,13 @@ Ppmimage *titleImage=NULL;
 int title =1;
 GLuint titleTexture;
 
+
 Ppmimage *selectcharacter_Image=NULL;
 int selchar=1;
 GLuint selectTexture;
 
 /*Holds character names*/
 char names[2][30];
-
-/*clock_t begin_time;
-  bool clk = true;
-  float t;
-  bool hit = false;
- */
 
 /***********Setup timers **********/
 const double physicsRate = 1.0 / 60.0;
@@ -150,7 +131,8 @@ int main(void)
 {
     initXWindows();
     init_menu();
-    init_character_select();
+	init_character_boxes();
+	init_character_select();
     init_players();
     init_sounds();
     init_opengl();
@@ -184,7 +166,7 @@ int main(void)
                     let_the_music_play();
                     i++;
                 }
-                character_select();
+                character_select_render();
             }
         }
         else if(play_game==false && two_players == true && go_selchar==false){
@@ -327,7 +309,7 @@ void init_character_select(void)
     glEnable(GL_TEXTURE_2D);
     initialize_fonts();
 
-    char a[] = "./images/characterselect2.ppm";
+    char a[] = "./images/characterselect.ppm";
     selectcharacter_Image = ppm6GetImage(selectcharacter_Image,a);
     glGenTextures(1, &selectTexture);
     glBindTexture(GL_TEXTURE_2D, selectTexture);
@@ -462,7 +444,6 @@ void check_mouse(XEvent *e)
     }
 }
 
-
 int check_keys(XEvent *e)
 {
     int key= XLookupKeysym(&e->xkey, 0);
@@ -537,18 +518,6 @@ void VecNormalize(Vec v)
     v[1] *= len;
     v[2] *= len;
 }
-
-/*void selectBox(Vec leftButtonPos)
-{
-    if (play_game == false) { // if in title screen
-        if (go_selchar==false && two_players==false){
-            if ((leftButtonPos[0] > (xres/2 - 75) && leftButtonPos[0] < xres/2 + 75) && 
-                    (leftButtonPos[1] > (yres/8 - 25) && leftButtonPos[1] < (yres/8 + 25))) 
-                go_selchar = true;
-        }
-    }
-}  
-*/
 
 void physics(void)
 {
@@ -728,23 +697,6 @@ void physics(void)
     }
 }
 
-/*void drawCharBox (Flt width, Flt height, int x)
-  {
-  int w = width;
-  int h = height;
-  glBegin(GL_QUADS);
-  glColor3ub(255,255,0); // yellow
-  glVertex2i(-w,-h);
-  glColor3ub(0,255,255);	// cyan
-  glVertex2i(-w, h);
-  glColor3ub(255,0,0); // red
-  glVertex2i( w, h);
-  glColor3ub(255,0,255); // magenta
-  glVertex2i( w,-h);
-  glEnd();
-  glPopMatrix();
-  }*/
-
 void drawBox(Flt width, Flt height, int x)
 {
     int w = width, h = height;
@@ -803,88 +755,6 @@ void drawBox(Flt width, Flt height, int x)
         glVertex2i(w, -h);     
     }
     glEnd();
-}
-
-void drawmenu_button(Flt width, Flt height) 
-{
-    int w = width, h = height;
-
-    glBegin(GL_QUADS);
-    glColor3f(1.0,0.0,0.0); 
-    glVertex2i(-w, -h);
-    glColor3f(0.0,0.0,1.0); 
-    glVertex2i(-w, h);
-    glColor3f(1.0,0.0,0.0); 
-    glVertex2i(w, h);
-    glColor3f(0.0,0.0,1.0); 
-    glVertex2i(w, -h);
-    glEnd();
-}
-
-void menu_render(void) 
-{
-    int w = (xres/2);
-    int y = (yres/8);
-    /***************************************/
-    /*Draw title screen background*/
-    glColor3f(1.0, 1.0, 1.0);
-    if (title) {
-        glBindTexture(GL_TEXTURE_2D, titleTexture);
-        glBegin(GL_QUADS);
-        glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-        glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres);
-        glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
-        glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
-        glEnd();
-    }
-    /*Draw the play button*/
-    glColor3f(1.0,1.0,1.0);
-    /*****/
-    glPushMatrix();
-    glTranslatef(w,y,1);
-    drawmenu_button(150,50);
-    glPopMatrix();
-    /******************************************************/
-}
-
-void character_select(void)
-{
-    int w;
-    int h;
-    box cbox[4];
-    for (int i = 0; i < 4; i++) {
-        //glColor3f (1.0, 1.0, 1.0);
-        glPushMatrix();
-        glTranslatef(cbox->center.x, cbox->center.y, cbox->center.z);
-        cbox[i].width = 100;
-        cbox[i].height = 20;
-        cbox[i].center.x = 120 + i*65;
-        cbox[i].center.y = 500 - i*60;
-        w = cbox[i].width;
-        h = cbox[i].height;
-        glBegin(GL_QUADS);
-        glColor3ub(255,255,0); // yellow
-        glVertex2i(-w,-h);
-        glColor3ub(0,255,255);	// cyan
-        glVertex2i(-w, h);
-        glColor3ub(255,0,0); // red
-        glVertex2i( w, h);
-        glColor3ub(255,0,255); // magenta
-        glVertex2i( w,-h);
-        glEnd();
-        glPopMatrix();	
-    }
-
-    glColor3f(1.0, 1.0, 1.0);
-    if (selchar) {
-        glBindTexture(GL_TEXTURE_2D, selectTexture);
-        glBegin(GL_QUADS);
-        glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-        glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres);
-        glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
-        glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
-        glEnd();
-    }
 }
 
 void render(void)
@@ -1007,9 +877,6 @@ void render(void)
         animatePlayerTwoWalk(play2.width, play2.height);
     }
 
-
-
-
     /*****************Player 2 punch and hit******************/
     if((play2.punch && !play2.punchHit) || play2.finPunch)
     {
@@ -1029,9 +896,6 @@ void render(void)
         play1.hbar.width -= punchDamage;
         play2.punchHit = false;
     }
-
-
-
 
     /*healthbar check****************************/
 
@@ -1054,6 +918,5 @@ void render(void)
     r.left = play2.hbar.posOut[0]+180;
     r.bot  = play2.hbar.posOut[1]-10;
     ggprint16(&r, 20, 0x00ffff00, play2.name);
-
 }
 
