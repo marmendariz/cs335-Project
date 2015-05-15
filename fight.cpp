@@ -730,16 +730,17 @@ void drawBox(Flt width, Flt height, int x)
     }
     glEnd();
 } 
+
 void drawmenu_button(Flt width, Flt height) 
 {
     int w = width, h = height;
 
     glBegin(GL_QUADS);
-    glColor3f(1.0,0.0,0.0); 
+    glColor3f(0.0,0.5,0.0); 
     glVertex2i(-w, -h);
     glColor3f(0.0,0.0,1.0); 
     glVertex2i(-w, h);
-    glColor3f(1.0,0.0,0.0); 
+    glColor3f(0.0,0.5,0.0); 
     glVertex2i(w, h);
     glColor3f(0.0,0.0,1.0); 
     glVertex2i(w, -h);
@@ -748,8 +749,9 @@ void drawmenu_button(Flt width, Flt height)
 
 void menu_render(void) 
 {
-    int w = (xres/2);
-    int y = (yres/8);
+    int w = 1050;
+    int y = 460;
+	
     /***************************************/
     /*Draw title screen background*/
     glColor3f(1.0, 1.0, 1.0);
@@ -764,10 +766,10 @@ void menu_render(void)
     }
     /*Draw the play button*/
     glColor3f(1.0,1.0,1.0);
-/*****/
+	/*****/
     glPushMatrix();
     glTranslatef(w,y,1);
-    drawmenu_button(150,50);
+    drawmenu_button(150,80);
     glPopMatrix();
     /******************************************************/
 }
