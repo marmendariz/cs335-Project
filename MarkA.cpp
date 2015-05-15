@@ -45,7 +45,7 @@ void init_opengl(void)
 
     /**************INITIALIZE TEXTURES******************/
     /*PLAYER ONE TEXTURE*/
-    char x[] = "./images/sprite1.ppm";
+    char x[] = "./images/guile_play1.ppm";
     play1Image = ppm6GetImage(play1Image,x);
     glGenTextures(1, &play1Texture);
     glBindTexture(GL_TEXTURE_2D, play1Texture);
@@ -58,7 +58,7 @@ void init_opengl(void)
     delete [] play1Data;
 
     /*PLAYER TWO TEXTURE*/
-    char b[] = "./images/sprite2.ppm";
+    char b[] = "./images/guile_play2.ppm";
     play2Image = ppm6GetImage(play2Image,b);
     glGenTextures(1, &play2Texture);
     glBindTexture(GL_TEXTURE_2D, play2Texture);
