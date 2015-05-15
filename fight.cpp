@@ -8,7 +8,7 @@
   Zenaida
   Sarahbeth
   Kevin
-  */
+ */
 /**********************************************/
 /**********************************************/
 #include <iostream>
@@ -28,7 +28,6 @@
 #include "KevinO.h"
 #include "MarkA.h"
 #include "SarahbethR.h"
-
 extern "C" {
 #include "fonts.h"
 }
@@ -71,15 +70,16 @@ int xres=1280, yres=680;
 int leftButtonDown=0;
 int punchDamage = 5;
 Vec leftButtonPos;
+/*
+   bool punch1 = false;
+   bool punch2 = false;
+   bool finishpunch = false;
 
-bool punch1 = false;
-bool punch2 = false;
-bool finishpunch = false;
+   bool p1control = false;
+   bool p2control = false;
+ */
 
-bool p1control = false;
-bool p2control = false;
-
-bool draw = true;
+//bool draw = true;
 
 bool two_players = false;
 bool play_game = false;
@@ -120,14 +120,14 @@ Ppmimage *selectcharacter_Image=NULL;
 int selchar=1;
 GLuint selectTexture;
 
-
 /*Holds character names*/
 char names[2][30];
 
-clock_t begin_time;
-bool clk = true;
-float t;
-bool hit = false;
+/*clock_t begin_time;
+  bool clk = true;
+  float t;
+  bool hit = false;
+ */
 
 /***********Setup timers **********/
 const double physicsRate = 1.0 / 60.0;
@@ -138,7 +138,7 @@ double physicsCountdown=0.0;
 double timeSpan=0.0;
 double timeDiff(struct timespec *start, struct timespec *end) {
     return (double)(end->tv_sec - start->tv_sec ) +
-	(double)(end->tv_nsec - start->tv_nsec) * oobillion;
+        (double)(end->tv_nsec - start->tv_nsec) * oobillion;
 }
 void timeCopy(struct timespec *dest, struct timespec *source) {
     memcpy(dest, source, sizeof(struct timespec));
@@ -150,8 +150,7 @@ int main(void)
 {
     initXWindows();
     init_menu();
-    init_character_boxes();
-	init_character_select();
+    init_character_select();
     init_players();
     init_sounds();
     init_opengl();
@@ -160,47 +159,47 @@ int main(void)
     int done=0;
     int i=1;
     while(!done) {
-	while(XPending(dpy)) {
-	    XEvent e;
-	    XNextEvent(dpy, &e);
-	    check_resize(&e);
-	    check_mouse(&e);
-	    done = check_keys(&e);
-	}
-	clock_gettime(CLOCK_REALTIME, &timeCurrent);
-	timeSpan = timeDiff(&timeStart, &timeCurrent);
-	timeCopy(&timeStart, &timeCurrent);
-	physicsCountdown += timeSpan;
-	while(physicsCountdown >= physicsRate) {
-	    physics();
-	    physicsCountdown -= physicsRate;
-	}
+        while(XPending(dpy)) {
+            XEvent e;
+            XNextEvent(dpy, &e);
+            check_resize(&e);
+            check_mouse(&e);
+            done = check_keys(&e);
+        }
+        clock_gettime(CLOCK_REALTIME, &timeCurrent);
+        timeSpan = timeDiff(&timeStart, &timeCurrent);
+        timeCopy(&timeStart, &timeCurrent);
+        physicsCountdown += timeSpan;
+        while(physicsCountdown >= physicsRate) {
+            physics();
+            physicsCountdown -= physicsRate;
+        }
 
-	if(play_game == false && two_players==false){
-	    menu_render();
-	    if(go_selchar == true){
-		if(i==1)
-		{
-		sound_p= true;
-		let_the_music_play();
-		i++;
-		}
-		character_select_render();
-	    }
-	}
-	else if(play_game==false && two_players == true && go_selchar==false){
-	    menu_render();
-	}
-	else if(play_game ==true && two_players==true && go_selchar==false){
-	    if(i==2)
-	    {
-		sound_p=false;
-		let_the_music_play();
-		i++;
-	    }
-	    render();
-	}
-	glXSwapBuffers(dpy, win);
+        if(play_game == false && two_players==false){
+            menu_render();
+            if(go_selchar == true){
+                if(i==1)
+                {
+                    sound_p= true;
+                    let_the_music_play();
+                    i++;
+                }
+                character_select();
+            }
+        }
+        else if(play_game==false && two_players == true && go_selchar==false){
+            menu_render();
+        }
+        else if(play_game ==true && two_players==true && go_selchar==false){
+            if(i==2)
+            {
+                sound_p=false;
+                let_the_music_play();
+                i++;
+            }
+            render();
+        }
+        glXSwapBuffers(dpy, win);
     }
     cleanupXWindows();
     cleanup_fonts();
@@ -234,29 +233,29 @@ void initXWindows(void)
     setup_screen_res(1280, 680);
     dpy = XOpenDisplay(NULL);
     if(dpy == NULL) {
-	std::cout << "\n\tcannot connect to X server\n" << std::endl;
-	exit(EXIT_FAILURE);
+        std::cout << "\n\tcannot connect to X server\n" << std::endl;
+        exit(EXIT_FAILURE);
     }
     Window root = DefaultRootWindow(dpy);
     XVisualInfo *vi = glXChooseVisual(dpy, 0, att);
     if(vi == NULL) {
-	std::cout << "\n\tno appropriate visual found\n" << std::endl;
-	exit(EXIT_FAILURE);
+        std::cout << "\n\tno appropriate visual found\n" << std::endl;
+        exit(EXIT_FAILURE);
     } 
     Colormap cmap = XCreateColormap(dpy, root, vi->visual, AllocNone);
     swa.colormap = cmap;
     swa.event_mask =
-	ExposureMask |
-	KeyPressMask |
-	KeyReleaseMask |
-	PointerMotionMask |
-	ButtonPressMask |
-	ButtonReleaseMask |
-	StructureNotifyMask |
-	SubstructureNotifyMask;
+        ExposureMask |
+        KeyPressMask |
+        KeyReleaseMask |
+        PointerMotionMask |
+        ButtonPressMask |
+        ButtonReleaseMask |
+        StructureNotifyMask |
+        SubstructureNotifyMask;
     win = XCreateWindow(dpy, root, 0, 0, xres, yres, 0,
-	    vi->depth, InputOutput, vi->visual,
-	    CWColormap | CWEventMask, &swa);
+            vi->depth, InputOutput, vi->visual,
+            CWColormap | CWEventMask, &swa);
     set_title();
     glc = glXCreateContext(dpy, vi, NULL, GL_TRUE);
     glXMakeCurrent(dpy, win, glc);
@@ -301,8 +300,8 @@ void init_menu(void)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, 3,
-	    titleImage->width, titleImage->height,
-	    0, GL_RGB, GL_UNSIGNED_BYTE, titleImage->data);
+            titleImage->width, titleImage->height,
+            0, GL_RGB, GL_UNSIGNED_BYTE, titleImage->data);
 
     strcpy(names[0],"Guile");
     strcpy(names[1],"Bizarro Guile");
@@ -328,15 +327,15 @@ void init_character_select(void)
     glEnable(GL_TEXTURE_2D);
     initialize_fonts();
 
-    char a[] = "./images/characterselect.ppm";
+    char a[] = "./images/characterselect2.ppm";
     selectcharacter_Image = ppm6GetImage(selectcharacter_Image,a);
     glGenTextures(1, &selectTexture);
     glBindTexture(GL_TEXTURE_2D, selectTexture);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, 3,
-	    selectcharacter_Image->width, selectcharacter_Image->height,
-	    0, GL_RGB, GL_UNSIGNED_BYTE, selectcharacter_Image->data);
+            selectcharacter_Image->width, selectcharacter_Image->height,
+            0, GL_RGB, GL_UNSIGNED_BYTE, selectcharacter_Image->data);
 }
 
 void init_players(void)
@@ -355,6 +354,17 @@ void init_players(void)
     play1.atk.wPunch = 100;
     play1.atk.hPunch = 10;
 
+    play1.punch = false;
+    play1.finPunch = false;
+    play1.control = false;
+    play1.punchClk = true;
+    play1.punchHit = false;
+    play1.draw = true;
+    play1.walkClk = true;
+    play1.walk = false;
+    play1.block = false;
+    play1.blockClk = true;
+
     /*Player TWO*/
     play2.pos[0] = xres - 350;
     play2.pos[1] = 200;
@@ -364,6 +374,18 @@ void init_players(void)
     play2.width = 120.0;
     play2.height= 120.0;
     play2.mass = 1.0;
+
+    play2.punch = false;
+    play2.finPunch = false;
+    play2.control = false;
+    play2.punchClk = true;
+    play2.punchHit = false;
+    play2.draw = true;
+    play2.walkClk = true;
+    play2.walk = false;
+    play2.block = false;
+    play2.blockClk = true;
+
 
     init_healthBars();
 }
@@ -398,11 +420,11 @@ void check_resize(XEvent *e)
     //The ConfigureNotify is sent by the
     //server if the window is resized.
     if (e->type != ConfigureNotify)
-	return;
+        return;
     XConfigureEvent xce = e->xconfigure;
     if (xce.width != xres || xce.height != yres) {
-	//Window size did change.
-	reshape_window(xce.width, xce.height);
+        //Window size did change.
+        reshape_window(xce.width, xce.height);
     }
 }
 
@@ -414,29 +436,29 @@ void check_mouse(XEvent *e)
     static int savey = 0;
     //
     if (e->type == ButtonRelease) {
-	leftButtonDown=0;
-	return;
+        leftButtonDown=0;
+        return;
     }
     if (e->type == ButtonPress) {
-	if (e->xbutton.button==1) {
-	    //Left button is down
-	    leftButtonDown = 1;
-	    leftButtonPos[0] = (Flt)e->xbutton.x;
-	    leftButtonPos[1] = (Flt)(yres - e->xbutton.y);
-	    selectBox(leftButtonPos);
-	}
-	if (e->xbutton.button==3) {
-	    /*Right button is down*/
-	}
+        if (e->xbutton.button==1) {
+            //Left button is down
+            leftButtonDown = 1;
+            leftButtonPos[0] = (Flt)e->xbutton.x;
+            leftButtonPos[1] = (Flt)(yres - e->xbutton.y);
+            selectBox(leftButtonPos);
+        }
+        if (e->xbutton.button==3) {
+            /*Right button is down*/
+        }
     }
     if (savex != e->xbutton.x || savey != e->xbutton.y) {
-	/*Mouse moved*/
-	savex = e->xbutton.x;
-	savey = e->xbutton.y;
-	if (leftButtonDown) {
-	    leftButtonPos[0] = (Flt)e->xbutton.x;
-	    leftButtonPos[1] = (Flt)(yres - e->xbutton.y);
-	}
+        /*Mouse moved*/
+        savex = e->xbutton.x;
+        savey = e->xbutton.y;
+        if (leftButtonDown) {
+            leftButtonPos[0] = (Flt)e->xbutton.x;
+            leftButtonPos[1] = (Flt)(yres - e->xbutton.y);
+        }
     }
 }
 
@@ -446,61 +468,61 @@ int check_keys(XEvent *e)
     int key= XLookupKeysym(&e->xkey, 0);
     if (e->type == KeyRelease)
     {
-	keys[key]=0;
-	return 0;
+        keys[key]=0;
+        return 0;
     }
     if (e->type == KeyPress)
-	keys[key]=1;
+        keys[key]=1;
     else
-	return 0;
+        return 0;
 
     switch(key) 
     {
-	case XK_Escape:
-	    return 1;
-	    break;
-	case XK_b:
-	    forest ^=1;
-	    break;
-	case XK_p:
-	    if (play_game == true) { // they are playing 
-		play_game = false;
-		p1control = false;
-		p2control = false;
-	    }
-	    else if (play_game == false) {
-		//at menu screen need to select characters
-		if(go_selchar==false && two_players==false)
-		    go_selchar=true;
+        case XK_Escape:
+            return 1;
+            break;
+        case XK_b:
+            forest ^=1;
+            break;
+        case XK_p:
+            if (play_game == true) { // they are playing 
+                play_game = false;
+                play1.control = false;
+                play2.control = false;
+            }
+            else if (play_game == false) {
+                //at menu screen need to select characters
+                if(go_selchar==false && two_players==false)
+                    go_selchar=true;
 
-		//selected characters go to game
-		else if(go_selchar==true && two_players==true){
-		    go_selchar=false;
-		    play_game =true;
-		    p1control =true;
-		    p2control =true;
-		}
+                //selected characters go to game
+                else if(go_selchar==true && two_players==true){
+                    go_selchar=false;
+                    play_game =true;
+                    play1.control =true;
+                    play2.control =true;
+                }
 
-		//in game 
-		else if(go_selchar==false && two_players==true){
-		    play_game = true;
-		    p1control = true;
-		    p2control = true;
-		}
-	    }
-	    break;
-	case XK_c:
-	    two_players=true;
-	    break;
-	/*Use numbers to select players*/
-	case XK_1:
-	    if(go_selchar)
-	    strcpy(play1.name,names[0]);
-	    break;
-	case XK_2:
-	    if(go_selchar)
-	    strcpy(play2.name,names[1]);
-	    break;
+                //in game 
+                else if(go_selchar==false && two_players==true){
+                    play_game = true;
+                    play1.control = true;
+                    play2.control = true;
+                }
+            }
+            break;
+        case XK_c:
+            two_players=true;
+            break;
+            /*Use numbers to select players*/
+        case XK_1:
+            if(go_selchar)
+                strcpy(play1.name,names[0]);
+            break;
+        case XK_2:
+            if(go_selchar)
+                strcpy(play2.name,names[1]);
+            break;
     }
     return 0;
 }
@@ -509,23 +531,24 @@ void VecNormalize(Vec v)
 {
     Flt dist = v[0]*v[0]+v[1]*v[1]+v[2]*v[2];
     if (dist==0.0)
-	return;
+        return;
     Flt len = 1.0 / sqrt(dist);
     v[0] *= len;
     v[1] *= len;
     v[2] *= len;
 }
-/*
-void selectBox(Vec leftButtonPos)
+
+/*void selectBox(Vec leftButtonPos)
 {
     if (play_game == false) { // if in title screen
-	if (go_selchar==false && two_players==false){
-	    if ((leftButtonPos[0] > (xres/2 - 75) && leftButtonPos[0] < xres/2 + 75) && 
-		    (leftButtonPos[1] > (yres/8 - 25) && leftButtonPos[1] < (yres/8 + 25))) 
-		go_selchar = true;
-	}
+        if (go_selchar==false && two_players==false){
+            if ((leftButtonPos[0] > (xres/2 - 75) && leftButtonPos[0] < xres/2 + 75) && 
+                    (leftButtonPos[1] > (yres/8 - 25) && leftButtonPos[1] < (yres/8 + 25))) 
+                go_selchar = true;
+        }
     }
-} */ 
+}  
+*/
 
 void physics(void)
 {
@@ -542,21 +565,72 @@ void physics(void)
 
     /*CHECK KEYS*/
     /*Player ONE*/
-    if(p1control){
-	if(keys[XK_a])
-	    play1.pos[0] -= stepVel;    
-	if(keys[XK_d])
-	    play1.pos[0] += stepVel;
-	if(keys[XK_f]){
-	    punch1 = true;
-	}
+    if(play1.control){
+        if(!play1.block){
+            if(!(keys[XK_a] && keys[XK_d])){
+
+                if(keys[XK_a] == 1){
+                    play1.pos[0] -= stepVel;
+                    if(play1.walkClk)
+                        play1.beginWalk = clock();
+                    play1.walk = true;
+                }
+                if(keys[XK_d] == 1){
+                    play1.pos[0] += stepVel;
+                    if(play1.walkClk)
+                        play1.beginWalk = clock();
+                    play1.walk = true;
+                }
+
+            }
+            if(keys[XK_d] == 0 && keys[XK_a] == 0){
+                play1.walkClk = true;
+                play1.draw = true;
+                play1.walk = false;
+            }       
+
+            if(keys[XK_f] == 1){
+                play1.punch = true;
+            }
+        }
+        if(keys[XK_r] == 1){
+            if(play1.blockClk)
+                play1.beginBlock = clock();
+            play1.block = true;
+        }
+        if(keys[XK_r] == 0){
+            play1.blockClk = true;
+            play1.block = false;
+        }
     }
     /*Player TWO*/
-    if(p2control){
-	if(keys[XK_Left])
-	    play2.pos[0] -= stepVel;
-	if(keys[XK_Right])
-	    play2.pos[0] += stepVel;
+    if(play2.control){
+
+        if(!(keys[XK_Left] && keys[XK_Right])){
+
+            if(keys[XK_Left]){
+                play2.pos[0] -= stepVel;
+                if(play2.walkClk)
+                    play2.beginWalk = clock();
+                play2.walk = true;
+            }
+
+            if(keys[XK_Right]){
+                play2.pos[0] += stepVel;
+                if(play2.walkClk)
+                    play2.beginWalk = clock();
+                play2.walk = true;
+            }
+        }
+
+        if(keys[XK_Left] == 0 && keys[XK_Right] == 0){
+            play2.walkClk = true;
+            play2.draw = true;
+            play2.walk = false;
+        }       
+
+        if(keys[XK_l])
+            play2.punch = true;
     }
     /*END CHECK KEYS*/
 
@@ -564,94 +638,94 @@ void physics(void)
     play1.atk.posPunch[1] = play1.pos[1] + play1.height - 100;
 
     if (distance < play1.width+(play2.width)) {
-	//We have a collision!
-	//vector from center to center.
-	vcontact[0][0] = tx;
-	vcontact[0][2] = 0.0;
-	VecNormalize(vcontact[0]);
-	VecCopy(vcontact[0],vcontact[1]);
-	VecNegate(vcontact[1]);
-	movi[0] = play1.vel[0];
-	movi[1] = play1.vel[1];
-	movj[0] = play2.vel[0];
-	movj[1] = play2.vel[1];
-	vmove[0][0] = movi[0];
-	vmove[0][2] = 0.0;
-	vmove[1][0] = movj[0];
-	vmove[1][2] = 0.0;
-	VecNormalize(vmove[0]);
-	VecNormalize(vmove[1]);
-	//Determine how direct the hit was...
-	//Find the closing (relative) speed of the objects...
-	float speed0 = 0.5;
-	float speed1 = 0.5;
-	speed = speed0 + speed1;
-	if (speed < 0.0) {
-	    //Normalize the mass of each object...
-	    massFactor = 2.0 / (play1.mass + play2.mass);
-	    massi = play1.mass * massFactor;
-	    massj = play2.mass * massFactor;
-	    play2.vel[0] += vcontact[0][0] * speed * massi;
-	    play2.vel[1] += vcontact[0][1] * speed * massi;
-	    play1.vel[0] += vcontact[1][0] * speed * massj;
-	    play1.vel[1] += vcontact[1][1] * speed * massj;
-	}
+        //We have a collision!
+        //vector from center to center.
+        vcontact[0][0] = tx;
+        vcontact[0][2] = 0.0;
+        VecNormalize(vcontact[0]);
+        VecCopy(vcontact[0],vcontact[1]);
+        VecNegate(vcontact[1]);
+        movi[0] = play1.vel[0];
+        movi[1] = play1.vel[1];
+        movj[0] = play2.vel[0];
+        movj[1] = play2.vel[1];
+        vmove[0][0] = movi[0];
+        vmove[0][2] = 0.0;
+        vmove[1][0] = movj[0];
+        vmove[1][2] = 0.0;
+        VecNormalize(vmove[0]);
+        VecNormalize(vmove[1]);
+        //Determine how direct the hit was...
+        //Find the closing (relative) speed of the objects...
+        float speed0 = 0.5;
+        float speed1 = 0.5;
+        speed = speed0 + speed1;
+        if (speed < 0.0) {
+            //Normalize the mass of each object...
+            massFactor = 2.0 / (play1.mass + play2.mass);
+            massi = play1.mass * massFactor;
+            massj = play2.mass * massFactor;
+            play2.vel[0] += vcontact[0][0] * speed * massi;
+            play2.vel[1] += vcontact[0][1] * speed * massi;
+            play1.vel[0] += vcontact[1][0] * speed * massj;
+            play1.vel[1] += vcontact[1][1] * speed * massj;
+        }
     }
     //Update position
     while(play1.pos[0] >= play2.pos[0])
     {
-	play1.pos[0]-= 2;
-	play2.pos[0]+= 2;
+        play1.pos[0]-= 2;
+        play2.pos[0]+= 2;
     }
     if(play1.pos[0]>(30 + play2.pos[0]))
     {
-	play1.pos[0] += play1.vel[0];
-	play2.pos[0] += play2.vel[0];
+        play1.pos[0] += play1.vel[0];
+        play2.pos[0] += play2.vel[0];
     }
     //steps
     play1.vel[0] = 0;
     play2.vel[0] = 0;
 
     while(play1.pos[0] - play1.width  < 0){
-	play1.pos[0] += 2;
+        play1.pos[0] += 2;
     }
 
     while(play2.pos[0] + play2.width > xres) {
-	play2.pos[0] -= 2;
+        play2.pos[0] -= 2;
     }
 
     //Update position
     while(play1.pos[0]+play1.width>=play2.pos[0]+play2.width)
     {
-	play1.pos[0]-= 2;
-	play2.pos[0]+= 2;
+        play1.pos[0]-= 2;
+        play2.pos[0]+= 2;
     }
     if(play1.pos[0]<(30+play2.pos[0]))
     {
-	play1.pos[0] += play1.vel[0];
-	play2.pos[0] += play2.vel[0];
+        play1.pos[0] += play1.vel[0];
+        play2.pos[0] += play2.vel[0];
     }
     //steps
     play1.vel[0] = 0;
     play2.vel[0] = 0;
 
-//Check for collision with window edges
-if ((play1.pos[0] < play1.width && play1.vel[0] < 0.0) ||
-	(play1.pos[0] >= (Flt)xres-play1.width && play1.vel[0] > 0.0)) {
-    play1.vel[0] = -play1.vel[0];
-}
-if ((play1.pos[1] < play1.width && play1.vel[1] < 0.0) ||
-	(play1.pos[1] >= (Flt)yres-play1.width && play1.vel[1] > 0.0)) {
-    play1.vel[1] = -play1.vel[1];
-}
-if ((play2.pos[0] < play2.radius && play2.vel[0] < 0.0) ||
-	(play2.pos[0] >= (Flt)xres-play2.radius && play2.vel[0] > 0.0)) {
-    play2.vel[0] = -play2.vel[0];
-}
-if ((play2.pos[1] < play2.radius && play2.vel[1] < 0.0) ||
-	(play2.pos[1] >= (Flt)yres-play2.radius && play2.vel[1] > 0.0)) {
-    play2.vel[1] = -play2.vel[1];
-}
+    //Check for collision with window edges
+    if ((play1.pos[0] < play1.width && play1.vel[0] < 0.0) ||
+            (play1.pos[0] >= (Flt)xres-play1.width && play1.vel[0] > 0.0)) {
+        play1.vel[0] = -play1.vel[0];
+    }
+    if ((play1.pos[1] < play1.width && play1.vel[1] < 0.0) ||
+            (play1.pos[1] >= (Flt)yres-play1.width && play1.vel[1] > 0.0)) {
+        play1.vel[1] = -play1.vel[1];
+    }
+    if ((play2.pos[0] < play2.radius && play2.vel[0] < 0.0) ||
+            (play2.pos[0] >= (Flt)xres-play2.radius && play2.vel[0] > 0.0)) {
+        play2.vel[0] = -play2.vel[0];
+    }
+    if ((play2.pos[1] < play2.radius && play2.vel[1] < 0.0) ||
+            (play2.pos[1] >= (Flt)yres-play2.radius && play2.vel[1] > 0.0)) {
+        play2.vel[1] = -play2.vel[1];
+    }
 }
 
 /*void drawCharBox (Flt width, Flt height, int x)
@@ -678,69 +752,69 @@ void drawBox(Flt width, Flt height, int x)
     /*x= 1 or 3 - Bind player1 and player2 textures*/
     if(x==1)
     {
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, play1Texture);
-	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER,0.1f);
-	glColor4ub(255,255,255,255);
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, play1Texture);
+        glEnable(GL_ALPHA_TEST);
+        glAlphaFunc(GL_GREATER,0.1f);
+        glColor4ub(255,255,255,255);
     }
     if(x==3)
     {
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, play2Texture);
-	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER,0.1f);
-	glColor4ub(255,255,255,255);
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, play2Texture);
+        glEnable(GL_ALPHA_TEST);
+        glAlphaFunc(GL_GREATER,0.1f);
+        glColor4ub(255,255,255,255);
     }
 
     /*x=0, bind metal texture for healthbar*/
     if(x==0)
-	glBindTexture(GL_TEXTURE_2D, metalTexture);
+        glBindTexture(GL_TEXTURE_2D, metalTexture);
     if(x==4)
-	glBindTexture(GL_TEXTURE_2D, metal2Texture);
+        glBindTexture(GL_TEXTURE_2D, metal2Texture);
 
     /*If x=2, Draw red bars - No texture*/
     if(x==2)
-	glDisable(GL_TEXTURE_2D);
+        glDisable(GL_TEXTURE_2D);
 
     glBegin(GL_QUADS);
     /*Draw player1/player2 with texture*/
     if(x==1 || x==3)
     {
-	glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
-	glTexCoord2f(0.1f, 0.0f); glVertex2i(w, h);
-	glTexCoord2f(0.1f, 1.0f); glVertex2i(w, -h);    
+        glTexCoord2f(0.0f, 1.0f/3.0f); glVertex2i(-w, -h);
+        glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
+        glTexCoord2f(0.1f, 0.0f); glVertex2i(w, h);
+        glTexCoord2f(0.1f, 1.0f/3.0f); glVertex2i(w, -h);    
     }
     /*Draw regular full size of texture*/
     if(x==0 || x==4)
     {
-	glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);	
+        glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
+        glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
+        glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
+        glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);	
     }
     /*Draw non-textured rectangle*/
     else
     {
-	glVertex2i(-w, -h);
-	glVertex2i(-w, h);
-	glVertex2i(w, h);
-	glVertex2i(w, -h);     
+        glVertex2i(-w, -h);
+        glVertex2i(-w, h);
+        glVertex2i(w, h);
+        glVertex2i(w, -h);     
     }
     glEnd();
-} 
+}
 
 void drawmenu_button(Flt width, Flt height) 
 {
     int w = width, h = height;
 
     glBegin(GL_QUADS);
-    glColor3f(0.0,0.5,0.0); 
+    glColor3f(1.0,0.0,0.0); 
     glVertex2i(-w, -h);
     glColor3f(0.0,0.0,1.0); 
     glVertex2i(-w, h);
-    glColor3f(0.0,0.5,0.0); 
+    glColor3f(1.0,0.0,0.0); 
     glVertex2i(w, h);
     glColor3f(0.0,0.0,1.0); 
     glVertex2i(w, -h);
@@ -749,27 +823,26 @@ void drawmenu_button(Flt width, Flt height)
 
 void menu_render(void) 
 {
-    int w = 1050;
-    int y = 460;
-	
+    int w = (xres/2);
+    int y = (yres/8);
     /***************************************/
     /*Draw title screen background*/
     glColor3f(1.0, 1.0, 1.0);
     if (title) {
-	glBindTexture(GL_TEXTURE_2D, titleTexture);
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
-	glEnd();
+        glBindTexture(GL_TEXTURE_2D, titleTexture);
+        glBegin(GL_QUADS);
+        glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+        glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres);
+        glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
+        glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
+        glEnd();
     }
     /*Draw the play button*/
     glColor3f(1.0,1.0,1.0);
-	/*****/
+    /*****/
     glPushMatrix();
     glTranslatef(w,y,1);
-    drawmenu_button(150,80);
+    drawmenu_button(150,50);
     glPopMatrix();
     /******************************************************/
 }
@@ -780,37 +853,37 @@ void character_select(void)
     int h;
     box cbox[4];
     for (int i = 0; i < 4; i++) {
-	//glColor3f (1.0, 1.0, 1.0);
-	glPushMatrix();
-	glTranslatef(cbox->center.x, cbox->center.y, cbox->center.z);
-	cbox[i].width = 100;
-	cbox[i].height = 20;
-	cbox[i].center.x = 120 + i*65;
-	cbox[i].center.y = 500 - i*60;
-	w = cbox[i].width;
-	h = cbox[i].height;
-	glBegin(GL_QUADS);
-	glColor3ub(255,255,0); // yellow
-	glVertex2i(-w,-h);
-	glColor3ub(0,255,255);	// cyan
-	glVertex2i(-w, h);
-	glColor3ub(255,0,0); // red
-	glVertex2i( w, h);
-	glColor3ub(255,0,255); // magenta
-	glVertex2i( w,-h);
-	glEnd();
-	glPopMatrix();	
+        //glColor3f (1.0, 1.0, 1.0);
+        glPushMatrix();
+        glTranslatef(cbox->center.x, cbox->center.y, cbox->center.z);
+        cbox[i].width = 100;
+        cbox[i].height = 20;
+        cbox[i].center.x = 120 + i*65;
+        cbox[i].center.y = 500 - i*60;
+        w = cbox[i].width;
+        h = cbox[i].height;
+        glBegin(GL_QUADS);
+        glColor3ub(255,255,0); // yellow
+        glVertex2i(-w,-h);
+        glColor3ub(0,255,255);	// cyan
+        glVertex2i(-w, h);
+        glColor3ub(255,0,0); // red
+        glVertex2i( w, h);
+        glColor3ub(255,0,255); // magenta
+        glVertex2i( w,-h);
+        glEnd();
+        glPopMatrix();	
     }
 
     glColor3f(1.0, 1.0, 1.0);
     if (selchar) {
-	glBindTexture(GL_TEXTURE_2D, selectTexture);
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
-	glEnd();
+        glBindTexture(GL_TEXTURE_2D, selectTexture);
+        glBegin(GL_QUADS);
+        glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+        glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres);
+        glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
+        glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
+        glEnd();
     }
 }
 
@@ -822,13 +895,13 @@ void render(void)
 
     glColor3f(1.0, 1.0, 1.0);
     if (forest) {
-	glBindTexture(GL_TEXTURE_2D, forestTexture);
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
-	glEnd();
+        glBindTexture(GL_TEXTURE_2D, forestTexture);
+        glBegin(GL_QUADS);
+        glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+        glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres);
+        glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
+        glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
+        glEnd();
     }
 
     /*************************************/
@@ -836,13 +909,14 @@ void render(void)
     glColor3f(1.0, 1.0, 1.0);
     glPushMatrix();
     glTranslatef(play1.pos[0], play1.pos[1], play1.pos[2]);
-    if(draw)
-	drawBox(play1.width,play1.height,1);
+    if(play1.draw)
+        drawBox(play1.width,play1.height,1);
     glPopMatrix();
     /*Draw Player Two*/
     glPushMatrix();
     glTranslatef(play2.pos[0], play2.pos[1], play2.pos[2]);
-    drawBox(play2.width,play2.height,3);
+    if(play2.draw)
+        drawBox(play2.width,play2.height,3);
     glPopMatrix();
     /***************************************/
 
@@ -854,14 +928,14 @@ void render(void)
     glColor3f(1.0, 1.0, 1.0);
     glPushMatrix();
     glTranslatef(play1.hbar.posOut[0], 
-	    play1.hbar.posOut[1], play1.hbar.posOut[2]);
+            play1.hbar.posOut[1], play1.hbar.posOut[2]);
     drawBox(play1.hbar.wOut,play1.hbar.hOut,0);
     glPopMatrix();
 
     glColor3f(1.0, 1.0, 1.0);
     glPushMatrix();
     glTranslatef(play2.hbar.posOut[0], 
-	    play2.hbar.posOut[1], play2.hbar.posOut[2]);
+            play2.hbar.posOut[1], play2.hbar.posOut[2]);
     drawBox(play2.hbar.wOut,play2.hbar.hOut,0);
     glPopMatrix();
     /****/
@@ -887,42 +961,89 @@ void render(void)
     glColor3ub(200,0,0);
     glPushMatrix();
     glTranslatef(play1.hbar.pos[0], 
-	    play1.hbar.pos[1], play1.hbar.pos[2]);
+            play1.hbar.pos[1], play1.hbar.pos[2]);
     drawBox(play1.hbar.width,play1.hbar.height,2);
     glPopMatrix();
 
     glColor3ub(200,0,0);
     glPushMatrix();
     glTranslatef(play2.hbar.pos[0], 
-	    play2.hbar.pos[1], play2.hbar.pos[2]);
+            play2.hbar.pos[1], play2.hbar.pos[2]);
     drawBox(play2.hbar.width,play2.hbar.height,2);
     glPopMatrix();
     /*****************END DRAW HEALTHBARS***********************/
 
-    t = float( clock () - begin_time ) /  CLOCKS_PER_SEC;
-    if((punch1 && !hit) || finishpunch)
+
+    /*****************Player 1 punch and hit******************/
+
+    if((play1.punch && !play1.punchHit) || play1.finPunch)
     {
-	if(clk)
-	{
-	    begin_time = clock();
+        if(play1.punchClk)
+        {
+            play1.beginPunch = clock();
 
-	}
-	p1control = false;
-	draw = false;
-	animatePlayerOne(play1.width,play1.height);
+        }
+        play1.control = false;
+        play1.draw = false;
+        animatePlayerOne(play1.width,play1.height);
     }
 
-    if(!punch1 && hit){
-	play2.pos[0] += 100;
-	play2.hbar.pos[0] += punchDamage;
-	play2.hbar.width -= punchDamage;
-	hit = false;
+    if(!play1.punch && play1.punchHit){
+        play2.pos[0] += 100;
+        play2.hbar.pos[0] += punchDamage;
+        play2.hbar.width -= punchDamage;
+        play1.punchHit = false;
     }
+
+    if(play1.walk && play1.control && !play1.block){
+        animatePlayerOneWalk(play1.width, play1.height);
+    }
+
+    if(play1.block){
+        animatePlayerOneBlock(play1.width, play1.height);
+    }
+
+    if(play2.walk && play2.control){
+        animatePlayerTwoWalk(play2.width, play2.height);
+    }
+
+
+
+
+    /*****************Player 2 punch and hit******************/
+    if((play2.punch && !play2.punchHit) || play2.finPunch)
+    {
+        if(play2.punchClk)
+        {
+            play2.beginPunch = clock();
+
+        }
+        play2.control = false;
+        play2.draw = false;
+        animatePlayerTwo(play2.width,play2.height);
+    }
+
+    if(!play2.punch && play2.punchHit){
+        play1.pos[0] -= 100;
+        play1.hbar.pos[0] -= punchDamage;
+        play1.hbar.width -= punchDamage;
+        play2.punchHit = false;
+    }
+
+
+
+
+    /*healthbar check****************************/
 
     if(play2.hbar.width <= 0){
-	play2.hbar.width = 0;
-	punchDamage = 0;
+        play2.hbar.width = 0;
+        punchDamage = 0;
     }
+    if(play1.hbar.width <= 0){
+        play1.hbar.width = 0;
+        punchDamage = 0;
+    }
+
     glEnable(GL_TEXTURE_2D);
     r.bot = yres - 20;
     r.center = 5;
@@ -933,5 +1054,6 @@ void render(void)
     r.left = play2.hbar.posOut[0]+180;
     r.bot  = play2.hbar.posOut[1]-10;
     ggprint16(&r, 20, 0x00ffff00, play2.name);
-    }
+
+}
 

@@ -1,6 +1,8 @@
 #ifndef _DEFS_H
 #define _DEFS_H
 
+#include <ctime>
+
 typedef double Flt;
 typedef double Vec[3];
 typedef Flt	Matrix[4][4];
@@ -126,12 +128,33 @@ typedef struct t_Player {
     Vec pos;
     Vec vel;
     Vec center;
+
     float radius;
     float mass;
     float width,height;
+
     healthBar hbar;
     Attacks atk;
+
     char name[30];
+
+    bool punch;
+    bool finPunch;
+    bool control;
+    bool punchClk;
+    bool walkClk;
+    bool blockClk;
+    bool punchHit;
+    bool draw;
+    bool walk;
+    bool block;
+
+    clock_t beginPunch;
+    clock_t beginWalk;
+    clock_t beginBlock;
+    float punchTimeDif;
+    float walkTimeDif;
+    float blockTimeDif;
 } Player;
 #endif
 
