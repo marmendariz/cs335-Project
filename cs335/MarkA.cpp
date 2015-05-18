@@ -176,3 +176,4 @@ unsigned char *buildAlphaData(Ppmimage *img)
 	}
 	return newdata;
 }
+//

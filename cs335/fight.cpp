@@ -979,4 +979,4 @@ void render(void)
 	r.bot  = play2.hbar.posOut[1]-10;
 	ggprint16(&r, 20, 0x00ffff00, play2.name);
 }
-
+//
