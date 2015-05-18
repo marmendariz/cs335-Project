@@ -119,7 +119,7 @@ bool player2guile=false;
 bool player2bguile=false;
 int player1=0;
 int player2=0;
-
+bool restart=false;
 /***********Setup timers **********/
 const double physicsRate = 1.0 / 60.0;
 const double oobillion = 1.0 / 1e9;
@@ -146,11 +146,13 @@ int main(void)
 	init_players();
 	init_music();
 	init_sound();
+	//init_opengl();
 	clock_gettime(CLOCK_REALTIME, &timePause);
 	clock_gettime(CLOCK_REALTIME, &timeStart);
 	int done=0;
 	int i=0;
 	while(!done) {
+
 		while(XPending(dpy)) {
 			XEvent e;
 			XNextEvent(dpy, &e);
@@ -174,6 +176,9 @@ int main(void)
 				i++;
 			}
 			menu_render();
+			
+		//	char_select:
+			//restart=false;
 			if(go_selchar == true){
 				if(i==1)
 				{ 
@@ -198,6 +203,13 @@ int main(void)
 		}
 		else if(play_game==false && two_players == true && go_selchar==false){
 			menu_render();
+		
+		if(restart==true){
+			play_game=false;
+		        two_players=false;	
+			restart=false;
+//			goto restart_game;
+			}
 		}
 		else if(play_game ==true && two_players==true && go_selchar==false){
 			if(i==2)
@@ -520,8 +532,17 @@ int check_keys(XEvent *e)
 				}
 			}
 			break;
-		case XK_c:
-			two_players=true;
+		case XK_r:
+			//play_game=false;
+			//two_players=false;
+			//go_selchar=true;
+			//character_select_render();
+	//		restart=false;
+             		restart=true;
+                 	
+	               // cleanupXWindows();
+			//cleanup_fonts();
+                        //goto restart_game;
 			break;
 			/*Use numbers to select players*/
 		case XK_1:

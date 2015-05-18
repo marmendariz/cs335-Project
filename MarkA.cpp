@@ -69,7 +69,7 @@ void init_opengl(void)
 		unsigned char *play1Data = buildAlphaData(play1Image);	
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 				GL_RGBA, GL_UNSIGNED_BYTE, play1Data);
-		//delete [] play1Data;
+		delete [] play1Data;
 	}
  	 if(player1guile==false && player1bguile==true){
 		char player1char[]="./images/bizguile_play1.ppm";
@@ -82,7 +82,7 @@ void init_opengl(void)
 		unsigned char *play1Data = buildAlphaData(play1Image);	
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 				GL_RGBA, GL_UNSIGNED_BYTE, play1Data);
-		//delete [] play1Data;
+		delete [] play1Data;
 	}
 
 
@@ -98,6 +98,7 @@ void init_opengl(void)
 		 h = play2Image->height;
 		unsigned char *play2Data = buildAlphaData(play2Image);	
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,GL_RGBA, GL_UNSIGNED_BYTE, play2Data);
+		delete [] play2Data;
 	}
 	 if(player2guile==false && player2bguile==true){
 		char player2char[]="./images/bizguile_play2.ppm";
@@ -110,6 +111,7 @@ void init_opengl(void)
 		unsigned char *play2Data = buildAlphaData(play2Image);	
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 				GL_RGBA, GL_UNSIGNED_BYTE, play2Data);
+		delete [] play2Data;
 	}
 
 
