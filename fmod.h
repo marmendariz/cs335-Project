@@ -11,6 +11,8 @@ extern int fmod_setmode(int i, int mode);
 extern int fmod_getlength(int i, unsigned int *lenms);
 extern int fmod_systemupdate(void);
 extern int fmod_getchannelsplaying(int *channelsplaying);
+extern int fmod_playeffect(int i);
+extern int fmod_stopeffect();
 extern int fmod_stopsound();
 #endif //MY_FMOD_H
 

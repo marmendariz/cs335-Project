@@ -21,6 +21,7 @@ See other sample programs in the fmod /examples directory
 FMOD_SYSTEM  *xsystem;
 FMOD_SOUND   *sound[MAX_SOUNDS];
 FMOD_CHANNEL *channel = 0;
+FMOD_CHANNEL *channel1= 0;
 static int nsounds=0;
 
 int ERRCHECK(FMOD_RESULT result)
@@ -69,28 +70,27 @@ int fmod_createsound(char *fname, int i)
 int fmod_playsound(int i)
 {
 	FMOD_RESULT result;
-	//printf("fmod_playsound(%i)...\n",i);
-	
-//	if(j==0){
 	result = FMOD_System_PlaySound(xsystem, FMOD_CHANNEL_FREE, sound[i], false, &channel);
 	if (ERRCHECK(result)) {
 		printf("error fmod_playsound()\n");
 		return 1;
 	}
-//	}
-        
-	//if(j==1){
-	//result = FMOD_System_PlaySound(xsystem, FMOD_CHANNEL_FREE, sound[i], true, &channel);
-       //channel->setPaused(true);
-       //}
+	return 0;
+}
+int fmod_playeffect(int i)
+{
+	FMOD_RESULT result;
+	result = FMOD_System_PlaySound(xsystem, FMOD_CHANNEL_FREE, sound[i], false, &channel1);
+	if (ERRCHECK(result)) {
+		printf("error fmod_playsound()\n");
+		return 1;
+	}
 	return 0;
 }
 
 int fmod_setmode(int i, int mode)
 {
 	FMOD_RESULT result;
-	//printf("fmod_setmode()...\n");
-	//result = FMOD_Sound_SetMode(sound[i], FMOD_LOOP_OFF);
 	result = FMOD_Sound_SetMode(sound[i], mode);
 	if (ERRCHECK(result)) {
 		printf("error fmod_setmode()\n");
@@ -141,6 +141,17 @@ int fmod_cleanup(void)
 int fmod_stopsound(){
 FMOD_RESULT result;
 	result = FMOD_Channel_Stop(channel);
+	//printf("fmod_playsound(%i)...\n",i);
+	if (ERRCHECK(result)) {
+		printf("error fmod_playsound()\n");
+		return 1;
+	}
+	return 0;
+
+}
+int fmod_stopeffect(){
+FMOD_RESULT result;
+	result = FMOD_Channel_Stop(channel1);
 	//printf("fmod_playsound(%i)...\n",i);
 	if (ERRCHECK(result)) {
 		printf("error fmod_playsound()\n");

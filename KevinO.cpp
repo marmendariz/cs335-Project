@@ -2,9 +2,10 @@
 //coder: Kevin OBrien
 
 #include <cstdio>
+#include <cstdlib>
 #include "animations.h"
 #include "defs.h"
-
+#include "ZenaidaG.h"
 
 extern Player play1, play2;
 extern GLuint play1Texture;
@@ -29,8 +30,11 @@ void animatePlayerOne(Flt width, Flt height)
         x_val = 0.2f;
     else if (play1.punchTimeDif>=0.006 && play1.punchTimeDif<.009)
         x_val = 0.3f;
-    else if (play1.punchTimeDif>=0.009 && play1.punchTimeDif<.012)
-        x_val = 0.4f;
+    else if (play1.punchTimeDif>=0.009 && play1.punchTimeDif<.012){
+        int rnd= (rand()%2)+5;
+	soundeffects(rnd);
+	x_val = 0.4f;
+	}
     else if (play1.punchTimeDif>=0.012 && play1.punchTimeDif<.015){
         x_val = 0.5f;
         if (play1.pos[0] + (1.7*play1.width) >= play2.pos[0] + play2.width 
@@ -56,6 +60,11 @@ void animatePlayerOne(Flt width, Flt height)
         play1.punchClk = true;
         play1.control = true;
         play1.finPunch = false;
+
+	if(play2.block==true){
+       	   int rnd= (rand()%2)+7;
+           soundeffects(rnd);
+	}
     }
 
     glPushMatrix();
@@ -143,8 +152,9 @@ void animatePlayerOneBlock(Flt width, Flt height){
 
     //printf("%f\n", play1.walkTimeDif);
 
-    if(play1.blockTimeDif < 0.005)
+    if(play1.blockTimeDif < 0.005){
         x_val = 0.1f;
+	}
     else if(play1.blockTimeDif >= 0.005)
         x_val = 0.2f;
 
@@ -187,8 +197,11 @@ void animatePlayerTwo(Flt width, Flt height)
         x_val = 0.8f;
     else if (play2.punchTimeDif>=0.006 && play2.punchTimeDif<.009)
         x_val = 0.7f;
-    else if (play2.punchTimeDif>=0.009 && play2.punchTimeDif<.012)
-        x_val = 0.6f;
+    else if (play2.punchTimeDif>=0.009 && play2.punchTimeDif<.012){
+        int rnd=(rand()%2)+5;
+        soundeffects(rnd);
+	x_val = 0.6f;
+	}
     else if (play2.punchTimeDif>=0.012 && play2.punchTimeDif<.015){
         x_val = 0.5f;
         if (play1.pos[0] + (1.7*play1.width) >= play2.pos[0] + play2.width 
@@ -214,6 +227,10 @@ void animatePlayerTwo(Flt width, Flt height)
         play2.punchClk = true;
         play2.control = true;
         play2.finPunch = false;
+	if(play1.block==true){
+       	   int rnd= (rand()%2)+7;
+           soundeffects(rnd);
+	}
         //play2.draw = true;
     }
 
