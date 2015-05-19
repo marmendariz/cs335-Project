@@ -1,6 +1,6 @@
 // Sarahbeth Ramirez
 // CS 335 - Final Project
-// Homework 6
+
 
 /****************/
 /* 	CONTAINS: 
@@ -18,8 +18,10 @@
 #include "defs.h"
 
 extern int xres, yres;
-extern bool play_game, go_selchar, two_players;
-
+extern bool play_game, go_selchar, two_players, player1choose, player2choose;
+extern "C" {
+	#include "fonts.h"
+}
 /********** Structures ********/
 
 typedef struct t_charBox
@@ -28,7 +30,8 @@ typedef struct t_charBox
     Vec pos;
 } charBox;
 
-charBox charBox1, charBox2, logoBox1;
+charBox charBox1, charBox2, backgroundBox1, logoBox1, charPrompt1box, charPrompt2box;
+
 
 /********* Declare Textures **********/
 
@@ -44,10 +47,21 @@ Ppmimage *gLogoImage=NULL;
 int glogo=1;
 GLuint glogoTexture;
 
+Ppmimage *streetImage=NULL;
+int street=1;
+GLuint streetTexture;
+
+Ppmimage *charPrompt1Image=NULL;
+int charPrompt1=1;
+GLuint charPrompt1Texture;
+
+Ppmimage *charPrompt2Image=NULL;
+int charPrompt2=1;
+GLuint charPrompt2Texture;
+
 extern Ppmimage *titleImage;
 extern int title;
 extern GLuint titleTexture;
-
 
 extern Ppmimage *selectcharacter_Image;
 extern int selchar;
@@ -106,6 +120,48 @@ void init_character_boxes(void)
 			GL_RGBA, GL_UNSIGNED_BYTE, bguileData);
 	delete [] bguileData;
 	
+	/* BACKGROUND 1 SELECT (STREET) */
+	
+	char d[] = "./images/street.ppm";
+	streetImage = ppm6GetImage(streetImage, d);
+	glGenTextures(1, &streetTexture);
+	glBindTexture(GL_TEXTURE_2D, streetTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	w = streetImage->width;
+	h = streetImage->height;
+	unsigned char *streetData = buildAlphaData(streetImage);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, 
+			GL_RGBA, GL_UNSIGNED_BYTE, streetData);
+	delete [] streetData;
+	
+	/* PROMPT TO SELECT PLAYER 1 */
+	char f[] = "./images/charPrompt1.ppm";
+	charPrompt1Image = ppm6GetImage(charPrompt1Image, f);
+	glGenTextures(1, &charPrompt1Texture);
+	glBindTexture(GL_TEXTURE_2D, charPrompt1Texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	w = charPrompt1Image->width;
+	h = charPrompt1Image->height;
+	unsigned char *charPrompt1Data = buildAlphaData(charPrompt1Image);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, 
+			GL_RGBA, GL_UNSIGNED_BYTE, charPrompt1Data);
+	delete [] charPrompt1Data;
+	
+	char g[] = "./images/charPrompt2.ppm";
+	charPrompt2Image = ppm6GetImage(charPrompt2Image, g);
+	glGenTextures(1, &charPrompt2Texture);
+	glBindTexture(GL_TEXTURE_2D, charPrompt2Texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	w = charPrompt2Image->width;
+	h = charPrompt2Image->height;
+	unsigned char *charPrompt2Data = buildAlphaData(charPrompt2Image);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, 
+			GL_RGBA, GL_UNSIGNED_BYTE, charPrompt2Data);
+	delete [] charPrompt2Data;
+	
 	/* 	GUILE LOGO TEXTURE	
 
 	char d[] = "./images/guileLogo.ppm";
@@ -127,14 +183,30 @@ void init_character_boxes(void)
 	charBox2.pos[1] = 450;
 	charBox2.width = 100;
 	charBox2.height = 150;
+
+	backgroundBox1.pos[0] = 900;
+	backgroundBox1.pos[1] = 450;
+	backgroundBox1.width = 200;
+	backgroundBox1.height = 100; 
+
+	charPrompt1box.pos[0] = (xres/2);
+	charPrompt1box.pos[1] = 180;
+	charPrompt1box.width = 300;
+	charPrompt1box.height = 80;
+
+	charPrompt2box.pos[0] = (xres/2);
+	charPrompt2box.pos[1] = 180;
+	charPrompt2box.width = 300;
+	charPrompt2box.height = 80;
+
 }
 
 void selectBox(Vec leftButtonPos)
 {
     if (play_game == false) { // if in title screen
         if (go_selchar==false && two_players==false){
-            if ((leftButtonPos[0] > (xres/2 - 75) && leftButtonPos[0] < xres/2 + 75) && 
-                    (leftButtonPos[1] > (yres/8 - 25) && leftButtonPos[1] < (yres/8 + 25))) 
+            if ((leftButtonPos[0] > (1050 - 75) && leftButtonPos[0] < 1050 + 75) && 
+                    (leftButtonPos[1] > (460 - 25) && leftButtonPos[1] < (460 + 25))) 
                 go_selchar = true;
         }
     }
@@ -172,6 +244,46 @@ void drawCharBox(Flt width, Flt height, int x)
         glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);
     }
     glEnd();
+
+	// Draw Select Background 1 (street)
+ 	if (x == 3) 
+        glBindTexture(GL_TEXTURE_2D, streetTexture);
+
+    glBegin(GL_QUADS);
+    if (x == 3) {
+        glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
+        glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
+        glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
+        glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);
+    }
+    glEnd();
+	
+	// Draw Select Player 1 Prompt
+ 	if (x == 4) 
+        glBindTexture(GL_TEXTURE_2D, charPrompt1Texture);
+	
+    glBegin(GL_QUADS);
+    if (x == 4) {
+        glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
+        glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
+        glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
+        glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);
+    }
+    glEnd();
+
+	// Draw Select Player 2 Prompt
+ 	if (x == 5) 
+        glBindTexture(GL_TEXTURE_2D, charPrompt2Texture);
+	
+    glBegin(GL_QUADS);
+    if (x == 5) {
+        glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
+        glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
+        glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
+        glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);
+    }
+    glEnd();
+
 
     glDisable(GL_TEXTURE_2D);
 }
@@ -212,6 +324,33 @@ void character_select_render(void)
     drawCharBox(charBox2.width, charBox2.height, 2);
     glPopMatrix();
 
+	//draw street background box
+	glColor3f(1.0,1.0,1.0);
+    glPushMatrix();
+    glTranslatef(backgroundBox1.pos[0], backgroundBox1.pos[1], 0);
+    drawCharBox(backgroundBox1.width, backgroundBox1.height, 3);
+    glPopMatrix();
+
+	//draw prompts
+	if ( two_players == false && selchar == true && player1choose == false && player2choose == false) {
+		glColor3f(1.0,1.0,1.0);
+		glPushMatrix();
+		glTranslatef(charPrompt1box.pos[0], charPrompt1box.pos[1], 0);
+		drawCharBox(charPrompt1box.width, charPrompt1box.height, 4);
+		glPopMatrix();
+	} else if ( two_players == false && selchar == true && player1choose == 			true && player2choose == false) {
+		glColor3f(1.0,1.0,1.0);
+		glPushMatrix();
+		glTranslatef(charPrompt2box.pos[0], charPrompt2box.pos[1], 0);
+		drawCharBox(charPrompt2box.width, charPrompt2box.height, 5);
+		glPopMatrix();
+	}
+
+
+	/*else if (player1choose == true && player2choose == false)
+		drawCharBox(charPrompt.width, charPrompt.height, 5);
+	else if (player1choose == true && player2choose == true)
+		drawCharBox(charPrompt.width, charPrompt.height, 6);*/
 }
 
 void menu_render(void)  
@@ -254,13 +393,20 @@ void drawmenu_button(Flt width, Flt height)
      glColor3f(0.0,0.0,1.0);
      glVertex2i(w, -h);
      glEnd();
+
+	/*glEnable(GL_TEXTURE_2D);
+	 Rect r;
+	 r.center = 1;
+	 r.bot = 460;
+	 r.left = 1050;
+	 ggprint16(&r, 16, 0x2EFEC8, "CLICK TO PLAY!");*/
 }
 
 /**************** UNDER DEVELOPMENT **********************/
 
 /*void animate_ReadySetGo(Flt width, Flt height)
 {
-	float timeDif = float(clock() - startTime) / CLOCKS_PER_SEC; 
+	float ReadyTimeDif = float(clock() - startTime) / CLOCKS_PER_SEC; 
 	startClk = false;
 
 	int w = width;

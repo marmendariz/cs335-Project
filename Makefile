@@ -9,7 +9,7 @@ fight: ZenaidaG.o KevinO.o MarkA.o SarahbethR.o fight.o fmod.c ppm.c
 	g++ $(CFLAGS) -o fight fight.o ZenaidaG.o KevinO.o MarkA.o SarahbethR.o fmod.c  ppm.c -Wall -Wextra $(LFLAGS)  
 
 SarahbethR.o: SarahbethR.cpp
-	g++ $(CFLAGS) -c SarahbethR.cpp fmod.c ppm.c $(FLAGS)
+	g++ $(CFLAGS) $(LIB) -c SarahbethR.cpp fmod.c ppm.c $(FLAGS)  
 
 KevinO.o: KevinO.cpp
 	g++ $(CFLAGS) -c KevinO.cpp fmod.c ppm.c $(FLAGS)
