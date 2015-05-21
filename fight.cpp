@@ -237,7 +237,7 @@ int main(void)
 				//let_the_music_play(0);
 				i++;
 				sound_p=true;
-				let_the_music_play(12);
+				let_the_music_play(13);
 			}
 			play_sounds=0;
 			render();
