@@ -61,7 +61,9 @@ void animatePlayerOne(Flt, Flt);
 void drawmenu_button(Flt, Flt);
 void init_menu();
 void menu_render();
+
 void restart_game(void);
+
 
 int xres=1280, yres=680;
 int leftButtonDown=0;
@@ -72,7 +74,9 @@ bool two_players = false;
 bool play_game = false;
 bool go_selchar=false;
 bool sound_p = false;
+
 bool visted =false;
+
 #ifdef USE_SOUND
 int play_sounds = 0;
 #endif
@@ -81,6 +85,7 @@ Player play1;
 Player play2;
 
 /*TEXTURE STUFF*/
+
 Ppmimage *play2guile=NULL;
 GLuint play2guiletext;
 Ppmimage *play1guile=NULL;
@@ -90,6 +95,7 @@ GLuint play1bguiletext;
 
 Ppmimage *play2bguile=NULL;
 GLuint play2bguiletext;
+
 
 Ppmimage *metalImage=NULL;
 GLuint metalTexture;
@@ -124,9 +130,11 @@ bool player2guile=false;
 bool player2bguile=false;
 int player1=0;
 int player2=0;
+
 int please=0;
 bool restart=false;
 bool playone=true;
+
 /***********Setup timers **********/
 const double physicsRate = 1.0 / 60.0;
 const double oobillion = 1.0 / 1e9;
@@ -143,18 +151,23 @@ void timeCopy(struct timespec *dest, struct timespec *source) {
 }
 /**************************************/
 
+
 int i=0;
+
 /***************MAIN*******************/
 int main(void)
 {
 	initXWindows();
+
 	init_opengl();
+
 	init_menu();
 	init_character_boxes();
 	init_character_select();
 	init_players();
 	init_music();
 	init_sound();
+
 	//init_opengl();
 	clock_gettime(CLOCK_REALTIME, &timePause);
 	clock_gettime(CLOCK_REALTIME, &timeStart);
@@ -179,12 +192,15 @@ int main(void)
 
 		if(play_game == false && two_players==false){
 			if(i==0){
+
 			goodbye();
+
 				sound_p=true;
 				let_the_music_play(1);
 				i++;
 			}
 			menu_render();
+
 
 			if(go_selchar == true){
 				if(i==1)
@@ -203,20 +219,24 @@ int main(void)
 					play_sounds=0;
 					soundeffects(9);
 					//play_sounds=1;
+
 				}
 
 				character_select_render();
 
 				if (player1choose==true && player2choose==true){
+
 					//init_opengl();
 					//please++;
 					printf("two players\n");
 					two_players=true;
 					printf("two players\n");
+
 				}
 			}
 		}
 		else if(play_game==false && two_players == true && go_selchar==false){
+
 			//goodbye();
 			//if(sound_p==true){
 			//sound_p=false;
@@ -232,12 +252,14 @@ int main(void)
 		else if(play_game ==true && two_players==true && go_selchar==false){
 			if(i==2)
 			{
+
 			goodbye();
 				//sound_p=false;
 				//let_the_music_play(0);
 				i++;
 				sound_p=true;
 				let_the_music_play(13);
+
 			}
 			play_sounds=0;
 			render();
@@ -505,6 +527,7 @@ void check_mouse(XEvent *e)
 	}
 }
 
+
 void restart_game(void){
 	init_healthBars();
 	init_players();
@@ -531,7 +554,9 @@ void restart_game(void){
 	//sound_p=false;
 	//let_the_music_play(12);
 	playone=true;
+
 }
+
 int check_keys(XEvent *e)
 {
 	int key= XLookupKeysym(&e->xkey, 0);
@@ -554,7 +579,9 @@ int check_keys(XEvent *e)
 			forest ^=1;
 			break;
 		case XK_p:
+
 		        //goodbye();
+
 			if (play_game == true) { // they are playing 
 				play_game = false;
 				play1.control = false;
@@ -581,10 +608,12 @@ int check_keys(XEvent *e)
 				}
 			}
 			break;
+
 		case XK_r:
 			if(play_game==false && two_players == true && go_selchar==false){
 				restart_game();
 			}
+
 			break;
 			/*Use numbers to select players*/
 		case XK_1:
@@ -594,9 +623,11 @@ int check_keys(XEvent *e)
 					player1guile=true;
 					player1bguile=false;
 					strcpy(play1.name,names[0]);
+
 					player1choose=true;
 				}
 				else if(player1choose==true && player2choose==false){
+
 					player2=1;
 					player2guile=true;
 					player2bguile=false;
@@ -608,7 +639,9 @@ int check_keys(XEvent *e)
 		case XK_2:
 			if(go_selchar==true){
 				if(player1choose==false && player2choose==false){
+
 					player1bguile=true;
+
 					player1guile=false;
 					player1=2;
 					strcpy(play1.name,names[1]);
@@ -653,7 +686,9 @@ void physics(void)
 
 	/*CHECK KEYS*/
 	/*Player ONE*/
+
 	if(play1.control && !(play1.hbar.width <=0)){
+
 		if(!play1.block){
 			if(!(keys[XK_a] && keys[XK_d])){
 
@@ -681,18 +716,24 @@ void physics(void)
 				play1.punch = true;
 			}
 		}
+
 		if(keys[XK_g] == 1){
+
 			if(play1.blockClk)
 				play1.beginBlock = clock();
 			play1.block = true;
 		}
+
 		if(keys[XK_g] == 0){
+
 			play1.blockClk = true;
 			play1.block = false;
 		}
 	}
 	/*Player TWO*/
+
 	if(play2.control && !(play2.hbar.width <= 0)){
+
 
 		if(!(keys[XK_Left] && keys[XK_Right])){
 
@@ -824,12 +865,14 @@ void drawBox(Flt width, Flt height, int x)
 	if(x==1)
 	{
 		glEnable(GL_TEXTURE_2D);
+
 		if(player1guile==true && player1bguile==false){
 			glBindTexture(GL_TEXTURE_2D, play1guiletext);
 		}
 		else if(player1guile==false && player1bguile==true){
 			glBindTexture(GL_TEXTURE_2D, play1bguiletext);
 		}
+
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER,0.1f);
 		glColor4ub(255,255,255,255);
@@ -837,6 +880,7 @@ void drawBox(Flt width, Flt height, int x)
 	if(x==3)
 	{
 		glEnable(GL_TEXTURE_2D);
+
 		if(player2guile==true && player2bguile==false){
 			glBindTexture(GL_TEXTURE_2D, play2guiletext);
 		}
@@ -844,6 +888,7 @@ void drawBox(Flt width, Flt height, int x)
 			glBindTexture(GL_TEXTURE_2D, play2bguiletext);
 		}
 		//glBindTexture(GL_TEXTURE_2D, play2Texture);
+
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER,0.1f);
 		glColor4ub(255,255,255,255);
@@ -993,10 +1038,12 @@ void render(void)
 		play2.hbar.pos[0] += punchDamage;
 		play2.hbar.width -= punchDamage;
 		int punchn=(rand()%3)+2;
+
 		//play_sounds=0;
 		soundeffects(punchn);
 		//play_sounds=1;
 		//soundeffects(punchn);
+
 		play1.punchHit = false;
 	}
 
@@ -1030,10 +1077,12 @@ void render(void)
 		play1.hbar.pos[0] -= punchDamage;
 		play1.hbar.width -= punchDamage;
 		int punchn=(rand()%3)+2;
+
 		play_sounds=0;
 		soundeffects(punchn);
 		//play_sounds=1;
 		//soundeffects(punchn);
+
 		play2.punchHit = false;
 	}
 
@@ -1041,6 +1090,7 @@ void render(void)
 
 	if(play2.hbar.width <= 0){
 		play2.hbar.width = 0;
+
 		//punchDamage = 0;
 		play1.control=false;
 		play2.control=false;
@@ -1081,6 +1131,7 @@ void render(void)
 		//play_sounds=1;
 		//soundeffects(11);
 
+
 	}
 
 	glEnable(GL_TEXTURE_2D);
@@ -1094,4 +1145,6 @@ void render(void)
 	r.bot  = play2.hbar.posOut[1]-10;
 	ggprint16(&r, 20, 0x00ffff00, play2.name);
 }
+
+
 

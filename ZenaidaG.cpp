@@ -8,6 +8,7 @@ void init_music(void)
 {
     char select[]= "./sounds/zfc.mp3";
     char start[] ="./sounds/blue.mp3";
+
     char fight1[]="./sounds/doubt.mp3";
     char fight2[]="./sounds/thefall.mp3";
     char fight3[]="./sounds/Takedown.mp3";
@@ -17,7 +18,9 @@ void init_music(void)
                 printf("ERROR-fmod_init()\n\n");
                 return;
         }
+
         if(fmod_createsound(select,15)){
+
                 printf("ERROR-fmod_createsound()\n\n");
                 return;
         }
@@ -25,6 +28,7 @@ void init_music(void)
                 printf("ERROR-fmod_createsound()\n\n");
                 return;
         }
+
 	if(fmod_createsound(fight1,12)){
                 printf("ERROR-fmod_createsound()\n\n");
                 return;
@@ -60,9 +64,11 @@ void init_sound()
 	char block1[]="./sounds/block1.mp3";
 	char block2[]="./sounds/block2.mp3";
 
+
         char player1wins[]="./sounds/play1wins.mp3";
 	char player2wins[]="./sounds/play2wins.mp3";
 	char selectchar[]="./sounds/selectcharacter.mp3";
+
 #ifdef USE_SOUND
         if(fmod_init()){
                 printf("ERROR-fmod_init()\n\n");
@@ -108,6 +114,7 @@ void init_sound()
                 printf("ERROR-fmod_createsound()\n\n");
                 return;
         }
+
         if(fmod_createsound(player1wins,10)){
                 printf("ERROR-fmod_createsound()\n\n");
                 return;
@@ -118,6 +125,7 @@ void init_sound()
 	}
 
 
+
         fmod_setmode(2,FMOD_LOOP_OFF);
         fmod_setmode(3,FMOD_LOOP_OFF);
         fmod_setmode(4,FMOD_LOOP_OFF);
@@ -126,8 +134,10 @@ void init_sound()
         fmod_setmode(7,FMOD_LOOP_OFF);
         fmod_setmode(8,FMOD_LOOP_OFF);
         fmod_setmode(9,FMOD_LOOP_OFF);
+
         fmod_setmode(10,FMOD_LOOP_OFF);
         fmod_setmode(11,FMOD_LOOP_OFF);
+
 #endif
 
 }

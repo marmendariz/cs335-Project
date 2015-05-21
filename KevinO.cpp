@@ -78,11 +78,13 @@ void animatePlayerOne(Flt width, Flt height)
 
     glEnable(GL_TEXTURE_2D);
 
+
     if(player1guile==true && player1bguile==false){
     glBindTexture(GL_TEXTURE_2D, play1guiletext);}
     else if(player1bguile==true && player1guile==false){
     glBindTexture(GL_TEXTURE_2D, play1bguiletext);}
     
+
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER,0.1f);
     glColor4ub(255,255,255,255);
@@ -128,6 +130,7 @@ void animatePlayerOneWalk(Flt width, Flt height){
     glTranslatef(play1.pos[0], play1.pos[1], play1.pos[2]);
 
     glEnable(GL_TEXTURE_2D);
+
     //glBindTexture(GL_TEXTURE_2D, play1Texture);
     if(player1guile==true && player1bguile==false){
     glBindTexture(GL_TEXTURE_2D, play1guiletext);}
@@ -184,6 +187,7 @@ void animatePlayerOneBlock(Flt width, Flt height){
     glBindTexture(GL_TEXTURE_2D, play1bguiletext);}
  
     //glBindTexture(GL_TEXTURE_2D, play1Texture);
+
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER,0.1f);
     glColor4ub(255,255,255,255);
@@ -259,11 +263,13 @@ void animatePlayerTwo(Flt width, Flt height)
     glTranslatef(play2.pos[0], play2.pos[1], play2.pos[2]);
 
     glEnable(GL_TEXTURE_2D);
+
     if(player2guile==true && player2bguile==false){
     glBindTexture(GL_TEXTURE_2D, play2guiletext);}
     else if(player2bguile==true && player2guile==false){
     glBindTexture(GL_TEXTURE_2D, play2bguiletext);}
   // glBindTexture(GL_TEXTURE_2D, play2Texture);
+
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER,0.1f);
     glColor4ub(255,255,255,255);
@@ -312,12 +318,13 @@ void animatePlayerTwoWalk(Flt width, Flt height){
     glTranslatef(play2.pos[0], play2.pos[1], play2.pos[2]);
 
     glEnable(GL_TEXTURE_2D);
+
     //glBindTexture(GL_TEXTURE_2D, play2Texture);
     if(player2guile==true && player2bguile==false){
     glBindTexture(GL_TEXTURE_2D, play2guiletext);}
     else if(player2bguile==true && player2guile==false){
     glBindTexture(GL_TEXTURE_2D, play2bguiletext);}
- 
+
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER,0.1f);
     glColor4ub(255,255,255,255);
