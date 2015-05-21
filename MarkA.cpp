@@ -3,17 +3,22 @@
 #include "MarkA.h"
 #include "defs.h"
 #include "ppm.h"
+#include <stdio.h>
 extern "C" {
 #include "fonts.h"
 }
 
-extern Ppmimage *play2Image,
-       *play1Image,
+extern Ppmimage *play2guile,
+       *play1guile,
+       *play2bguile,
+       *play1bguile,
        *metalImage,
        *metal2Image,
        *forestImage;
-extern GLuint play1Texture,
-       play2Texture,
+extern GLuint play1guiletext,
+       play2guiletext,
+       play1bguiletext,
+       play2bguiletext,
        metalTexture,
        metal2Texture,
        forestTexture;
@@ -33,9 +38,10 @@ extern int  player1,
        player2;
 
 
-
+extern int please;
 void init_opengl(void)
 {
+      
 	int w,h;
 	/*Initialize openGL and all textures*/
 	glViewport(0, 0, xres, yres);
@@ -51,70 +57,76 @@ void init_opengl(void)
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 	/*Do this to allow fonts*/
 	glEnable(GL_TEXTURE_2D);
-	initialize_fonts();
+        initialize_fonts();
 
 
+         printf("initialize textures\n");
 	/**************INITIALIZE TEXTURES******************/
 	/*PLAYER ONE TEXTURE*/
 	//char player1char[] = "./images/guile_play1.ppm";
 	//play1Image = ppm6GetImage(play1Image,player1char);
-	if(player1guile==true && player1bguile==false){
-		char player1char[]= "./images/guile_play1.ppm";
-		play1Image = ppm6GetImage(play1Image,player1char);
-		glGenTextures(1, &play1Texture);
-		glBindTexture(GL_TEXTURE_2D, play1Texture);
+	//if(player1guile==true && player1bguile==false){
+		char player1guile[]= "./images/guile_play1.ppm";
+		play1guile = ppm6GetImage(play1guile,player1guile);
+		glGenTextures(1, &play1guiletext);
+		glBindTexture(GL_TEXTURE_2D, play1guiletext);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-		 w = play1Image->width;
-		 h = play1Image->height;
-		unsigned char *play1Data = buildAlphaData(play1Image);	
+		 w = play1guile->width;
+		 h = play1guile->height;
+		unsigned char *play1Dataguile = buildAlphaData(play1guile);	
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-				GL_RGBA, GL_UNSIGNED_BYTE, play1Data);
-		delete [] play1Data;
-	}
- 	 if(player1guile==false && player1bguile==true){
-		char player1char[]="./images/bizguile_play1.ppm";
-		play1Image = ppm6GetImage(play1Image,player1char);
-		glGenTextures(1, &play1Texture);
-		glBindTexture(GL_TEXTURE_2D, play1Texture);
+				GL_RGBA, GL_UNSIGNED_BYTE, play1Dataguile);
+	        printf("guile\n");
+	//delete [] play1Data;
+	//}
+ 	// if(player1guile==false && player1bguile==true){
+		char player1bguile[]="./images/bizguile_play1.ppm";
+		play1bguile = ppm6GetImage(play1bguile,player1bguile);
+		glGenTextures(1, &play1bguiletext);
+		glBindTexture(GL_TEXTURE_2D, play1bguiletext);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-		 w = play1Image->width;
-		 h = play1Image->height;
-		unsigned char *play1Data = buildAlphaData(play1Image);	
+		 w = play1bguile->width;
+		 h = play1bguile->height;
+		unsigned char *play1Databguile = buildAlphaData(play1bguile);	
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-				GL_RGBA, GL_UNSIGNED_BYTE, play1Data);
-		delete [] play1Data;
-	}
+				GL_RGBA, GL_UNSIGNED_BYTE, play1Databguile);
+	        printf("guile\n");
+		//delete [] play1Data;
+	//}
 
 
 	/*PLAYER TWO TEXTURE*/
 	//char player2char[] = "./images/guile_play2.ppm";
-	 if(player2guile==true && player2bguile==false){
-		char player2char[]="./images/guile_play2.ppm";
-		play2Image = ppm6GetImage(play2Image,player2char);
-		glGenTextures(1, &play2Texture);
-		glBindTexture(GL_TEXTURE_2D, play2Texture);
+	// if(player2guile==true && player2bguile==false){
+		char player2guile[]="./images/guile_play2.ppm";
+		play2guile = ppm6GetImage(play2guile,player2guile);
+		glGenTextures(1, &play2guiletext);
+		glBindTexture(GL_TEXTURE_2D, play2guiletext);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-		 w = play2Image->width;
-		 h = play2Image->height;
-		unsigned char *play2Data = buildAlphaData(play2Image);	
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,GL_RGBA, GL_UNSIGNED_BYTE, play2Data);
-		delete [] play2Data;
-	}
-	 if(player2guile==false && player2bguile==true){
-		char player2char[]="./images/bizguile_play2.ppm";
-		play2Image = ppm6GetImage(play2Image,player2char);
-		glGenTextures(1, &play2Texture);
-		glBindTexture(GL_TEXTURE_2D, play2Texture);
+		 w = play2guile->width;
+		 h = play2guile->height;
+		unsigned char *play2Dataguile = buildAlphaData(play2guile);	
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,GL_RGBA, GL_UNSIGNED_BYTE, play2Dataguile);
+	        printf("bguile\n");
+		//delete [] play2Data;
+	//}
+	// if(player2guile==false && player2bguile==true){
+		char player2bguile[]="./images/bizguile_play2.ppm";
+		play2bguile = ppm6GetImage(play2bguile,player2bguile);
+		glGenTextures(1, &play2bguiletext);
+		glBindTexture(GL_TEXTURE_2D, play2bguiletext);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-		 w = play2Image->width;
-		 h = play2Image->height;
-		unsigned char *play2Data = buildAlphaData(play2Image);	
+		 w = play2bguile->width;
+		 h = play2bguile->height;
+		unsigned char *play2Databguile = buildAlphaData(play2bguile);	
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-				GL_RGBA, GL_UNSIGNED_BYTE, play2Data);
-		delete [] play2Data;
-	}
+				GL_RGBA, GL_UNSIGNED_BYTE, play2Databguile);
+	        printf("bguile\n");
+		//delete [] play2Data;
+	//}
 
 
+	
 	/*BACKGROUND METAL HEALTHBAR*/
 	char y[] = "./images/metal.ppm";
 	metalImage = ppm6GetImage(metalImage,y);
@@ -127,7 +139,7 @@ void init_opengl(void)
 	unsigned char *metalData = buildAlphaData(metalImage);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, metalData);
-	delete [] metalData;
+	//delete [] metalData;
 
 	/*TOP LAYER METAL HEALTHBAR*/
 	char c[] = "./images/metal3.ppm";
@@ -141,7 +153,7 @@ void init_opengl(void)
 	unsigned char *metal2Data = buildAlphaData(metal2Image);	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, metal2Data);
-	delete [] metal2Data;
+	//delete [] metal2Data;
 
 	/*FOREST BACKGROUND IMAGE*/
 	char z[] = "./images/forest.ppm";

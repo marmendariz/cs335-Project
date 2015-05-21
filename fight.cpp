@@ -61,6 +61,7 @@ void animatePlayerOne(Flt, Flt);
 void drawmenu_button(Flt, Flt);
 void init_menu();
 void menu_render();
+void restart_game(void);
 
 int xres=1280, yres=680;
 int leftButtonDown=0;
@@ -71,7 +72,7 @@ bool two_players = false;
 bool play_game = false;
 bool go_selchar=false;
 bool sound_p = false;
-
+bool visted =false;
 #ifdef USE_SOUND
 int play_sounds = 0;
 #endif
@@ -80,11 +81,15 @@ Player play1;
 Player play2;
 
 /*TEXTURE STUFF*/
-Ppmimage *play1Image=NULL;
-GLuint play1Texture;
+Ppmimage *play2guile=NULL;
+GLuint play2guiletext;
+Ppmimage *play1guile=NULL;
+GLuint play1guiletext;
+Ppmimage *play1bguile=NULL;
+GLuint play1bguiletext;
 
-Ppmimage *play2Image=NULL;
-GLuint play2Texture;
+Ppmimage *play2bguile=NULL;
+GLuint play2bguiletext;
 
 Ppmimage *metalImage=NULL;
 GLuint metalTexture;
@@ -119,7 +124,9 @@ bool player2guile=false;
 bool player2bguile=false;
 int player1=0;
 int player2=0;
+int please=0;
 bool restart=false;
+bool playone=true;
 /***********Setup timers **********/
 const double physicsRate = 1.0 / 60.0;
 const double oobillion = 1.0 / 1e9;
@@ -136,10 +143,12 @@ void timeCopy(struct timespec *dest, struct timespec *source) {
 }
 /**************************************/
 
+int i=0;
 /***************MAIN*******************/
 int main(void)
 {
 	initXWindows();
+	init_opengl();
 	init_menu();
 	init_character_boxes();
 	init_character_select();
@@ -150,7 +159,6 @@ int main(void)
 	clock_gettime(CLOCK_REALTIME, &timePause);
 	clock_gettime(CLOCK_REALTIME, &timeStart);
 	int done=0;
-	int i=0;
 	while(!done) {
 
 		while(XPending(dpy)) {
@@ -171,52 +179,65 @@ int main(void)
 
 		if(play_game == false && two_players==false){
 			if(i==0){
+			goodbye();
 				sound_p=true;
 				let_the_music_play(1);
 				i++;
 			}
 			menu_render();
-			
-		//	char_select:
-			//restart=false;
+
 			if(go_selchar == true){
 				if(i==1)
 				{ 
+			goodbye();
 					i++;
-					sound_p=false;
-					let_the_music_play(1);
-
+					/*if (visted==false){
+						sound_p=false;
+						let_the_music_play(1);
+					}
+*/
 					sound_p= true;
-					let_the_music_play(0);
+					let_the_music_play(15);
+					
+
 					play_sounds=0;
 					soundeffects(9);
-					play_sounds=1;
+					//play_sounds=1;
 				}
 
 				character_select_render();
 
 				if (player1choose==true && player2choose==true){
-					init_opengl();
+					//init_opengl();
+					//please++;
+					printf("two players\n");
 					two_players=true;
+					printf("two players\n");
 				}
 			}
 		}
 		else if(play_game==false && two_players == true && go_selchar==false){
+			//goodbye();
+			//if(sound_p==true){
+			//sound_p=false;
+			//let_the_music_play(14);
+
+			//}
 			menu_render();
-		
-		if(restart==true){
-			play_game=false;
-		        two_players=false;	
-			restart=false;
-//			goto restart_game;
-			}
+			//if(restart==true){
+			//	character_select_render();
+			//}
+
 		}
 		else if(play_game ==true && two_players==true && go_selchar==false){
 			if(i==2)
 			{
-				sound_p=false;
-				let_the_music_play(0);
+			goodbye();
+				//sound_p=false;
+				//let_the_music_play(0);
 				i++;
+				sound_p=true;
+				let_the_music_play(12);
 			}
 			play_sounds=0;
 			render();
@@ -484,6 +505,33 @@ void check_mouse(XEvent *e)
 	}
 }
 
+void restart_game(void){
+	init_healthBars();
+	init_players();
+
+	go_selchar=true;
+	play_game=false;
+	two_players=false;
+	player1=0;
+	player2=0;
+	player1guile=false;
+	player1bguile=false;
+	player2guile=false;
+	player2bguile=false;
+	player1choose=false;
+	player2choose=false;
+	i=1;
+	visted=true;
+	restart=true;
+	goodbye();
+	//if(playone==false){
+//	play_sounds=1;
+//	soundeffects(0);
+
+	//sound_p=false;
+	//let_the_music_play(12);
+	playone=true;
+}
 int check_keys(XEvent *e)
 {
 	int key= XLookupKeysym(&e->xkey, 0);
@@ -506,6 +554,7 @@ int check_keys(XEvent *e)
 			forest ^=1;
 			break;
 		case XK_p:
+		        //goodbye();
 			if (play_game == true) { // they are playing 
 				play_game = false;
 				play1.control = false;
@@ -533,16 +582,9 @@ int check_keys(XEvent *e)
 			}
 			break;
 		case XK_r:
-			//play_game=false;
-			//two_players=false;
-			//go_selchar=true;
-			//character_select_render();
-	//		restart=false;
-             		restart=true;
-                 	
-	               // cleanupXWindows();
-			//cleanup_fonts();
-                        //goto restart_game;
+			if(play_game==false && two_players == true && go_selchar==false){
+				restart_game();
+			}
 			break;
 			/*Use numbers to select players*/
 		case XK_1:
@@ -552,9 +594,9 @@ int check_keys(XEvent *e)
 					player1guile=true;
 					player1bguile=false;
 					strcpy(play1.name,names[0]);
-                                        player1choose=true;
+					player1choose=true;
 				}
-				 else if(player1choose==true && player2choose==false){
+				else if(player1choose==true && player2choose==false){
 					player2=1;
 					player2guile=true;
 					player2bguile=false;
@@ -566,7 +608,7 @@ int check_keys(XEvent *e)
 		case XK_2:
 			if(go_selchar==true){
 				if(player1choose==false && player2choose==false){
-                                        player1bguile=true;
+					player1bguile=true;
 					player1guile=false;
 					player1=2;
 					strcpy(play1.name,names[1]);
@@ -611,7 +653,7 @@ void physics(void)
 
 	/*CHECK KEYS*/
 	/*Player ONE*/
-	if(play1.control){
+	if(play1.control && !(play1.hbar.width <=0)){
 		if(!play1.block){
 			if(!(keys[XK_a] && keys[XK_d])){
 
@@ -639,18 +681,18 @@ void physics(void)
 				play1.punch = true;
 			}
 		}
-		if(keys[XK_r] == 1){
+		if(keys[XK_g] == 1){
 			if(play1.blockClk)
 				play1.beginBlock = clock();
 			play1.block = true;
 		}
-		if(keys[XK_r] == 0){
+		if(keys[XK_g] == 0){
 			play1.blockClk = true;
 			play1.block = false;
 		}
 	}
 	/*Player TWO*/
-	if(play2.control){
+	if(play2.control && !(play2.hbar.width <= 0)){
 
 		if(!(keys[XK_Left] && keys[XK_Right])){
 
@@ -782,7 +824,12 @@ void drawBox(Flt width, Flt height, int x)
 	if(x==1)
 	{
 		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, play1Texture);
+		if(player1guile==true && player1bguile==false){
+			glBindTexture(GL_TEXTURE_2D, play1guiletext);
+		}
+		else if(player1guile==false && player1bguile==true){
+			glBindTexture(GL_TEXTURE_2D, play1bguiletext);
+		}
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER,0.1f);
 		glColor4ub(255,255,255,255);
@@ -790,7 +837,13 @@ void drawBox(Flt width, Flt height, int x)
 	if(x==3)
 	{
 		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, play2Texture);
+		if(player2guile==true && player2bguile==false){
+			glBindTexture(GL_TEXTURE_2D, play2guiletext);
+		}
+		else if(player2guile==false && player2bguile==true){
+			glBindTexture(GL_TEXTURE_2D, play2bguiletext);
+		}
+		//glBindTexture(GL_TEXTURE_2D, play2Texture);
 		glEnable(GL_ALPHA_TEST);
 		glAlphaFunc(GL_GREATER,0.1f);
 		glColor4ub(255,255,255,255);
@@ -940,7 +993,10 @@ void render(void)
 		play2.hbar.pos[0] += punchDamage;
 		play2.hbar.width -= punchDamage;
 		int punchn=(rand()%3)+2;
+		//play_sounds=0;
 		soundeffects(punchn);
+		//play_sounds=1;
+		//soundeffects(punchn);
 		play1.punchHit = false;
 	}
 
@@ -974,7 +1030,10 @@ void render(void)
 		play1.hbar.pos[0] -= punchDamage;
 		play1.hbar.width -= punchDamage;
 		int punchn=(rand()%3)+2;
+		play_sounds=0;
 		soundeffects(punchn);
+		//play_sounds=1;
+		//soundeffects(punchn);
 		play2.punchHit = false;
 	}
 
@@ -982,11 +1041,46 @@ void render(void)
 
 	if(play2.hbar.width <= 0){
 		play2.hbar.width = 0;
-		punchDamage = 0;
+		//punchDamage = 0;
+		play1.control=false;
+		play2.control=false;
+		play1.draw=true;
+		play2.draw=true;
+
+		glColor3f(0.0, 0.0, 0.0);
+		glPushMatrix();
+		glTranslatef(640, 400, 0.0);
+		drawBox(230,100,5);
+		glPopMatrix();
+
+		if(playone==true){
+			play_sounds=0;
+			soundeffects(10);
+			playone=false;
+		}
+		//play_sounds=1;
+		//soundeffects(11);
 	}
 	if(play1.hbar.width <= 0){
 		play1.hbar.width = 0;
-		punchDamage = 0;
+		//punchDamage = 0;
+		play1.control=false;
+		play2.control=false;
+		play1.draw=true;
+		play2.draw=true;
+		glColor3f(0.0, 0.0, 0.0);
+		glPushMatrix();
+		glTranslatef(640, 400, 0.0);
+		drawBox(230,100,5);
+		glPopMatrix();
+		if(playone==true){
+			play_sounds=0;
+			soundeffects(11);
+			playone=false;
+		}
+		//play_sounds=1;
+		//soundeffects(11);
+
 	}
 
 	glEnable(GL_TEXTURE_2D);

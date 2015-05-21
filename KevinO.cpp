@@ -8,8 +8,14 @@
 #include "ZenaidaG.h"
 
 extern Player play1, play2;
-extern GLuint play1Texture;
-extern GLuint play2Texture;
+extern GLuint play1guiletext;
+extern GLuint play2guiletext;
+extern GLuint play1bguiletext;
+extern GLuint play2bguiletext;
+extern bool player1guile,
+	    player1bguile,
+	    player2guile,
+	    player2bguile;
 
 void animatePlayerOne(Flt width, Flt height)
 {
@@ -38,7 +44,7 @@ void animatePlayerOne(Flt width, Flt height)
     else if (play1.punchTimeDif>=0.012 && play1.punchTimeDif<.015){
         x_val = 0.5f;
         if (play1.pos[0] + (1.7*play1.width) >= play2.pos[0] + play2.width 
-                && play1.punchTimeDif > .014)
+                && play1.punchTimeDif > .010 && play1.finPunch == false)
         {
             play1.punchHit = true;
             play1.punch = false;
@@ -71,7 +77,12 @@ void animatePlayerOne(Flt width, Flt height)
     glTranslatef(play1.pos[0], play1.pos[1], play1.pos[2]);
 
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, play1Texture);
+
+    if(player1guile==true && player1bguile==false){
+    glBindTexture(GL_TEXTURE_2D, play1guiletext);}
+    else if(player1bguile==true && player1guile==false){
+    glBindTexture(GL_TEXTURE_2D, play1bguiletext);}
+    
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER,0.1f);
     glColor4ub(255,255,255,255);
@@ -117,7 +128,12 @@ void animatePlayerOneWalk(Flt width, Flt height){
     glTranslatef(play1.pos[0], play1.pos[1], play1.pos[2]);
 
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, play1Texture);
+    //glBindTexture(GL_TEXTURE_2D, play1Texture);
+    if(player1guile==true && player1bguile==false){
+    glBindTexture(GL_TEXTURE_2D, play1guiletext);}
+    else if(player1bguile==true && player1guile==false){
+    glBindTexture(GL_TEXTURE_2D, play1bguiletext);}
+ 
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER,0.1f);
     glColor4ub(255,255,255,255);
@@ -162,7 +178,12 @@ void animatePlayerOneBlock(Flt width, Flt height){
     glTranslatef(play1.pos[0], play1.pos[1], play1.pos[2]);
 
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, play1Texture);
+    if(player1guile==true && player1bguile==false){
+    glBindTexture(GL_TEXTURE_2D, play1guiletext);}
+    else if(player1bguile==true && player1guile==false){
+    glBindTexture(GL_TEXTURE_2D, play1bguiletext);}
+ 
+    //glBindTexture(GL_TEXTURE_2D, play1Texture);
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER,0.1f);
     glColor4ub(255,255,255,255);
@@ -238,7 +259,11 @@ void animatePlayerTwo(Flt width, Flt height)
     glTranslatef(play2.pos[0], play2.pos[1], play2.pos[2]);
 
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, play2Texture);
+    if(player2guile==true && player2bguile==false){
+    glBindTexture(GL_TEXTURE_2D, play2guiletext);}
+    else if(player2bguile==true && player2guile==false){
+    glBindTexture(GL_TEXTURE_2D, play2bguiletext);}
+  // glBindTexture(GL_TEXTURE_2D, play2Texture);
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER,0.1f);
     glColor4ub(255,255,255,255);
@@ -287,7 +312,12 @@ void animatePlayerTwoWalk(Flt width, Flt height){
     glTranslatef(play2.pos[0], play2.pos[1], play2.pos[2]);
 
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, play2Texture);
+    //glBindTexture(GL_TEXTURE_2D, play2Texture);
+    if(player2guile==true && player2bguile==false){
+    glBindTexture(GL_TEXTURE_2D, play2guiletext);}
+    else if(player2bguile==true && player2guile==false){
+    glBindTexture(GL_TEXTURE_2D, play2bguiletext);}
+ 
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER,0.1f);
     glColor4ub(255,255,255,255);

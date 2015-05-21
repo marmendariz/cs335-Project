@@ -25,5 +25,5 @@ void init_music();
 void init_sound();
 void soundeffects(int num);
 void let_the_music_play(int num);
-
+void goodbye();
 

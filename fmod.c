@@ -27,7 +27,7 @@ static int nsounds=0;
 int ERRCHECK(FMOD_RESULT result)
 {
 	if (result != FMOD_OK) {
-		printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
+	//	printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
 		return 1;
 	}
 	return 0;
@@ -104,7 +104,7 @@ int fmod_getlength(int i, unsigned int *lenms)
 	FMOD_RESULT result;
 	result = FMOD_Sound_GetLength(sound[i], lenms, FMOD_TIMEUNIT_MS);
 	if (ERRCHECK(result)) {
-		printf("error fmod_getlength()\n");
+	printf("error fmod_getlength()\n");
 		return 1;
 	}
 	return 0;
@@ -143,7 +143,7 @@ FMOD_RESULT result;
 	result = FMOD_Channel_Stop(channel);
 	//printf("fmod_playsound(%i)...\n",i);
 	if (ERRCHECK(result)) {
-		printf("error fmod_playsound()\n");
+	//	printf("error fmod_playsound()\n");
 		return 1;
 	}
 	return 0;
@@ -154,7 +154,7 @@ FMOD_RESULT result;
 	result = FMOD_Channel_Stop(channel1);
 	//printf("fmod_playsound(%i)...\n",i);
 	if (ERRCHECK(result)) {
-		printf("error fmod_playsound()\n");
+	//	printf("error fmod_playsound()\n");
 		return 1;
 	}
 	return 0;
