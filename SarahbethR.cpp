@@ -1,10 +1,6 @@
 // Sarahbeth Ramirez
 // CS 335 - Final Project
-<<<<<<< HEAD
 // Homework 6
-=======
-
->>>>>>> b9b88d271c6cb807387e2976888719e29066d90a
 
 /****************/
 /* 	CONTAINS: 
@@ -22,15 +18,12 @@
 #include "defs.h"
 
 extern int xres, yres;
-<<<<<<< HEAD
-extern bool play_game, go_selchar, two_players;
 
-=======
 extern bool play_game, go_selchar, two_players, player1choose, player2choose;
 extern "C" {
 	#include "fonts.h"
 }
->>>>>>> b9b88d271c6cb807387e2976888719e29066d90a
+
 /********** Structures ********/
 
 typedef struct t_charBox
@@ -39,12 +32,10 @@ typedef struct t_charBox
     Vec pos;
 } charBox;
 
-<<<<<<< HEAD
-charBox charBox1, charBox2, logoBox1;
-=======
+
 charBox charBox1, charBox2, backgroundBox1, logoBox1, charPrompt1box, charPrompt2box;
 
->>>>>>> b9b88d271c6cb807387e2976888719e29066d90a
+
 
 /********* Declare Textures **********/
 
@@ -60,8 +51,7 @@ Ppmimage *gLogoImage=NULL;
 int glogo=1;
 GLuint glogoTexture;
 
-<<<<<<< HEAD
-=======
+
 Ppmimage *streetImage=NULL;
 int street=1;
 GLuint streetTexture;
@@ -74,16 +64,11 @@ Ppmimage *charPrompt2Image=NULL;
 int charPrompt2=1;
 GLuint charPrompt2Texture;
 
->>>>>>> b9b88d271c6cb807387e2976888719e29066d90a
+
 extern Ppmimage *titleImage;
 extern int title;
 extern GLuint titleTexture;
 
-<<<<<<< HEAD
-
-=======
->>>>>>> b9b88d271c6cb807387e2976888719e29066d90a
-extern Ppmimage *selectcharacter_Image;
 extern int selchar;
 extern GLuint selectTexture;
 
@@ -140,8 +125,7 @@ void init_character_boxes(void)
 			GL_RGBA, GL_UNSIGNED_BYTE, bguileData);
 	delete [] bguileData;
 	
-<<<<<<< HEAD
-=======
+
 	/* BACKGROUND 1 SELECT (STREET) */
 	
 	char d[] = "./images/street.ppm";
@@ -184,7 +168,7 @@ void init_character_boxes(void)
 			GL_RGBA, GL_UNSIGNED_BYTE, charPrompt2Data);
 	delete [] charPrompt2Data;
 	
->>>>>>> b9b88d271c6cb807387e2976888719e29066d90a
+
 	/* 	GUILE LOGO TEXTURE	
 
 	char d[] = "./images/guileLogo.ppm";
@@ -206,8 +190,7 @@ void init_character_boxes(void)
 	charBox2.pos[1] = 450;
 	charBox2.width = 100;
 	charBox2.height = 150;
-<<<<<<< HEAD
-=======
+
 
 	backgroundBox1.pos[0] = 900;
 	backgroundBox1.pos[1] = 450;
@@ -224,20 +207,17 @@ void init_character_boxes(void)
 	charPrompt2box.width = 300;
 	charPrompt2box.height = 80;
 
->>>>>>> b9b88d271c6cb807387e2976888719e29066d90a
+
 }
 
 void selectBox(Vec leftButtonPos)
 {
     if (play_game == false) { // if in title screen
         if (go_selchar==false && two_players==false){
-<<<<<<< HEAD
-            if ((leftButtonPos[0] > (xres/2 - 75) && leftButtonPos[0] < xres/2 + 75) && 
-                    (leftButtonPos[1] > (yres/8 - 25) && leftButtonPos[1] < (yres/8 + 25))) 
-=======
+
             if ((leftButtonPos[0] > (1050 - 75) && leftButtonPos[0] < 1050 + 75) && 
                     (leftButtonPos[1] > (460 - 25) && leftButtonPos[1] < (460 + 25))) 
->>>>>>> b9b88d271c6cb807387e2976888719e29066d90a
+
                 go_selchar = true;
         }
     }
@@ -276,8 +256,7 @@ void drawCharBox(Flt width, Flt height, int x)
     }
     glEnd();
 
-<<<<<<< HEAD
-=======
+
 	// Draw Select Background 1 (street)
  	if (x == 3) 
         glBindTexture(GL_TEXTURE_2D, streetTexture);
@@ -318,7 +297,7 @@ void drawCharBox(Flt width, Flt height, int x)
     glEnd();
 
 
->>>>>>> b9b88d271c6cb807387e2976888719e29066d90a
+
     glDisable(GL_TEXTURE_2D);
 }
 
@@ -358,8 +337,7 @@ void character_select_render(void)
     drawCharBox(charBox2.width, charBox2.height, 2);
     glPopMatrix();
 
-<<<<<<< HEAD
-=======
+
 	//draw street background box
 	glColor3f(1.0,1.0,1.0);
     glPushMatrix();
@@ -387,7 +365,7 @@ void character_select_render(void)
 		drawCharBox(charPrompt.width, charPrompt.height, 5);
 	else if (player1choose == true && player2choose == true)
 		drawCharBox(charPrompt.width, charPrompt.height, 6);*/
->>>>>>> b9b88d271c6cb807387e2976888719e29066d90a
+
 }
 
 void menu_render(void)  
@@ -430,8 +408,7 @@ void drawmenu_button(Flt width, Flt height)
      glColor3f(0.0,0.0,1.0);
      glVertex2i(w, -h);
      glEnd();
-<<<<<<< HEAD
-=======
+
 
 	/*glEnable(GL_TEXTURE_2D);
 	 Rect r;
@@ -439,7 +416,7 @@ void drawmenu_button(Flt width, Flt height)
 	 r.bot = 460;
 	 r.left = 1050;
 	 ggprint16(&r, 16, 0x2EFEC8, "CLICK TO PLAY!");*/
->>>>>>> b9b88d271c6cb807387e2976888719e29066d90a
+
 }
 
 /**************** UNDER DEVELOPMENT **********************/
