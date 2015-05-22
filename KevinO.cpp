@@ -230,7 +230,7 @@ void animatePlayerTwo(Flt width, Flt height)
     else if (play2.punchTimeDif>=0.012 && play2.punchTimeDif<.015){
         x_val = 0.5f;
         if (play1.pos[0] + (1.7*play1.width) >= play2.pos[0] + play2.width 
-                && play2.punchTimeDif > .014)
+                && play2.punchTimeDif > .010 && play2.finPunch == false)
         {
             play2.punchHit = true;
             play2.punch = false;
