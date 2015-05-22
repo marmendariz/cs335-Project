@@ -154,6 +154,12 @@ void timeCopy(struct timespec *dest, struct timespec *source) {
 
 int i=0;
 
+//VARIABLES FOR SARAHBETH... NO TOUCHY!!!!!
+clock_t startTime;
+bool readyPrompt = false;
+bool readyPromptClk = true;
+//---------------------------//
+
 /***************MAIN*******************/
 int main(void)
 {
@@ -596,8 +602,7 @@ int check_keys(XEvent *e)
 				else if(go_selchar==true && two_players==true){
 					go_selchar=false;
 					play_game =true;
-					play1.control =true;
-					play2.control =true;
+					readyPrompt = true;
 				}
 
 				//in game 
@@ -855,6 +860,8 @@ void physics(void)
 			(play2.pos[1] >= (Flt)yres-play2.radius && play2.vel[1] > 0.0)) {
 		play2.vel[1] = -play2.vel[1];
 	}
+	
+	
 }
 
 void drawBox(Flt width, Flt height, int x)
@@ -1017,7 +1024,13 @@ void render(void)
 	drawBox(play2.hbar.width,play2.hbar.height,2);
 	glPopMatrix();
 	/*****************END DRAW HEALTHBARS***********************/
-
+	if(readyPrompt == true){
+		if(readyPromptClk == true){
+			startTime = clock();
+			readyPromptClk = false;
+		}
+		animate_ReadySetGo();
+	}
 
 	/*****************Player 1 punch and hit******************/
 

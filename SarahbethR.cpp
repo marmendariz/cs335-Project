@@ -19,6 +19,8 @@
 
 extern int xres, yres;
 
+extern Player play1, play2;
+
 extern bool play_game, go_selchar, two_players, player1choose, player2choose;
 extern "C" {
 	#include "fonts.h"
@@ -33,9 +35,7 @@ typedef struct t_charBox
 } charBox;
 
 
-charBox charBox1, charBox2, backgroundBox1, logoBox1, charPrompt1box, charPrompt2box;
-
-
+charBox charBox1, charBox2, backgroundBox1, logoBox1, charPrompt1box, charPrompt2box, promptBox1;
 
 /********* Declare Textures **********/
 
@@ -64,6 +64,14 @@ Ppmimage *charPrompt2Image=NULL;
 int charPrompt2=1;
 GLuint charPrompt2Texture;
 
+Ppmimage *promptBox1Image=NULL;
+int prompt1=1;
+GLuint promptBox1Texture;
+
+Ppmimage *promptBox2Image=NULL;
+int prompt2=1;
+GLuint promptBox2Texture;
+
 
 extern Ppmimage *titleImage;
 extern int title;
@@ -71,6 +79,9 @@ extern GLuint titleTexture;
 
 extern int selchar;
 extern GLuint selectTexture;
+
+extern clock_t startTime;
+extern bool readyPrompt, readyPromptClk;
 
 /********** Functions *********/
 
@@ -168,6 +179,37 @@ void init_character_boxes(void)
 			GL_RGBA, GL_UNSIGNED_BYTE, charPrompt2Data);
 	delete [] charPrompt2Data;
 	
+	   /*********** Initialize Textures **************/
+	    /*READY PROMPT BOX TEXTURE*/
+	char j[] = "./images/ReadyPrompt.ppm"; 
+	promptBox1Image = ppm6GetImage(promptBox1Image, j);
+	glGenTextures(1, &promptBox1Texture);
+	glBindTexture(GL_TEXTURE_2D, promptBox1Texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	w = promptBox1Image->width;
+	h = promptBox1Image->height;
+	unsigned char *promptBox1Data = buildAlphaData(promptBox1Image);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	GL_RGBA, GL_UNSIGNED_BYTE, promptBox1Data);
+		delete [] promptBox1Data;
+    
+	/* FIGHT PROMPT TEXTURE */
+	
+	char i[] = "./images/FightPrompt.ppm"; 
+	promptBox2Image = ppm6GetImage(promptBox2Image, i);
+	glGenTextures(1, &promptBox2Texture);
+	glBindTexture(GL_TEXTURE_2D, promptBox2Texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	w = promptBox2Image->width;
+	h = promptBox2Image->height;
+	unsigned char *promptBox2Data = buildAlphaData(promptBox2Image);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, promptBox2Data);
+	delete [] promptBox2Data;
+
+
 
 	/* 	GUILE LOGO TEXTURE	
 
@@ -207,6 +249,10 @@ void init_character_boxes(void)
 	charPrompt2box.width = 300;
 	charPrompt2box.height = 80;
 
+	promptBox1.pos[0] = 0;
+	promptBox1.pos[1] = yres/2;
+	promptBox1.width = 200;
+	promptBox1.height = 90;
 
 }
 
@@ -297,6 +343,21 @@ void drawCharBox(Flt width, Flt height, int x)
     glEnd();
 
 
+    if (x == 6) { 
+	    glBindTexture(GL_TEXTURE_2D, promptBox1Texture);
+	
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER,0.1f);
+	glColor4ub(255,255,255,255);
+
+	glBegin(GL_QUADS);
+    
+	    glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
+	    glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
+	    glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
+	    glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);
+    }
+    glEnd();
 
     glDisable(GL_TEXTURE_2D);
 }
@@ -352,19 +413,13 @@ void character_select_render(void)
 		glTranslatef(charPrompt1box.pos[0], charPrompt1box.pos[1], 0);
 		drawCharBox(charPrompt1box.width, charPrompt1box.height, 4);
 		glPopMatrix();
-	} else if ( two_players == false && selchar == true && player1choose == 			true && player2choose == false) {
+	} else if ( two_players == false && selchar == true && player1choose == true && player2choose == false) {
 		glColor3f(1.0,1.0,1.0);
 		glPushMatrix();
 		glTranslatef(charPrompt2box.pos[0], charPrompt2box.pos[1], 0);
 		drawCharBox(charPrompt2box.width, charPrompt2box.height, 5);
 		glPopMatrix();
 	}
-
-
-	/*else if (player1choose == true && player2choose == false)
-		drawCharBox(charPrompt.width, charPrompt.height, 5);
-	else if (player1choose == true && player2choose == true)
-		drawCharBox(charPrompt.width, charPrompt.height, 6);*/
 
 }
 
@@ -421,12 +476,70 @@ void drawmenu_button(Flt width, Flt height)
 
 /**************** UNDER DEVELOPMENT **********************/
 
-/*void animate_ReadySetGo(Flt width, Flt height)
+void animate_ReadySetGo()
 {
-<<<<<<< HEAD
-	float timeDif = float(clock() - startTime) / CLOCKS_PER_SEC; 
-=======
+	
 	float ReadyTimeDif = float(clock() - startTime) / CLOCKS_PER_SEC; 
+	printf("%f\n", ReadyTimeDif);	
+	//int w = width;
+	//int h = height;
+	int inc = 0;
+
+    	
+	if(ReadyTimeDif >= 0.005 && ReadyTimeDif < 0.010)
+		inc = 20;
+	if(ReadyTimeDif >= 0.010 && ReadyTimeDif < 0.015)
+		inc = 40;
+	if(ReadyTimeDif >= 0.015 && ReadyTimeDif < 0.020)
+		inc = 60;
+	
+	if(ReadyTimeDif >= 0.020 && ReadyTimeDif < 0.025)
+		inc = 80;
+	if(ReadyTimeDif >= 0.025 && ReadyTimeDif < 0.030)
+		inc = 100;
+	if(ReadyTimeDif >= 0.030 && ReadyTimeDif < 0.035)
+		inc = 120;
+	if(ReadyTimeDif >= 0.035 && ReadyTimeDif < 0.040)
+		inc = 140;
+	if(ReadyTimeDif >= 0.040 && ReadyTimeDif < 0.045)
+		inc = 160;
+	if(ReadyTimeDif >= 0.045 && ReadyTimeDif < 0.50)
+		inc = 180;
+
+	if(ReadyTimeDif >= 0.050 && ReadyTimeDif < 0.055)
+		inc = 200;
+	if(ReadyTimeDif >= 0.055 && ReadyTimeDif < 0.060)
+		inc = 220;
+	if(ReadyTimeDif >= 0.060 && ReadyTimeDif < 0.065)
+		inc = 240;
+	if(ReadyTimeDif >= 0.065 && ReadyTimeDif < 0.070)
+		inc = 260;
+	if(ReadyTimeDif >= 0.070 && ReadyTimeDif < 0.075)
+		inc = 280;
+	if(ReadyTimeDif >= 0.075 && ReadyTimeDif < 0.080)
+		inc = 300;
+	if(ReadyTimeDif >= 0.080 && ReadyTimeDif < 0.120)
+		inc = 320;
+	
+
+
+	if(ReadyTimeDif >= 0.120){
+		inc = 320;
+		readyPrompt = false;
+		readyPromptClk = true;
+		play1.control = true;
+		play2.control = true;
+	} 
+
+
+    	glPushMatrix();
+    	glTranslatef(promptBox1.pos[0] + inc, promptBox1.pos[1], 0);
+    	drawCharBox(promptBox1.width, promptBox1.height, 6);
+    	glPopMatrix();
+	
+}
+/*
+float ReadyTimeDif = float(clock() - startTime) / CLOCKS_PER_SEC; 
 >>>>>>> b9b88d271c6cb807387e2976888719e29066d90a
 	startClk = false;
 
