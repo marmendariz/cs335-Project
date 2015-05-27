@@ -10,7 +10,7 @@
     select_box
     character_select_render
 	menu_render
-	drawmenu_button
+	check_mouse
  */
 
 #include <cstdio>
@@ -18,13 +18,18 @@
 #include "ZenaidaG.h"
 #include "defs.h"
 
-extern int xres, yres;
 int z=1;
 int leftButtonDown = 0;
 Vec leftButtonPos;
 
+extern int xres, yres;
+extern int play_sounds;
+extern int selchar;
+extern int title;
 extern Player play1, play2;
-extern bool play_game, go_selchar, two_players, player1choose, player2choose;
+extern clock_t startTime;
+extern bool readyPrompt, readyPromptClk;
+extern bool play_game, go_selchar, two_players, player1choose, player2choose, selectedBack;
 extern "C" {
 	#include "fonts.h"
 }
@@ -39,15 +44,18 @@ typedef struct t_charBox
 
 charBox 
 charBox1, 
-charBox2, 
+charBox2,
+charBox3,
+charBox4, 
 backgroundBox1, 
 backgroundBox2,
 logoBox1, 
 charPrompt1box, 
-charPrompt2box, 
+charPrompt2box,
+charPrompt3box,  
 promptBox1, 
-promptBox2;
-//titleBox;
+promptBox2,
+titleBox;
 
 /********* Declare Textures **********/
 
@@ -58,6 +66,14 @@ GLuint guileTexture;
 Ppmimage *bguileImage=NULL;
 int bguile=1;
 GLuint bguileTexture;
+
+Ppmimage *jokerImage=NULL;
+int joker=1;
+GLuint jokerTexture;
+
+Ppmimage *redImage=NULL;
+int red=1;
+GLuint redTexture;
 
 Ppmimage *gLogoImage=NULL;
 int glogo=1;
@@ -79,6 +95,10 @@ Ppmimage *charPrompt2Image=NULL;
 int charPrompt2=1;
 GLuint charPrompt2Texture;
 
+Ppmimage *charPrompt3Image=NULL;
+int charPrompt3=1;
+GLuint charPrompt3Texture;
+
 Ppmimage *promptBox1Image=NULL;
 int prompt1=1;
 GLuint promptBox1Texture;
@@ -87,19 +107,13 @@ Ppmimage *promptBox2Image=NULL;
 int prompt2=1;
 GLuint promptBox2Texture;
 
-/*Ppmimage *titlePromptImage=NULL;
+Ppmimage *titleBoxImage=NULL;
 int titlePrompt=1;
-GLuint titlePromptTexture;
-*/
-extern Ppmimage *titleImage;
-extern int title;
-extern GLuint titleTexture;
-extern int play_sounds;
-extern int selchar;
-extern GLuint selectTexture;
+GLuint titleBoxTexture;
 
-extern clock_t startTime;
-extern bool readyPrompt, readyPromptClk;
+extern Ppmimage *titleImage;
+extern GLuint titleTexture;
+extern GLuint selectTexture;
 
 /********** Functions *********/
 
@@ -124,7 +138,6 @@ void init_character_boxes(void)
     glEnable(GL_TEXTURE_2D);
     initialize_fonts();
 
-    /*********** Initialize Textures **************/
     /*GUILE CHARACTER BOX TEXTURE*/
     char b[] = "./images/selectGuile.ppm"; 
     guileImage = ppm6GetImage(guileImage, b);
@@ -154,6 +167,35 @@ void init_character_boxes(void)
 			GL_RGBA, GL_UNSIGNED_BYTE, bguileData);
 	delete [] bguileData;
 	
+	  /*JOKER CHARACTER BOX TEXTURE*/
+    char n[] = "./images/selectJoker.ppm"; 
+    jokerImage = ppm6GetImage(jokerImage, n);
+    glGenTextures(1, &jokerTexture);
+    glBindTexture(GL_TEXTURE_2D, jokerTexture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    w = jokerImage->width;
+    h = jokerImage->height;
+    unsigned char *jokerData = buildAlphaData(jokerImage);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+            GL_RGBA, GL_UNSIGNED_BYTE, jokerData);
+    delete [] jokerData;
+
+    /* BIZARRO GUILE CHARACTER BOX TEXTURE */
+	
+	char o[] = "./images/selectRed.ppm";
+	redImage = ppm6GetImage(redImage, o);
+	glGenTextures(1, &redTexture);
+	glBindTexture(GL_TEXTURE_2D, redTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	w = redImage->width;
+	h = redImage->height;
+	unsigned char *redData = buildAlphaData(redImage);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, 
+			GL_RGBA, GL_UNSIGNED_BYTE, redData);
+	delete [] redData;
+	
 
 	/* BACKGROUND 1 SELECT (STREET) */
 	
@@ -169,6 +211,7 @@ void init_character_boxes(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, 
 			GL_RGBA, GL_UNSIGNED_BYTE, CharStreetData);
 	delete [] CharStreetData;
+	
 	
 	/* BACKGROUND 2 SELECT (FOREST) */
 
@@ -186,9 +229,8 @@ void init_character_boxes(void)
 	delete [] CharForestData;
 	
 
-	////////////////////////////////////////////////////////
-	
 	/* PROMPT TO SELECT PLAYER 1 */
+	
 	char f[] = "./images/charPrompt1.ppm";
 	charPrompt1Image = ppm6GetImage(charPrompt1Image, f);
 	glGenTextures(1, &charPrompt1Texture);
@@ -201,6 +243,8 @@ void init_character_boxes(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, 
 			GL_RGBA, GL_UNSIGNED_BYTE, charPrompt1Data);
 	delete [] charPrompt1Data;
+	
+	/* PROMPT TO SELECT PLAYER 2 */
 	
 	char g[] = "./images/charPrompt2.ppm";
 	charPrompt2Image = ppm6GetImage(charPrompt2Image, g);
@@ -215,8 +259,25 @@ void init_character_boxes(void)
 			GL_RGBA, GL_UNSIGNED_BYTE, charPrompt2Data);
 	delete [] charPrompt2Data;
 	
-	   /*********** Initialize Textures **************/
-	    /*READY PROMPT BOX TEXTURE*/
+	/* PROMPT TO SELECT BACKGROUND */
+	
+	char p[] = "./images/selectStage.ppm";
+	charPrompt3Image = ppm6GetImage(charPrompt3Image, p);
+	glGenTextures(1, &charPrompt3Texture);
+	glBindTexture(GL_TEXTURE_2D, charPrompt3Texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	w = charPrompt3Image->width;
+	h = charPrompt3Image->height;
+	unsigned char *charPrompt3Data = buildAlphaData(charPrompt3Image);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, 
+			GL_RGBA, GL_UNSIGNED_BYTE, charPrompt3Data);
+	delete [] charPrompt3Data;
+	
+	/***** ANIMATE READY FIGHT TEXTURES *********/  
+	
+	/*READY PROMPT BOX TEXTURE*/
+	
 	char j[] = "./images/ReadyPrompt.ppm"; 
 	promptBox1Image = ppm6GetImage(promptBox1Image, j);
 	glGenTextures(1, &promptBox1Texture);
@@ -249,20 +310,20 @@ void init_character_boxes(void)
 	/*****************************************************************/
 	//title prompt (button that says FIGHT! in title screen)
 
-	/*char m[] = "./images/titlePrompt.ppm"; 
-	titlePromptImage = ppm6GetImage(titlePromptImage, m);
-	glGenTextures(1, &titlePromptTexture);
-	glBindTexture(GL_TEXTURE_2D, titlePromptTexture);
+	char m[] = "./images/titlePrompt.ppm"; 
+	titleBoxImage = ppm6GetImage(titleBoxImage, m);
+	glGenTextures(1, &titleBoxTexture);
+	glBindTexture(GL_TEXTURE_2D, titleBoxTexture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	w = titlePromptImage->width;
-	h = titlePromptImage->height;
-	unsigned char *titlePromptData = buildAlphaData(titlePromptImage);
+	w = titleBoxImage->width;
+	h = titleBoxImage->height;
+	unsigned char *titleBoxData = buildAlphaData(titleBoxImage);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-		GL_RGBA, GL_UNSIGNED_BYTE, titlePromptData);
-	delete [] titlePromptData;
-
-	 	GUILE LOGO TEXTURE	
+		GL_RGBA, GL_UNSIGNED_BYTE, titleBoxData);
+	delete [] titleBoxData;
+	
+	/* 	GUILE LOGO TEXTURE	
 
 	char d[] = "./images/guileLogo.ppm";
 	glogoImage = ppm6GetImage(glogoImage, d);
@@ -274,27 +335,35 @@ void init_character_boxes(void)
 
 	/********** Initialize Box Position (s) **********/
 	
-    charBox1.pos[0] = 200;
-    charBox1.pos[1] = 450;
+    charBox1.pos[0] = 150;
+    charBox1.pos[1] = 480;
     charBox1.width = 100;
     charBox1.height = 150;
 	
-	charBox2.pos[0] = 500;
-	charBox2.pos[1] = 450;
+	charBox2.pos[0] = 450;
+	charBox2.pos[1] = 480;
 	charBox2.width = 100;
 	charBox2.height = 150;
 
+	charBox3.pos[0] = 1050;
+    charBox3.pos[1] = 480;
+    charBox3.width = 100;
+    charBox3.height = 150;
+	
+	charBox4.pos[0] = 750;
+	charBox4.pos[1] = 480;
+	charBox4.width = 100;
+	charBox4.height = 150;
 
-	backgroundBox1.pos[0] = 900;
-	backgroundBox1.pos[1] = 450;
-	backgroundBox1.width = 200;
-	backgroundBox1.height = 100; 
+	backgroundBox1.pos[0] = 350;
+	backgroundBox1.pos[1] = 480;
+	backgroundBox1.width = 250;
+	backgroundBox1.height = 120; 
 
-	backgroundBox2.pos[0] = 900;
-	backgroundBox2.pos[1] = 250;
-	backgroundBox2.width = 200;
-	backgroundBox2.height = 100; 
-
+	backgroundBox2.pos[0] = 950;
+	backgroundBox2.pos[1] = 480;
+	backgroundBox2.width = 250;
+	backgroundBox2.height = 120; 
 
 	charPrompt1box.pos[0] = (xres/2);
 	charPrompt1box.pos[1] = 180;
@@ -306,6 +375,12 @@ void init_character_boxes(void)
 	charPrompt2box.width = 300;
 	charPrompt2box.height = 80;
 
+	charPrompt3box.pos[0] = (xres/2);
+	charPrompt3box.pos[1] = 180;
+	charPrompt3box.width = 300;
+	charPrompt3box.height = 80;
+
+
 	promptBox1.pos[0] = 0;
 	promptBox1.pos[1] = yres/2;
 	promptBox1.width = 200;
@@ -316,16 +391,16 @@ void init_character_boxes(void)
 	promptBox2.width = 300;
 	promptBox2.height = 150;
 
-	/*titleBox.pos[0] = 1050;
+	titleBox.pos[0] = 1050;
 	titleBox.pos[1] = 460;
 	titleBox.width = 150;
-	titleBox.height = 80;*/
+	titleBox.height = 80;
 
 }
 
 void selectBox(Vec leftButtonPos)
 	{
-    if (play_game == false) { // if in title screen
+    if (play_game == false) { 
         if (go_selchar==false && two_players==false){
 
             if ((leftButtonPos[0] > (1050 - 75) && leftButtonPos[0] < 1050 + 75) && 
@@ -368,6 +443,33 @@ void drawCharBox(Flt width, Flt height, int x)
         glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);
     }
     glEnd();
+ 
+	// Draw joker Character Box //
+	if (x == 10) 
+        glBindTexture(GL_TEXTURE_2D, jokerTexture);
+    		
+	glBegin(GL_QUADS);
+ 	if (x == 10) {
+        glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
+        glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
+        glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
+        glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);
+    }
+    glEnd();
+ 
+ 	// Draw Bizarro Guile Character Box
+ 	if (x ==11) 
+        glBindTexture(GL_TEXTURE_2D, redTexture);
+
+    glBegin(GL_QUADS);
+    if (x == 11) {
+        glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
+        glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
+        glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
+        glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);
+    }
+    glEnd();
+
 
 
 	 //Draw Select Background 1 (street)
@@ -423,7 +525,24 @@ void drawCharBox(Flt width, Flt height, int x)
     }
     glEnd();
 
+	// Draw Select BACKGROUND Prompt
+ 	if (x == 13) 
+        glBindTexture(GL_TEXTURE_2D, charPrompt3Texture);
+	
+    glBegin(GL_QUADS);
+    if (x == 13) {
+        glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
+        glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
+        glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
+        glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);
+    }
+    glEnd();
 
+
+/*****************************************************/
+		// REQUIRE ALPHA
+
+	// DRAW READY..... 
     if (x == 6) { 
 	    glBindTexture(GL_TEXTURE_2D, promptBox1Texture);
 	
@@ -438,6 +557,7 @@ void drawCharBox(Flt width, Flt height, int x)
 	    glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
 	    glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);
     }
+	// DRAW FIGHT! 
 
   if (x == 7) { 
 	    glBindTexture(GL_TEXTURE_2D, promptBox2Texture);
@@ -453,11 +573,11 @@ void drawCharBox(Flt width, Flt height, int x)
 	    glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
 	    glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);
     }
-    glEnd();
+	// DRAW TITLE SCREEN FIGHT BOX
 
- /*if (x == 9) { 
-	    glBindTexture(GL_TEXTURE_2D, titlePromptTexture);
-	
+ 	if (x == 9) { 
+	    glBindTexture(GL_TEXTURE_2D, titleBoxTexture);
+	if (x == 9) {	
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER,0.1f);
 	glColor4ub(255,255,255,255);
@@ -468,9 +588,10 @@ void drawCharBox(Flt width, Flt height, int x)
 	    glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
 	    glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
 	    glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);
+	}
     }
-    glEnd();*/
-
+    glEnd();
+	glDisable(GL_ALPHA_TEST);
     glDisable(GL_TEXTURE_2D);
 }
 
@@ -496,6 +617,8 @@ void character_select_render(void)
 
     glDisable(GL_TEXTURE_2D);
 
+	if (player2choose == false) {
+
     //draw Guile character box
     glColor3f(1.0,1.0,1.0);
     glPushMatrix();
@@ -510,7 +633,24 @@ void character_select_render(void)
     drawCharBox(charBox2.width, charBox2.height, 2);
     glPopMatrix();
 
+	//draw Joker character box
+    glColor3f(1.0,1.0,1.0);
+    glPushMatrix();
+    glTranslatef(charBox3.pos[0], charBox3.pos[1], 0);
+    drawCharBox(charBox3.width, charBox3.height, 10);
+    glPopMatrix();
 
+	//draw RED character box
+	glColor3f(1.0,1.0,1.0);
+    glPushMatrix();
+    glTranslatef(charBox4.pos[0], charBox4.pos[1], 0);
+    drawCharBox(charBox4.width, charBox4.height, 11);
+    glPopMatrix();
+
+	}
+
+	if (player2choose == true) {
+	
 	//draw street background box
 	glColor3f(1.0,1.0,1.0);
     glPushMatrix();
@@ -524,8 +664,18 @@ void character_select_render(void)
     glTranslatef(backgroundBox2.pos[0], backgroundBox2.pos[1], 0);
     drawCharBox(backgroundBox2.width, backgroundBox2.height, 8);
     glPopMatrix();
-
+	
+	//if (player1choose == true && player2choose == true && selectedBack == false) {
+		glColor3f(1.0,1.0,1.0);
+		glPushMatrix();
+		glTranslatef(charPrompt3box.pos[0], charPrompt3box.pos[1], 0);
+		drawCharBox(charPrompt3box.width, charPrompt3box.height, 13);
+		glPopMatrix();	
+	
+	}
+	
 	//draw prompts
+	
 	if ( two_players == false && selchar == true && player1choose == false && player2choose == false) {
 		glColor3f(1.0,1.0,1.0);
 		glPushMatrix();
@@ -538,38 +688,46 @@ void character_select_render(void)
 		glTranslatef(charPrompt2box.pos[0], charPrompt2box.pos[1], 0);
 		drawCharBox(charPrompt2box.width, charPrompt2box.height, 5);
 		glPopMatrix();
-	}
-
-}
+	}}
 
 void menu_render(void)  
 { 
-		int w = 1050; 
-		int y = 460; 
-		/***************************************/ 
-		/*Draw title screen background*/ 
-		glColor3f(1.0, 1.0, 1.0); 
-		if (title) { 
-				glBindTexture(GL_TEXTURE_2D, titleTexture); 
-				glBegin(GL_QUADS); 
-				glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0); 
-				glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres); 
-				glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres); 
-				glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0); 
-				//ndTexture(GL_TEXTURE_2D, promptBox2Texture);
-		}
+	int x = 1050; 
+	int y = 460; 
+    glClearColor(1.0,1.0,1.0,1.0);
+    glClear(GL_COLOR_BUFFER_BIT);
 
+    //Draw MENU Background
+    glEnable(GL_TEXTURE_2D);
 
-		/*Draw the play button*/ 
-		glColor3f(1.0,1.0,1.0); 
-		/*****/ 
-		glPushMatrix(); 
-		glTranslatef(w,y,0); 
-		//drawCharBox(titleBox.width, titleBox.height, 9);
-		drawmenu_button(150,80); 
-		glPopMatrix(); 
-		/******************************************************/ 
-} 
+    glColor3f(1.0, 1.0, 1.0);
+    if (title) {
+        glBindTexture(GL_TEXTURE_2D, titleTexture);
+        glBegin(GL_QUADS);
+        glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+        glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres);
+        glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
+        glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
+        glEnd();
+    	glDisable(GL_TEXTURE_2D);
+
+			//Draw the play button 
+			glColor3f(1.0,1.0,1.0); 
+			 
+			glPushMatrix(); 
+			glTranslatef(x,y,0); 
+			//drawCharBox(titleBox.width, titleBox.height, 9);
+			drawmenu_button(160,90); 
+			glPopMatrix(); 
+	
+    	//draw TITLE FIGHT box
+    	glColor3f(1.0,1.0,1.0);
+    	glPushMatrix();
+    	glTranslatef(titleBox.pos[0], titleBox.pos[1], 0);
+    	drawCharBox(titleBox.width, titleBox.height, 9);
+    	glPopMatrix();
+	}
+}
 
 void drawmenu_button(Flt width, Flt height)
 {
@@ -577,10 +735,10 @@ void drawmenu_button(Flt width, Flt height)
  	
 	//DRAW FIGHT BUTTON/
 	
-/*	glBindTexture(GL_TEXTURE_2D, titlePromptTexture); 
+	/*	glBindTexture(GL_TEXTURE_2D, titlePromptTexture); 
 	glEnable(GL_ALPHA_TEST);
 	glAlphaFunc(GL_GREATER,0.1f);
-	glColor4ub(255,255,255,255);
+	glColor4ub(255,255,255,255);*/
 	
 	glBegin(GL_QUADS);
     
@@ -589,28 +747,28 @@ void drawmenu_button(Flt width, Flt height)
 	    	glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
 	    	glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);
 	glEnd(); 
-*/		
+		
 
      glBegin(GL_QUADS);
-     glColor3f(0.0,0.5,0.0);
+     glColor3f(0.0,0.0,0.0);
      glVertex2i(-w, -h);
      glColor3f(0.0,0.0,1.0);
      glVertex2i(-w, h);
-     glColor3f(0.0,0.5,0.0);
+     glColor3f(0.0,0.0,0.0);
      glVertex2i(w, h);
      glColor3f(0.0,0.0,1.0);
      glVertex2i(w, -h);
      glEnd();
-
-
-	/*glEnable(GL_TEXTURE_2D);
+}
+/*
+	glEnable(GL_TEXTURE_2D);
 	 Rect r;
 	 r.center = 1;
 	 r.bot = 460;
 	 r.left = 1050;
 	 ggprint16(&r, 16, 0x2EFEC8, "CLICK TO PLAY!");*/
 
-}
+//}
 
 
 void animate_ReadySetGo()

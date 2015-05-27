@@ -508,41 +508,6 @@ void check_resize(XEvent *e)
     }
 }
 
-/*void check_mouse(XEvent *e)
-  {
-//Did the mouse move?
-//Was a mouse button clicked?
-static int savex = 0;
-static int savey = 0;
-//
-if (e->type == ButtonRelease) {
-leftButtonDown=0;
-return;
-}
-if (e->type == ButtonPress) {
-if (e->xbutton.button==1) {
-//Left button is down
-leftButtonDown = 1;
-leftButtonPos[0] = (Flt)e->xbutton.x;
-leftButtonPos[1] = (Flt)(yres - e->xbutton.y);
-selectBox(leftButtonPos);
-}
-if (e->xbutton.button==3) {
-//Right button is down
-}
-}
-if (savex != e->xbutton.x || savey != e->xbutton.y) {
-//Mouse moved
-savex = e->xbutton.x;
-savey = e->xbutton.y;
-if (leftButtonDown) {
-leftButtonPos[0] = (Flt)e->xbutton.x;
-leftButtonPos[1] = (Flt)(yres - e->xbutton.y);
-}
-}
-}
-
- */
 void restart_game(void){
     init_healthBars();
     init_players();
@@ -675,15 +640,7 @@ int check_keys(XEvent *e)
             }
             break;
         case XK_0:
-            if(go_selchar==true && selectedBack==false && two_players==true ){
-                streetback=false;
-                forestback=true;
-                selectedBack=true;
-
-            }
-            break;
-        case XK_9:
-            if(go_selchar==true && selectedBack==false && two_players==true){
+		  if(go_selchar==true && selectedBack==false && two_players==true){
 
                 streetback=true;
                 forestback=false;
@@ -691,8 +648,15 @@ int check_keys(XEvent *e)
 
             }
             break;
-    }
-
+        
+		case XK_9:
+			if(go_selchar==true && selectedBack==false && two_players==true ){
+                streetback=false;
+                forestback=true;
+                selectedBack=true;
+       		}
+		     break;
+}
     return 0;
 }
 
