@@ -717,7 +717,7 @@ void physics(void)
             }
         }
 
-        if(!play1.punch){
+        if(!play1.punch && !play1.walk){
             if(keys[XK_g] == 1){
 
                 if(play1.blockClk)
@@ -764,7 +764,7 @@ void physics(void)
                 play2.punch = true;
         }
 
-        if(!play2.punch){
+        if(!play2.punch && !play2.walk){
 
             if(keys[XK_k] == 1){
 
