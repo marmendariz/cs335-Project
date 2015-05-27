@@ -20,8 +20,10 @@
 
 extern int xres, yres;
 int z=1;
-extern Player play1, play2;
+int leftButtonDown = 0;
+Vec leftButtonPos;
 
+extern Player play1, play2;
 extern bool play_game, go_selchar, two_players, player1choose, player2choose;
 extern "C" {
 	#include "fonts.h"
@@ -35,8 +37,17 @@ typedef struct t_charBox
     Vec pos;
 } charBox;
 
-
-charBox charBox1, charBox2, backgroundBox1, logoBox1, charPrompt1box, charPrompt2box, promptBox1;
+charBox 
+charBox1, 
+charBox2, 
+backgroundBox1, 
+backgroundBox2,
+logoBox1, 
+charPrompt1box, 
+charPrompt2box, 
+promptBox1, 
+promptBox2;
+//titleBox;
 
 /********* Declare Textures **********/
 
@@ -52,10 +63,13 @@ Ppmimage *gLogoImage=NULL;
 int glogo=1;
 GLuint glogoTexture;
 
+Ppmimage *CharStreetImage=NULL;
+int CharStreet=1;
+GLuint CharStreetTexture;
 
-//Ppmimage *streetImage=NULL;
-//int street=1;
-//GLuint streetTexture;
+Ppmimage *CharForestImage=NULL;
+int CharForest=1;
+GLuint CharForestTexture;
 
 Ppmimage *charPrompt1Image=NULL;
 int charPrompt1=1;
@@ -73,7 +87,10 @@ Ppmimage *promptBox2Image=NULL;
 int prompt2=1;
 GLuint promptBox2Texture;
 
-
+/*Ppmimage *titlePromptImage=NULL;
+int titlePrompt=1;
+GLuint titlePromptTexture;
+*/
 extern Ppmimage *titleImage;
 extern int title;
 extern GLuint titleTexture;
@@ -140,18 +157,36 @@ void init_character_boxes(void)
 
 	/* BACKGROUND 1 SELECT (STREET) */
 	
-	/*char d[] = "./images/street.ppm";
-	streetImage = ppm6GetImage(streetImage, d);
-	glGenTextures(1, &streetTexture);
-	glBindTexture(GL_TEXTURE_2D, streetTexture);
+	char d[] = "./images/charStreet.ppm";
+	CharStreetImage = ppm6GetImage(CharStreetImage, d);
+	glGenTextures(1, &CharStreetTexture);
+	glBindTexture(GL_TEXTURE_2D, CharStreetTexture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	w = streetImage->width;
-	h = streetImage->height;
-	unsigned char *streetData = buildAlphaData(streetImage);
+	w = CharStreetImage->width;
+	h = CharStreetImage->height;
+	unsigned char *CharStreetData = buildAlphaData(CharStreetImage);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, 
-			GL_RGBA, GL_UNSIGNED_BYTE, streetData);
-	delete [] streetData;*/
+			GL_RGBA, GL_UNSIGNED_BYTE, CharStreetData);
+	delete [] CharStreetData;
+	
+	/* BACKGROUND 2 SELECT (FOREST) */
+
+	char l[] = "./images/charForest.ppm";
+	CharForestImage = ppm6GetImage(CharForestImage, l);
+	glGenTextures(1, &CharForestTexture);
+	glBindTexture(GL_TEXTURE_2D, CharForestTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	w = CharForestImage->width;
+	h = CharForestImage->height;
+	unsigned char *CharForestData = buildAlphaData(CharForestImage);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, 
+			GL_RGBA, GL_UNSIGNED_BYTE, CharForestData);
+	delete [] CharForestData;
+	
+
+	////////////////////////////////////////////////////////
 	
 	/* PROMPT TO SELECT PLAYER 1 */
 	char f[] = "./images/charPrompt1.ppm";
@@ -210,9 +245,24 @@ void init_character_boxes(void)
 		GL_RGBA, GL_UNSIGNED_BYTE, promptBox2Data);
 	delete [] promptBox2Data;
 
+	
+	/*****************************************************************/
+	//title prompt (button that says FIGHT! in title screen)
 
+	/*char m[] = "./images/titlePrompt.ppm"; 
+	titlePromptImage = ppm6GetImage(titlePromptImage, m);
+	glGenTextures(1, &titlePromptTexture);
+	glBindTexture(GL_TEXTURE_2D, titlePromptTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	w = titlePromptImage->width;
+	h = titlePromptImage->height;
+	unsigned char *titlePromptData = buildAlphaData(titlePromptImage);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, titlePromptData);
+	delete [] titlePromptData;
 
-	/* 	GUILE LOGO TEXTURE	
+	 	GUILE LOGO TEXTURE	
 
 	char d[] = "./images/guileLogo.ppm";
 	glogoImage = ppm6GetImage(glogoImage, d);
@@ -240,6 +290,12 @@ void init_character_boxes(void)
 	backgroundBox1.width = 200;
 	backgroundBox1.height = 100; 
 
+	backgroundBox2.pos[0] = 900;
+	backgroundBox2.pos[1] = 250;
+	backgroundBox2.width = 200;
+	backgroundBox2.height = 100; 
+
+
 	charPrompt1box.pos[0] = (xres/2);
 	charPrompt1box.pos[1] = 180;
 	charPrompt1box.width = 300;
@@ -255,10 +311,20 @@ void init_character_boxes(void)
 	promptBox1.width = 200;
 	promptBox1.height = 90;
 
+	promptBox2.pos[0] = 0;
+	promptBox2.pos[1] = yres/2;
+	promptBox2.width = 300;
+	promptBox2.height = 150;
+
+	/*titleBox.pos[0] = 1050;
+	titleBox.pos[1] = 460;
+	titleBox.width = 150;
+	titleBox.height = 80;*/
+
 }
 
 void selectBox(Vec leftButtonPos)
-{
+	{
     if (play_game == false) { // if in title screen
         if (go_selchar==false && two_players==false){
 
@@ -306,10 +372,24 @@ void drawCharBox(Flt width, Flt height, int x)
 
 	 //Draw Select Background 1 (street)
  	if (x == 3) 
-        glBindTexture(GL_TEXTURE_2D, bguileTexture);
+        glBindTexture(GL_TEXTURE_2D, CharStreetTexture);
 
     glBegin(GL_QUADS);
     if (x == 3) {
+        glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
+        glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
+        glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
+        glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);
+    }
+    glEnd();
+	
+
+	 //Draw Select Background 2 (street)
+ 	if (x == 8) 
+        glBindTexture(GL_TEXTURE_2D, CharForestTexture);
+
+    glBegin(GL_QUADS);
+    if (x == 8) {
         glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
         glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
         glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
@@ -358,7 +438,38 @@ void drawCharBox(Flt width, Flt height, int x)
 	    glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
 	    glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);
     }
+
+  if (x == 7) { 
+	    glBindTexture(GL_TEXTURE_2D, promptBox2Texture);
+	
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER,0.1f);
+	glColor4ub(255,255,255,255);
+
+	glBegin(GL_QUADS);
+    
+	    glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
+	    glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
+	    glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
+	    glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);
+    }
     glEnd();
+
+ /*if (x == 9) { 
+	    glBindTexture(GL_TEXTURE_2D, titlePromptTexture);
+	
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER,0.1f);
+	glColor4ub(255,255,255,255);
+
+	glBegin(GL_QUADS);
+    
+	    glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
+	    glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
+	    glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
+	    glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);
+    }
+    glEnd();*/
 
     glDisable(GL_TEXTURE_2D);
 }
@@ -407,6 +518,13 @@ void character_select_render(void)
     drawCharBox(backgroundBox1.width, backgroundBox1.height, 3);
     glPopMatrix();
 
+	//draw street background box
+	glColor3f(1.0,1.0,1.0);
+    glPushMatrix();
+    glTranslatef(backgroundBox2.pos[0], backgroundBox2.pos[1], 0);
+    drawCharBox(backgroundBox2.width, backgroundBox2.height, 8);
+    glPopMatrix();
+
 	//draw prompts
 	if ( two_players == false && selchar == true && player1choose == false && player2choose == false) {
 		glColor3f(1.0,1.0,1.0);
@@ -438,13 +556,16 @@ void menu_render(void)
 				glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres); 
 				glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres); 
 				glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0); 
-				glEnd(); 
-		} 
+				//ndTexture(GL_TEXTURE_2D, promptBox2Texture);
+		}
+
+
 		/*Draw the play button*/ 
 		glColor3f(1.0,1.0,1.0); 
 		/*****/ 
 		glPushMatrix(); 
-		glTranslatef(w,y,1); 
+		glTranslatef(w,y,0); 
+		//drawCharBox(titleBox.width, titleBox.height, 9);
 		drawmenu_button(150,80); 
 		glPopMatrix(); 
 		/******************************************************/ 
@@ -453,7 +574,23 @@ void menu_render(void)
 void drawmenu_button(Flt width, Flt height)
 {
      int w = width, h = height;
- 
+ 	
+	//DRAW FIGHT BUTTON/
+	
+/*	glBindTexture(GL_TEXTURE_2D, titlePromptTexture); 
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER,0.1f);
+	glColor4ub(255,255,255,255);
+	
+	glBegin(GL_QUADS);
+    
+	   	glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
+	    	glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
+	    	glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
+	    	glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);
+	glEnd(); 
+*/		
+
      glBegin(GL_QUADS);
      glColor3f(0.0,0.5,0.0);
      glVertex2i(-w, -h);
@@ -475,36 +612,34 @@ void drawmenu_button(Flt width, Flt height)
 
 }
 
-/**************** UNDER DEVELOPMENT **********************/
 
 void animate_ReadySetGo()
 {
 	
+	
 	float ReadyTimeDif = float(clock() - startTime) / CLOCKS_PER_SEC; 
 	printf("%f\n", ReadyTimeDif);	
-	//int w = width;
-	//int h = height;
 	int inc = 0;
 
-    	
+	/************** READY ***************/
+
 	if(ReadyTimeDif >= 0.005 && ReadyTimeDif < 0.010)
 		inc = 20;
 	if(ReadyTimeDif >= 0.010 && ReadyTimeDif < 0.015)
 		inc = 40;
 	if(ReadyTimeDif >= 0.015 && ReadyTimeDif < 0.020)
 		inc = 60;
-	
 	if(ReadyTimeDif >= 0.020 && ReadyTimeDif < 0.025)
 		inc = 80;
 	if(ReadyTimeDif >= 0.025 && ReadyTimeDif < 0.030)
-		inc= 100;
+		inc = 100;
 	if(ReadyTimeDif >= 0.030 && ReadyTimeDif < 0.035)
 		inc = 120;
 	if(ReadyTimeDif >= 0.035 && ReadyTimeDif < 0.040)
 		inc = 140;
 	if(ReadyTimeDif >= 0.040 && ReadyTimeDif < 0.045)
 		inc = 160;
- 	if(ReadyTimeDif >= 0.045 && ReadyTimeDif < 0.50)
+	if(ReadyTimeDif >= 0.045 && ReadyTimeDif < 0.050)
 		inc = 180;
 	if(ReadyTimeDif >= 0.050 && ReadyTimeDif < 0.055)
 		inc = 200;
@@ -518,54 +653,103 @@ void animate_ReadySetGo()
 		inc = 280;
 	if(ReadyTimeDif >= 0.075 && ReadyTimeDif < 0.080)
 		inc = 300;
-	if(ReadyTimeDif >= 0.080 && ReadyTimeDif < 0.120){
-		if(z==1){
-		play_sounds=0;
-		soundeffects(16);
-		z++;
-		}
+	if(ReadyTimeDif >= 0.080 && ReadyTimeDif < 0.085)
 		inc = 320;
+	if(ReadyTimeDif >= 0.085 && ReadyTimeDif < 0.090)
+		inc = 340;
+	if(ReadyTimeDif >= 0.090 && ReadyTimeDif < 0.095)
+		inc = 360;
+	if(ReadyTimeDif >= 0.095 && ReadyTimeDif < 0.100)
+		inc = 380;
+	if(ReadyTimeDif >= 0.100 && ReadyTimeDif < 0.105)
+		inc = 400;
+	if(ReadyTimeDif >= 0.105 && ReadyTimeDif < 0.110)
+		inc = 420;
+	if(ReadyTimeDif >= 0.110 && ReadyTimeDif < 0.115)
+		inc = 440;
+	if(ReadyTimeDif >= 0.115 && ReadyTimeDif < 0.120)
+		inc = 460;
+	if(ReadyTimeDif >= 0.120 && ReadyTimeDif < 0.125)
+		inc = 480;
+	if(ReadyTimeDif >= 0.125 && ReadyTimeDif < 0.130)
+		inc = 500;
+	if(ReadyTimeDif >= 0.130 && ReadyTimeDif < 0.135)
+		inc = 520;
+	if(ReadyTimeDif >= 0.135 && ReadyTimeDif < 0.140)
+		inc = 540;
+	if(ReadyTimeDif >= 0.140 && ReadyTimeDif < 0.145)
+		inc = 560;
+	if(ReadyTimeDif >= 0.145 && ReadyTimeDif < 0.150)
+		inc = 580;
+	if(ReadyTimeDif >= 0.150 && ReadyTimeDif < 0.155)
+		inc = 600;
+	if(ReadyTimeDif >= 0.155 && ReadyTimeDif < 0.160)
+		inc = 620;
+
+	/************** READY HOVER *********************/
+
+	if(ReadyTimeDif >= 0.160 && ReadyTimeDif < 0.260)
+		inc = 640;
+
+	if(ReadyTimeDif < 0.260){
+    	glPushMatrix();
+    	glTranslatef(promptBox1.pos[0] + inc, promptBox1.pos[1], 0);
+    	drawCharBox(promptBox1.width, promptBox1.height, 6);
+    	glPopMatrix();
+	}
+	
+	/***************** FIGHT *************/
+
+	if (ReadyTimeDif >= 0.260 && ReadyTimeDif < 0.320) {
+		inc = (xres/2);
+		glPushMatrix();
+	 	glTranslatef(promptBox2.pos[0] + inc, promptBox2.pos[1], 0);
+	    	drawCharBox(promptBox2.width, promptBox2.height, 7);
+	    	glPopMatrix();
 	}
 
-
-	if(ReadyTimeDif >= 0.120){
-		inc = 320;
+	if(ReadyTimeDif >= 0.320){
+		inc = 640;
 		readyPrompt = false;
 		readyPromptClk = true;
 		play1.control = true;
 		play2.control = true;
 	} 
 
-
-    	glPushMatrix();
-    	glTranslatef(promptBox1.pos[0] + inc, promptBox1.pos[1], 0);
-    	drawCharBox(promptBox1.width, promptBox1.height, 6);
-    	glPopMatrix();
-	
 }
-/*
-float ReadyTimeDif = float(clock() - startTime) / CLOCKS_PER_SEC; 
->>>>>>> b9b88d271c6cb807387e2976888719e29066d90a
-	startClk = false;
 
-	int w = width;
-	int h = height;
-	float x_val = 0.0f;
-	float y_top = 0.0f;
-	float y_bot = 1.0f/3.0f;
-	float inc = 0.1f;
-
-	if (timeDif < 2) {
-		play1.control = false;
-		play2.control = false;
+void check_mouse(XEvent *e)
+{
+	//Did the mouse move?
+	//Was a mouse button clicked?
+	static int savex = 0;
+	static int savey = 0;
+	//
+	if (e->type == ButtonRelease) {
+		leftButtonDown=0;
+		return;
 	}
-	if(timeDif < 1) 
-		x_val = 0.1f;
-	else if (timeDif >= 1 && timeDif < 2)
-		x_val = 0.2f;
-	else if (timeDif > 2) {
-		play1.control = true;
-		play2.control = true;
+	if (e->type == ButtonPress) {
+		if (e->xbutton.button==1) {
+			//Left button is down
+			leftButtonDown = 1;
+			leftButtonPos[0] = (Flt)e->xbutton.x;
+			leftButtonPos[1] = (Flt)(yres - e->xbutton.y);
+			selectBox(leftButtonPos);
+		}
+		if (e->xbutton.button==3) {
+			//Right button is down
+		}
 	}
+	if (savex != e->xbutton.x || savey != e->xbutton.y) {
+		//Mouse moved
+		savex = e->xbutton.x;
+		savey = e->xbutton.y;
+		if (leftButtonDown) {
+			leftButtonPos[0] = (Flt)e->xbutton.x;
+			leftButtonPos[1] = (Flt)(yres - e->xbutton.y);
+		}
+	}
+}
 
-*/	
+

@@ -66,9 +66,9 @@ void restart_game(void);
 
 
 int xres=1280, yres=680;
-int leftButtonDown=0;
+//int leftButtonDown=0;
 int punchDamage = 5;
-Vec leftButtonPos;
+//Vec leftButtonPos;
 
 bool two_players = false;
 bool play_game = false;
@@ -173,8 +173,8 @@ int main(void)
 
 	init_opengl();
 
-	init_menu();
 	init_character_boxes();
+	init_menu();
 	init_character_select();
 	init_players();
 	init_music();
@@ -508,7 +508,7 @@ void check_resize(XEvent *e)
 	}
 }
 
-void check_mouse(XEvent *e)
+/*void check_mouse(XEvent *e)
 {
 	//Did the mouse move?
 	//Was a mouse button clicked?
@@ -528,11 +528,11 @@ void check_mouse(XEvent *e)
 			selectBox(leftButtonPos);
 		}
 		if (e->xbutton.button==3) {
-			/*Right button is down*/
+			//Right button is down
 		}
 	}
 	if (savex != e->xbutton.x || savey != e->xbutton.y) {
-		/*Mouse moved*/
+		//Mouse moved
 		savex = e->xbutton.x;
 		savey = e->xbutton.y;
 		if (leftButtonDown) {
@@ -542,7 +542,7 @@ void check_mouse(XEvent *e)
 	}
 }
 
-
+*/
 void restart_game(void){
 	init_healthBars();
 	init_players();
