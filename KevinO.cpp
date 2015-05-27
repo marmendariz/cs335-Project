@@ -340,4 +340,49 @@ void animatePlayerTwoWalk(Flt width, Flt height){
 
 }
 
+void animatePlayerTwoBlock(Flt width, Flt height){
 
+    play2.blockTimeDif = float(clock() - play2.beginBlock)/CLOCKS_PER_SEC;
+    play2.blockClk = false;
+    play2.draw = false;
+
+    int w, h;
+    float x_val = 0.0f;
+    float y_top = 1.0f/3.0;
+    float y_bot = 2.0f/3.0f;
+    float inc = 0.1f;
+    w = width;
+    h = height;
+
+    //printf("%f\n", play1.walkTimeDif);
+
+    if(play2.blockTimeDif < 0.005){
+        x_val = 0.8f;
+	}
+    else if(play2.blockTimeDif >= 0.005)
+        x_val = 0.7f;
+
+    glPushMatrix();
+    glTranslatef(play2.pos[0], play2.pos[1], play2.pos[2]);
+
+    glEnable(GL_TEXTURE_2D);
+    if(player2guile==true && player2bguile==false){
+    glBindTexture(GL_TEXTURE_2D, play2guiletext);}
+    else if(player2bguile==true && player2guile==false){
+    glBindTexture(GL_TEXTURE_2D, play2bguiletext);}
+ 
+    //glBindTexture(GL_TEXTURE_2D, play1Texture);
+
+    glEnable(GL_ALPHA_TEST);
+    glAlphaFunc(GL_GREATER,0.1f);
+    glColor4ub(255,255,255,255);
+
+    glBegin(GL_QUADS);
+    glTexCoord2f(x_val, y_bot); glVertex2i(-w, -h);
+    glTexCoord2f(x_val, y_top); glVertex2i(-w, h);
+    glTexCoord2f(x_val + inc, y_top); glVertex2i(w, h);
+    glTexCoord2f(x_val + inc, y_bot); glVertex2i(w, -h);
+    glEnd();
+    glPopMatrix();
+
+}

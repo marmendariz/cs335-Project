@@ -17,4 +17,5 @@ void animatePlayerTwo(Flt, Flt);
 void animatePlayerOneWalk(Flt, Flt);
 void animatePlayerTwoWalk(Flt, Flt);
 void animatePlayerOneBlock(Flt, Flt);
+void animatePlayerTwoBlock(Flt, Flt);
 
