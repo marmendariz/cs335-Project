@@ -68,7 +68,7 @@ void init_sound()
         char player1wins[]="./sounds/play1wins.mp3";
 	char player2wins[]="./sounds/play2wins.mp3";
 	char selectchar[]="./sounds/selectcharacter.mp3";
-
+        char ready[]="./sounds/ready.mp3";
 #ifdef USE_SOUND
         if(fmod_init()){
                 printf("ERROR-fmod_init()\n\n");
@@ -123,6 +123,11 @@ void init_sound()
                 printf("ERROR-fmod_createsound()\n\n");
                 return;
 	}
+	if(fmod_createsound(ready,16)){
+                printf("ERROR-fmod_createsound()\n\n");
+                return;
+	}
+
 
 
 
@@ -137,6 +142,7 @@ void init_sound()
 
         fmod_setmode(10,FMOD_LOOP_OFF);
         fmod_setmode(11,FMOD_LOOP_OFF);
+        fmod_setmode(16,FMOD_LOOP_OFF);
 
 #endif
 

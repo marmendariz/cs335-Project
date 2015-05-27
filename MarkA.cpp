@@ -14,6 +14,7 @@ extern Ppmimage *play2guile,
        *play1bguile,
        *metalImage,
        *metal2Image,
+       *streetImage,
        *forestImage;
 extern GLuint play1guiletext,
        play2guiletext,
@@ -21,6 +22,7 @@ extern GLuint play1guiletext,
        play2bguiletext,
        metalTexture,
        metal2Texture,
+       streetTexture,
        forestTexture;
 extern Flt metal2Pos[4],
        metal2Dim[4];  
@@ -163,6 +165,19 @@ void init_opengl(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, 3,
 			forestImage->width, forestImage->height,
 			0, GL_RGB, GL_UNSIGNED_BYTE, forestImage->data);
+ 
+	char u[] = "./images/street.ppm";
+        streetImage = ppm6GetImage(streetImage, u);
+	glGenTextures(1, &streetTexture);
+	glBindTexture(GL_TEXTURE_2D, streetTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	w = streetImage->width;
+	h = streetImage->height;
+	unsigned char *streetData = buildAlphaData(streetImage);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, 
+			GL_RGBA, GL_UNSIGNED_BYTE, streetData);
+	delete [] streetData;
 	/****************END INITIALIZE TEXTURES*********************/
 }
 

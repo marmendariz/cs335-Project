@@ -76,7 +76,9 @@ bool go_selchar=false;
 bool sound_p = false;
 
 bool visted =false;
-
+bool selectedBack=false;
+bool streetback=false;
+bool forestback=false;
 #ifdef USE_SOUND
 int play_sounds = 0;
 #endif
@@ -108,6 +110,10 @@ Flt metal2Dim[4];
 Ppmimage *forestImage=NULL;
 GLuint forestTexture;
 int forest =1;
+int street=1;
+
+Ppmimage *streetImage=NULL;
+GLuint streetTexture;
 
 Ppmimage *titleImage=NULL;
 int title =1;
@@ -196,7 +202,7 @@ int main(void)
 			physicsCountdown -= physicsRate;
 		}
 
-		if(play_game == false && two_players==false){
+		if(play_game == false && two_players==false && selectedBack ==false){
 			if(i==0){
 
 			goodbye();
@@ -230,18 +236,20 @@ int main(void)
 
 				character_select_render();
 
-				if (player1choose==true && player2choose==true){
-
-					//init_opengl();
+				if (player1choose==true && player2choose==true && selectedBack==false){
 					//please++;
 					printf("two players\n");
 					two_players=true;
 					printf("two players\n");
+					if(selectedBack==true){
+					printf("background selected");
+					init_opengl();
+					}
 
 				}
 			}
 		}
-		else if(play_game==false && two_players == true && go_selchar==false){
+		else if(play_game==false && two_players == true && go_selchar==false && selectedBack==true){
 
 			//goodbye();
 			//if(sound_p==true){
@@ -255,7 +263,7 @@ int main(void)
 			//}
 
 		}
-		else if(play_game ==true && two_players==true && go_selchar==false){
+		else if(play_game ==true && two_players==true && go_selchar==false && selectedBack==true){
 			if(i==2)
 			{
 
@@ -264,7 +272,8 @@ int main(void)
 				//let_the_music_play(0);
 				i++;
 				sound_p=true;
-				let_the_music_play(13);
+				int rd = (rand()%3)+12;
+				let_the_music_play(rd);
 
 			}
 			play_sounds=0;
@@ -551,6 +560,9 @@ void restart_game(void){
 	player2choose=false;
 	i=1;
 	visted=true;
+	selectedBack=false;
+	forestback=false;
+	streetback=false;
 	restart=true;
 	goodbye();
 	//if(playone==false){
@@ -595,18 +607,18 @@ int check_keys(XEvent *e)
 			}
 			else if (play_game == false) {
 				//at menu screen need to select characters
-				if(go_selchar==false && two_players==false)
+				if(go_selchar==false && two_players==false && selectedBack==false)
 					go_selchar=true;
 
 				//selected characters go to game
-				else if(go_selchar==true && two_players==true){
+				else if(go_selchar==true && two_players==true && selectedBack==true){
 					go_selchar=false;
 					play_game =true;
 					readyPrompt = true;
 				}
 
 				//in game 
-				else if(go_selchar==false && two_players==true){
+				else if(go_selchar==false && two_players==true && selectedBack==true){
 					play_game = true;
 					play1.control = true;
 					play2.control = true;
@@ -658,10 +670,29 @@ int check_keys(XEvent *e)
 					player2=2;
 					strcpy(play2.name,names[1]);
 					player2choose=true;
+					
 				}
 			}
 			break;
-	}
+		case XK_0:
+			if(go_selchar==true && selectedBack==false && two_players==true ){
+				streetback=false;
+				forestback=true;
+				selectedBack=true;
+				
+				}
+			break;
+		case XK_9:
+			if(go_selchar==true && selectedBack==false && two_players==true){
+				
+				streetback=true;
+				forestback=false;
+				selectedBack=true;
+				
+				}
+			break;
+			}
+	
 	return 0;
 }
 
@@ -944,16 +975,30 @@ void render(void)
 	Rect r;
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
-
 	glColor3f(1.0, 1.0, 1.0);
-	if (forest) {
-		glBindTexture(GL_TEXTURE_2D, forestTexture);
-		glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-		glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres);
-		glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
-		glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
-		glEnd();
+
+	glEnable(GL_TEXTURE_2D);
+	if(forestback==true && streetback==false){
+		if (forest) {
+			glBindTexture(GL_TEXTURE_2D, forestTexture);
+			glBegin(GL_QUADS);
+			glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+			glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres);
+			glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
+			glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
+			glEnd();
+		}
+	}
+	else if(forestback==false && streetback==true){
+		if (street) {
+			glBindTexture(GL_TEXTURE_2D, streetTexture);
+			glBegin(GL_QUADS);
+			glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+			glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres);
+			glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
+			glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
+			glEnd();
+		}
 	}
 
 	/*************************************/

@@ -15,10 +15,11 @@
 
 #include <cstdio>
 #include "SarahbethR.h"
+#include "ZenaidaG.h"
 #include "defs.h"
 
 extern int xres, yres;
-
+int z=1;
 extern Player play1, play2;
 
 extern bool play_game, go_selchar, two_players, player1choose, player2choose;
@@ -52,9 +53,9 @@ int glogo=1;
 GLuint glogoTexture;
 
 
-Ppmimage *streetImage=NULL;
-int street=1;
-GLuint streetTexture;
+//Ppmimage *streetImage=NULL;
+//int street=1;
+//GLuint streetTexture;
 
 Ppmimage *charPrompt1Image=NULL;
 int charPrompt1=1;
@@ -76,7 +77,7 @@ GLuint promptBox2Texture;
 extern Ppmimage *titleImage;
 extern int title;
 extern GLuint titleTexture;
-
+extern int play_sounds;
 extern int selchar;
 extern GLuint selectTexture;
 
@@ -139,7 +140,7 @@ void init_character_boxes(void)
 
 	/* BACKGROUND 1 SELECT (STREET) */
 	
-	char d[] = "./images/street.ppm";
+	/*char d[] = "./images/street.ppm";
 	streetImage = ppm6GetImage(streetImage, d);
 	glGenTextures(1, &streetTexture);
 	glBindTexture(GL_TEXTURE_2D, streetTexture);
@@ -150,7 +151,7 @@ void init_character_boxes(void)
 	unsigned char *streetData = buildAlphaData(streetImage);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, 
 			GL_RGBA, GL_UNSIGNED_BYTE, streetData);
-	delete [] streetData;
+	delete [] streetData;*/
 	
 	/* PROMPT TO SELECT PLAYER 1 */
 	char f[] = "./images/charPrompt1.ppm";
@@ -303,9 +304,9 @@ void drawCharBox(Flt width, Flt height, int x)
     glEnd();
 
 
-	// Draw Select Background 1 (street)
+	 //Draw Select Background 1 (street)
  	if (x == 3) 
-        glBindTexture(GL_TEXTURE_2D, streetTexture);
+        glBindTexture(GL_TEXTURE_2D, bguileTexture);
 
     glBegin(GL_QUADS);
     if (x == 3) {
@@ -496,16 +497,15 @@ void animate_ReadySetGo()
 	if(ReadyTimeDif >= 0.020 && ReadyTimeDif < 0.025)
 		inc = 80;
 	if(ReadyTimeDif >= 0.025 && ReadyTimeDif < 0.030)
-		inc = 100;
+		inc= 100;
 	if(ReadyTimeDif >= 0.030 && ReadyTimeDif < 0.035)
 		inc = 120;
 	if(ReadyTimeDif >= 0.035 && ReadyTimeDif < 0.040)
 		inc = 140;
 	if(ReadyTimeDif >= 0.040 && ReadyTimeDif < 0.045)
 		inc = 160;
-	if(ReadyTimeDif >= 0.045 && ReadyTimeDif < 0.50)
+ 	if(ReadyTimeDif >= 0.045 && ReadyTimeDif < 0.50)
 		inc = 180;
-
 	if(ReadyTimeDif >= 0.050 && ReadyTimeDif < 0.055)
 		inc = 200;
 	if(ReadyTimeDif >= 0.055 && ReadyTimeDif < 0.060)
@@ -518,9 +518,14 @@ void animate_ReadySetGo()
 		inc = 280;
 	if(ReadyTimeDif >= 0.075 && ReadyTimeDif < 0.080)
 		inc = 300;
-	if(ReadyTimeDif >= 0.080 && ReadyTimeDif < 0.120)
+	if(ReadyTimeDif >= 0.080 && ReadyTimeDif < 0.120){
+		if(z==1){
+		play_sounds=0;
+		soundeffects(16);
+		z++;
+		}
 		inc = 320;
-	
+	}
 
 
 	if(ReadyTimeDif >= 0.120){
