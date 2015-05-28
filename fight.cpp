@@ -68,7 +68,7 @@ void restart_game(void);
 
 int xres=1280, yres=680;
 //int leftButtonDown=0;
-int punchDamage = 5;
+int punchDamage = 10;
 //Vec leftButtonPos;
 
 bool two_players = false;
@@ -563,7 +563,7 @@ void physics(void)
 
         if(!play1.block){
             if(!(keys[XK_a] && keys[XK_d])){
-
+		if(!keys[XK_f]){
                 if(keys[XK_a] == 1){
                     play1.pos[0] -= stepVel;
                     if(play1.walkClk)
@@ -576,7 +576,7 @@ void physics(void)
                         play1.beginWalk = clock();
                     play1.walk = true;
                 }
-
+		}
             }
             if(keys[XK_d] == 0 && keys[XK_a] == 0){
                 play1.walkClk = true;
@@ -586,7 +586,9 @@ void physics(void)
 
             if(keys[XK_f] == 1){
                 play1.punch = true;
-            }
+	    }
+	    if(!keys[XK_f])
+		play1.punchClk = true;
         }
 
         if(!play1.punch && !play1.walk){
@@ -610,7 +612,7 @@ void physics(void)
 
         if(!play2.block){
             if(!(keys[XK_Left] && keys[XK_Right])){
-
+		if(!keys[XK_l]){
                 if(keys[XK_Left]){
                     play2.pos[0] -= stepVel;
                     if(play2.walkClk)
@@ -624,6 +626,7 @@ void physics(void)
                         play2.beginWalk = clock();
                     play2.walk = true;
                 }
+		}
             }
 
             if(keys[XK_Left] == 0 && keys[XK_Right] == 0){
@@ -634,6 +637,8 @@ void physics(void)
 
             if(keys[XK_l])
                 play2.punch = true;
+	    if(!keys[XK_l])
+		play2.punchClk = true;
         }
 
         if(!play2.punch && !play2.walk){
@@ -964,9 +969,16 @@ void render(void)
     }
 
     if(!play1.punch && play1.punchHit){
-        play2.pos[0] += 100;
+        if(!play2.block){
+	play2.pos[0] += 100;
         play2.hbar.pos[0] += punchDamage;
         play2.hbar.width -= punchDamage;
+	}
+	else{
+	    play2.pos[0]+=10;
+	    play2.hbar.pos[0]+=punchDamage*0.2;
+	    play2.hbar.width-=punchDamage*0.2;
+	}
         int punchn=(rand()%3)+2;
 
         //play_sounds=0;
@@ -1007,9 +1019,16 @@ void render(void)
     }
 
     if(!play2.punch && play2.punchHit){
+	if(!play1.block){
         play1.pos[0] -= 100;
         play1.hbar.pos[0] -= punchDamage;
         play1.hbar.width -= punchDamage;
+	}
+	else{
+	    play1.pos[0]-=10;
+	    play1.hbar.pos[0]-=punchDamage*0.2;
+	    play1.hbar.width-=punchDamage*0.2;
+	}
         int punchn=(rand()%3)+2;
 
         play_sounds=0;
@@ -1028,6 +1047,12 @@ void render(void)
         //punchDamage = 0;
         play1.control=false;
         play2.control=false;
+	play2.block = false;
+	play2.punch = false;
+	play2.walk = false;	
+	play1.block = false;
+	play1.punch = false;
+	play1.walk = false;
         play1.draw=true;
         play2.draw=true;
 
@@ -1057,6 +1082,13 @@ void render(void)
         play2.control=false;
         play1.draw=true;
         play2.draw=true;
+	play1.block = false;
+	play1.punch = false;
+	play1.walk = false;
+	play2.block = false;
+	play2.punch = false;
+	play2.walk = false;
+
         glColor3f(0.0, 0.0, 0.0);
         glPushMatrix();
         glTranslatef(640, 400, 0.0);

@@ -69,18 +69,19 @@ void animatePlayerOne(Flt width, Flt height)
         x_val = 0.8f;
     else if (play1.punchTimeDif>=0.024 && play1.punchTimeDif<.027){
         x_val = 0.9f;
-    }
-    else if (play1.punchTimeDif>=0.027){
-        play1.punch = false;
-        play1.punchClk = true;
-        play1.control = true;
-        play1.finPunch = false;
-
-	if(play2.block==true){
+        if(play2.block==true){
        	   int rnd= (rand()%2)+7;
            soundeffects(rnd);
 	}
+
     }
+    else if (play1.punchTimeDif>=0.027){
+        play1.punch = false;
+       // play1.punchClk = true;
+        play1.control = true;
+        play1.finPunch = false;
+
+	    }
 
     glPushMatrix();
     glTranslatef(play1.pos[0], play1.pos[1], play1.pos[2]);
@@ -228,7 +229,7 @@ void animatePlayerTwo(Flt width, Flt height)
     play2.punchClk =false;
 
     int w, h;
-    float x_val = 0.0f;
+    float x_val = 0.9f;
     float y_top = 0.0f;
     float y_bot = 1.0f/3.0f;
     float inc = 0.1f;
@@ -265,16 +266,17 @@ void animatePlayerTwo(Flt width, Flt height)
         x_val = 0.2f;
     else if (play2.punchTimeDif>=0.024 && play2.punchTimeDif<.027){
         x_val = 0.1f;
-    }
-    else if (play2.punchTimeDif>=0.027){
-        play2.punch = false;
-        play2.punchClk = true;
-        play2.control = true;
-        play2.finPunch = false;
-	if(play1.block==true){
+  	if(play1.block==true){
        	   int rnd= (rand()%2)+7;
            soundeffects(rnd);
 	}
+
+    }
+    else if (play2.punchTimeDif>=0.027){
+        play2.punch = false;
+        //play2.punchClk = true;
+        play2.control = true;
+        play2.finPunch = false;
         //play2.draw = true;
     }
 
@@ -312,7 +314,7 @@ void animatePlayerTwoWalk(Flt width, Flt height){
     play2.draw = false;
 
     int w, h;
-    float x_val = 0.0f;
+    float x_val = 0.9f;
     float y_top = 2.0f/3.0;
     float y_bot = 1.0f;
     float inc = 0.1f;
@@ -373,7 +375,7 @@ void animatePlayerTwoBlock(Flt width, Flt height){
     play2.draw = false;
 
     int w, h;
-    float x_val = 0.0f;
+    float x_val = 0.9f;
     float y_top = 1.0f/3.0;
     float y_bot = 2.0f/3.0f;
     float inc = 0.1f;
