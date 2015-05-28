@@ -55,6 +55,8 @@ charPrompt2box,
 charPrompt3box,  
 promptBox1, 
 promptBox2,
+endBox1,
+endBox2,
 titleBox;
 
 /********* Declare Textures **********/
@@ -110,6 +112,17 @@ GLuint promptBox2Texture;
 Ppmimage *titleBoxImage=NULL;
 int titlePrompt=1;
 GLuint titleBoxTexture;
+
+/*******************************************************/
+Ppmimage *play1winsImage=NULL;
+int play1wins=1;
+GLuint play1winsTexture;
+
+Ppmimage *play2winsImage=NULL;
+int play2wins=1;
+GLuint play2winsTexture;
+
+/********************************************/
 
 extern Ppmimage *titleImage;
 extern GLuint titleTexture;
@@ -322,7 +335,43 @@ void init_character_boxes(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
 		GL_RGBA, GL_UNSIGNED_BYTE, titleBoxData);
 	delete [] titleBoxData;
-	
+
+
+
+
+	/*************************************************************************/
+	char play1[] = "./images/play1wins.ppm"; 
+	play1winsImage = ppm6GetImage(play1winsImage, play1);
+	glGenTextures(1, &play1winsTexture);
+	glBindTexture(GL_TEXTURE_2D, play1winsTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	w = play1winsImage->width;
+	h = play1winsImage->height;
+	unsigned char *play1winsData = buildAlphaData(play1winsImage);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	GL_RGBA, GL_UNSIGNED_BYTE, play1winsData);
+		delete [] play1winsData;
+    
+    	char play2[] = "./images/play2wins.ppm"; 
+	play2winsImage = ppm6GetImage(play2winsImage, play2);
+	glGenTextures(1, &play2winsTexture);
+	glBindTexture(GL_TEXTURE_2D, play2winsTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	w = play2winsImage->width;
+	h = play2winsImage->height;
+	unsigned char *play2winsData = buildAlphaData(play2winsImage);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+	GL_RGBA, GL_UNSIGNED_BYTE, play2winsData);
+		delete [] play2winsData;
+    
+
+
+/*****************************************************************************/
+
+
+
 	/* 	GUILE LOGO TEXTURE	
 
 	char d[] = "./images/guileLogo.ppm";
@@ -390,6 +439,16 @@ void init_character_boxes(void)
 	promptBox2.pos[1] = yres/2;
 	promptBox2.width = 300;
 	promptBox2.height = 150;
+	
+	endBox1.pos[0] = 0;
+	endBox1.pos[1] = yres/2;
+	endBox1.width = 300;
+	endBox1.height = 150;
+
+	endBox2.pos[0] = 0;
+	endBox2.pos[1] = yres/2;
+	endBox2.width = 300;
+	endBox2.height = 150;
 
 	titleBox.pos[0] = 1050;
 	titleBox.pos[1] = 460;
@@ -573,7 +632,44 @@ void drawCharBox(Flt width, Flt height, int x)
 	    glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
 	    glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);
     }
-	// DRAW TITLE SCREEN FIGHT BOX
+
+ /************************************************************************/
+ if (x == 14) { 
+	    glBindTexture(GL_TEXTURE_2D, play1winsTexture);
+	
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER,0.1f);
+	glColor4ub(255,255,255,255);
+
+	glBegin(GL_QUADS);
+    
+	    glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
+	    glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
+	    glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
+	    glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);
+    }
+
+ if (x == 15) { 
+	    glBindTexture(GL_TEXTURE_2D, play2winsTexture);
+	
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER,0.1f);
+	glColor4ub(255,255,255,255);
+
+	glBegin(GL_QUADS);
+    
+	    glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
+	    glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
+	    glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
+	    glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);
+    }
+
+
+
+/************************************************************************/    
+
+
+// DRAW TITLE SCREEN FIGHT BOX
 
  	if (x == 9) { 
 	    glBindTexture(GL_TEXTURE_2D, titleBoxTexture);

@@ -238,6 +238,7 @@ void init_opengl(void)
 			GL_RGBA, GL_UNSIGNED_BYTE, streetData);
 	delete [] streetData;
 	/****************END INITIALIZE TEXTURES*********************/
+
 }
 
 

@@ -126,6 +126,10 @@ int check_keys(XEvent *e)
             }
 
             break;
+
+	case XK_h:
+		
+		break;
             /*Use numbers to select players*/
         case XK_1:
             if(go_selchar==true){

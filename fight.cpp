@@ -112,12 +112,21 @@ GLuint metalTexture;
 
 Ppmimage *metal2Image=NULL;
 GLuint metal2Texture;
+
+
+/************************************************************/
+/*
+Ppmimage *play1winsImage=NULL;
+GLuint play1winsTexture;
+Ppmimage *play2winsImage=NULL;
+GLuint play2winsTexture;*/
+/*************************************************************/
 Flt metal2Pos[4];
 Flt metal2Dim[4];  
 
 Ppmimage *forestImage=NULL;
 GLuint forestTexture;
-int forest =1;
+int forest=1;
 int street=1;
 
 Ppmimage *streetImage=NULL;
@@ -773,14 +782,6 @@ void drawBox(Flt width, Flt height, int x)
     {
         glEnable(GL_TEXTURE_2D);
 
-      //  if(player2guile==true && player2bguile==false){
-      //      glBindTexture(GL_TEXTURE_2D, play2guiletext);
-       // }
-       // else if(player2guile==false && player2bguile==true){
-       //     glBindTexture(GL_TEXTURE_2D, play2bguiletext);
-       // }
-        //glBindTexture(GL_TEXTURE_2D, play2Texture);
-
       if(player2guile==true && player2bguile==false && player2red==false && player2joker==false){
             glBindTexture(GL_TEXTURE_2D, play2guiletext);
         }
@@ -805,11 +806,14 @@ void drawBox(Flt width, Flt height, int x)
     if(x==4)
         glBindTexture(GL_TEXTURE_2D, metal2Texture);
 
+
     /*If x=2, Draw red bars - No texture*/
     if(x==2)
         glDisable(GL_TEXTURE_2D);
 
+    
     glBegin(GL_QUADS);
+    
     /*Draw player1/player2 with texture*/
     if(x==1 || x==3)
     {
@@ -826,6 +830,7 @@ void drawBox(Flt width, Flt height, int x)
         glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
         glTexCoord2f(1.0f, 1.0f); glVertex2i(w, -h);	
     }
+
     /*Draw non-textured rectangle*/
     else
     {
@@ -1029,8 +1034,13 @@ void render(void)
         glColor3f(0.0, 0.0, 0.0);
         glPushMatrix();
         glTranslatef(640, 400, 0.0);
-        drawBox(230,100,5);
-        glPopMatrix();
+        //drawBox(230,100,5);
+        
+	/********************************************************************/
+	drawCharBox(230, 100, 14);
+
+	/**********************************************************************/
+	glPopMatrix();
 
         if(playone==true){
             play_sounds=0;
@@ -1050,8 +1060,13 @@ void render(void)
         glColor3f(0.0, 0.0, 0.0);
         glPushMatrix();
         glTranslatef(640, 400, 0.0);
-        drawBox(230,100,5);
-        glPopMatrix();
+        //drawBox(230,100,6);
+        /***********************************************************************/
+
+	drawCharBox(230, 100, 15);
+
+	/**********************************************************************/
+	glPopMatrix();
         if(playone==true){
             play_sounds=0;
             soundeffects(11);
