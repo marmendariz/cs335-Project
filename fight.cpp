@@ -569,7 +569,7 @@ void physics(void)
                 }
 		}
             }
-            if(keys[XK_d] && keys[XK_a]){
+            if(keys[XK_d] == 0 && keys[XK_a] == 0){
                 play1.walkClk = true;
                 play1.draw = true;
                 play1.walk = false;
@@ -620,7 +620,7 @@ void physics(void)
 		}
             }
 
-            if(keys[XK_Left] && keys[XK_Right]){
+            if(keys[XK_Left] == 0 && keys[XK_Right] == 0){
                 play2.walkClk = true;
                 play2.draw = true;
                 play2.walk = false;
