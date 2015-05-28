@@ -1,4 +1,4 @@
-#include "ZenaidaG.h"
+#include "audio.h"
 extern bool sound_p;
 #ifdef USE_SOUND
 extern int play_sounds;

@@ -253,4 +253,3 @@ int check_keys(XEvent *e)
 
 
 
-

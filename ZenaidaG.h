@@ -18,6 +18,8 @@ extern "C" {
 void restart_game();
 int check_keys(XEvent *e);
 /*
+=======
+>>>>>>> cb361c1d34439b9a7b9d603b39efbdbbb7886c1a
 #define USE_SOUND
 
 #ifdef USE_SOUND
@@ -30,5 +32,6 @@ void soundeffects(int num);
 void let_the_music_play(int num);
 
 void goodbye();
+<<<<<<< HEAD
 */
 

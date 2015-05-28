@@ -87,7 +87,6 @@ void animatePlayerOne(Flt width, Flt height)
 
     glEnable(GL_TEXTURE_2D);
 
-
     if(player1guile==true && player1bguile==false && player1red==false && player1joker==false ){
     glBindTexture(GL_TEXTURE_2D, play1guiletext);}
     else if(player1bguile==true && player1guile==false && player1red==false && player1joker==false){
@@ -96,9 +95,6 @@ void animatePlayerOne(Flt width, Flt height)
     glBindTexture(GL_TEXTURE_2D, play1redtext);}
     else if(player1bguile==false && player1guile==false && player1red==false && player1joker==true){
     glBindTexture(GL_TEXTURE_2D, play1jokertext);}
-
-
-    
 
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER,0.1f);
@@ -146,10 +142,6 @@ void animatePlayerOneWalk(Flt width, Flt height){
 
     glEnable(GL_TEXTURE_2D);
 
-    //glBindTexture(GL_TEXTURE_2D, play1Texture);
-    //if(player1guile==true && player1bguile==false){
-   // glBindTexture(GL_TEXTURE_2D, play1guiletext);}
-  //  else if(player1bguile==true && player1guile==false){
      if(player1guile==true && player1bguile==false && player1red==false && player1joker==false ){
     glBindTexture(GL_TEXTURE_2D, play1guiletext);}
     else if(player1bguile==true && player1guile==false && player1red==false && player1joker==false){
@@ -159,7 +151,6 @@ void animatePlayerOneWalk(Flt width, Flt height){
     else if(player1bguile==false && player1guile==false && player1red==false && player1joker==true){
     glBindTexture(GL_TEXTURE_2D, play1jokertext);}
 
-  //glBindTexture(GL_TEXTURE_2D, play1bguiletext);}
  
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER,0.1f);
@@ -205,10 +196,7 @@ void animatePlayerOneBlock(Flt width, Flt height){
     glTranslatef(play1.pos[0], play1.pos[1], play1.pos[2]);
 
     glEnable(GL_TEXTURE_2D);
-    //if(player1guile==true && player1bguile==false){
-   // glBindTexture(GL_TEXTURE_2D, play1guiletext);}
-   // else if(player1bguile==true && player1guile==false){
-   // glBindTexture(GL_TEXTURE_2D, play1bguiletext);}
+    
     if(player1guile==true && player1bguile==false && player1red==false && player1joker==false ){
     glBindTexture(GL_TEXTURE_2D, play1guiletext);}
     else if(player1bguile==true && player1guile==false && player1red==false && player1joker==false){
@@ -218,8 +206,6 @@ void animatePlayerOneBlock(Flt width, Flt height){
     else if(player1bguile==false && player1guile==false && player1red==false && player1joker==true){
     glBindTexture(GL_TEXTURE_2D, play1jokertext);}
 
-
-    //glBindTexture(GL_TEXTURE_2D, play1Texture);
 
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER,0.1f);
@@ -297,11 +283,6 @@ void animatePlayerTwo(Flt width, Flt height)
 
     glEnable(GL_TEXTURE_2D);
 
- //   if(player2guile==true && player2bguile==false){
-  //  glBindTexture(GL_TEXTURE_2D, play2guiletext);}
-    //else if(player2bguile==true && player2guile==false){
-    //glBindTexture(GL_TEXTURE_2D, play2bguiletext);}
-  // glBindTexture(GL_TEXTURE_2D, play2Texture);
    if(player2guile==true && player2bguile==false && player2red==false && player2joker==false ){
     glBindTexture(GL_TEXTURE_2D, play2guiletext);}
     else if(player2bguile==true && player2guile==false && player2red==false && player2joker==false){
@@ -310,7 +291,6 @@ void animatePlayerTwo(Flt width, Flt height)
     glBindTexture(GL_TEXTURE_2D, play2redtext);}
     else if(player2bguile==false && player2guile==false && player2red==false && player2joker==true){
     glBindTexture(GL_TEXTURE_2D, play2jokertext);}
-
 
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER,0.1f);
@@ -362,10 +342,6 @@ void animatePlayerTwoWalk(Flt width, Flt height){
     glEnable(GL_TEXTURE_2D);
 
     //glBindTexture(GL_TEXTURE_2D, play2Texture);
-   // if(player2guile==true && player2bguile==false){
-   // glBindTexture(GL_TEXTURE_2D, play2guiletext);}
-    //else if(player2bguile==true && player2guile==false){
-    //glBindTexture(GL_TEXTURE_2D, play2bguiletext);}
 	if(player2guile==true && player2bguile==false && player2red==false && player2joker==false ){
     glBindTexture(GL_TEXTURE_2D, play2guiletext);}
     else if(player2bguile==true && player2guile==false && player2red==false && player2joker==false){
@@ -429,7 +405,6 @@ void animatePlayerTwoBlock(Flt width, Flt height){
     else if(player2bguile==false && player2guile==false && player2red==false && player2joker==true){
     glBindTexture(GL_TEXTURE_2D, play2jokertext);}
 
-    //glBindTexture(GL_TEXTURE_2D, play1Texture);
 
     glEnable(GL_ALPHA_TEST);
     glAlphaFunc(GL_GREATER,0.1f);

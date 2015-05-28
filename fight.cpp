@@ -580,7 +580,7 @@ void physics(void)
             }
         }
 
-        if(!play1.punch){
+        if(!play1.punch && !play1.walk){
             if(keys[XK_g] == 1){
 
                 if(play1.blockClk)
@@ -627,7 +627,7 @@ void physics(void)
                 play2.punch = true;
         }
 
-        if(!play2.punch){
+        if(!play2.punch && !play2.walk){
 
             if(keys[XK_k] == 1){
 
@@ -764,7 +764,8 @@ void drawBox(Flt width, Flt height, int x)
        else if(player1guile==false && player1bguile==false && player1red==false && player1joker==true){
             glBindTexture(GL_TEXTURE_2D, play1jokertext);
         }
-        glEnable(GL_ALPHA_TEST);
+        
+	glEnable(GL_ALPHA_TEST);
         glAlphaFunc(GL_GREATER,0.1f);
         glColor4ub(255,255,255,255);
     }

@@ -771,6 +771,7 @@ void drawmenu_button(Flt width, Flt height)
 //}
 
 int q=0;
+
 void animate_ReadySetGo()
 {
 	
