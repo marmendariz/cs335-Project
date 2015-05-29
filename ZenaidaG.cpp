@@ -1,6 +1,6 @@
 #include "ZenaidaG.h"
 #include "audio.h"
-
+#include "SarahbethR.h"
 extern void init_healthBars();
 extern void init_players();
 extern bool readyPrompt;
@@ -35,9 +35,10 @@ extern bool playone;//=true;
 extern int q;
 extern char names[4][30];
 extern int keys[65536];
-bool help_screen=false;
+extern bool help_screen;
 extern Player play1;
 extern Player play2;
+extern bool playonce;
 
 void restart_game(void){
     init_healthBars();
@@ -68,6 +69,7 @@ void restart_game(void){
     restart=true;
     goodbye();
     playone=true;
+    playonce=false;
 }
 
 int check_keys(XEvent *e)

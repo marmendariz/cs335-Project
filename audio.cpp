@@ -70,6 +70,8 @@ void init_sound()
 	char selectchar[]="./sounds/selectcharacter.mp3";
         char fight[]="./sounds/fight.mp3";
 	char ready[]="./sounds/ready.mp3";
+	char selectstage[]="./sounds/selectstage.mp3";
+
 #ifdef USE_SOUND
         if(fmod_init()){
                 printf("ERROR-fmod_init()\n\n");
@@ -131,8 +133,12 @@ void init_sound()
 	if(fmod_createsound(fight,17)){
 	        printf("ERROR-fmod_createsound()\n\n");
                 return;
-
 	}
+	if(fmod_createsound(selectstage,18)){
+		printf("Error-fmod_createsound()\n\n");
+		return;
+	}
+	
 
 
 
@@ -150,6 +156,7 @@ void init_sound()
         fmod_setmode(11,FMOD_LOOP_OFF);
         fmod_setmode(16,FMOD_LOOP_OFF);
         fmod_setmode(17,FMOD_LOOP_OFF);
+	fmod_setmode(18,FMOD_LOOP_OFF);
 #endif
 
 }

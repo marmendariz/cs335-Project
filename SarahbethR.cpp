@@ -23,7 +23,7 @@ int z=1;
 int leftButtonDown = 0;
 Vec leftButtonPos;
 
-extern bool help_screen;
+bool help_screen=false;
 extern int xres, yres;
 extern int play_sounds;
 extern int selchar;
@@ -693,6 +693,7 @@ void drawCharBox(Flt width, Flt height, int x)
     glDisable(GL_TEXTURE_2D);
 }
 
+bool playonce=false;
 void character_select_render(void)
 {
 
@@ -748,6 +749,11 @@ void character_select_render(void)
 	}
 
 	if (player2choose == true) {
+	if(playonce==false){
+		playonce=true;
+       		play_sounds=0;
+		soundeffects(18);
+	}
 	
 	//draw street background box
 	glColor3f(1.0,1.0,1.0);
