@@ -80,6 +80,7 @@ bool visted =false;
 bool selectedBack=false;
 bool streetback=false;
 bool forestback=false;
+extern bool help_screen;// =false;
 #ifdef USE_SOUND
 int play_sounds = 0;
 #endif
@@ -1069,6 +1070,12 @@ void render(void)
         glPushMatrix();
         glTranslatef(640, 400, 0.0);
         //drawBox(230,100,5);
+<<<<<<< HEAD
+=======
+        
+	/********************************************************************/
+	drawCharBox(330, 100, 14);
+>>>>>>> 03ab70d5afcde1a5add87700813a40343d3b953c
 
         /********************************************************************/
         drawCharBox(230, 100, 14);
@@ -1103,8 +1110,13 @@ void render(void)
         glTranslatef(640, 400, 0.0);
         //drawBox(230,100,6);
         /***********************************************************************/
+<<<<<<< HEAD
 
         drawCharBox(230, 100, 15);
+=======
+	//230
+	drawCharBox(330, 100, 15);
+>>>>>>> 03ab70d5afcde1a5add87700813a40343d3b953c
 
         /**********************************************************************/
         glPopMatrix();
