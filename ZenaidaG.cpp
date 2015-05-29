@@ -35,7 +35,7 @@ extern bool playone;//=true;
 extern int q;
 extern char names[4][30];
 extern int keys[65536];
-
+bool help_screen=false;
 extern Player play1;
 extern Player play2;
 
@@ -43,6 +43,7 @@ void restart_game(void){
     init_healthBars();
     init_players();
 
+    help_screen=false;
     go_selchar=true;
     play_game=false;
     two_players=false;
@@ -91,6 +92,7 @@ int check_keys(XEvent *e)
             forest ^=1;
             break;
         case XK_p:
+		help_screen=false;
 
             //goodbye();
 
@@ -129,6 +131,13 @@ int check_keys(XEvent *e)
 
 	case XK_h:
 		
+            if((play_game==false && two_players == true && go_selchar==false && selectedBack==true) ||
+	    (play_game==false && two_players == false && go_selchar==false && selectedBack==false)){
+	         if(help_screen==true)
+		 	help_screen=false;
+		else if(help_screen==false)
+			help_screen=true;
+            }
 		break;
             /*Use numbers to select players*/
         case XK_1:

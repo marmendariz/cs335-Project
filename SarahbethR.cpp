@@ -17,11 +17,13 @@
 #include "SarahbethR.h"
 #include "audio.h"
 #include "defs.h"
+#include "ZenaidaG.h"
 
 int z=1;
 int leftButtonDown = 0;
 Vec leftButtonPos;
 
+extern bool help_screen;
 extern int xres, yres;
 extern int play_sounds;
 extern int selchar;
@@ -784,7 +786,8 @@ void character_select_render(void)
 		glTranslatef(charPrompt2box.pos[0], charPrompt2box.pos[1], 0);
 		drawCharBox(charPrompt2box.width, charPrompt2box.height, 5);
 		glPopMatrix();
-	}}
+	}
+}
 
 void menu_render(void)  
 { 
@@ -822,6 +825,16 @@ void menu_render(void)
     	glTranslatef(titleBox.pos[0], titleBox.pos[1], 0);
     	drawCharBox(titleBox.width, titleBox.height, 9);
     	glPopMatrix();
+	}
+
+	if(help_screen ==true){
+	glColor3f(1.0,1.0,1.0);
+    	glPushMatrix();
+    	glTranslatef(400, 500, 0);
+    	drawCharBox(titleBox.width, titleBox.height, 9);
+    	glPopMatrix();
+
+	
 	}
 }
 

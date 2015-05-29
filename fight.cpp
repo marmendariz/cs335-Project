@@ -80,6 +80,7 @@ bool visted =false;
 bool selectedBack=false;
 bool streetback=false;
 bool forestback=false;
+extern bool help_screen;// =false;
 #ifdef USE_SOUND
 int play_sounds = 0;
 #endif
