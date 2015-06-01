@@ -117,10 +117,10 @@ GLuint metal2Texture;
 
 /************************************************************/
 /*
-Ppmimage *play1winsImage=NULL;
-GLuint play1winsTexture;
-Ppmimage *play2winsImage=NULL;
-GLuint play2winsTexture;*/
+   Ppmimage *play1winsImage=NULL;
+   GLuint play1winsTexture;
+   Ppmimage *play2winsImage=NULL;
+   GLuint play2winsTexture;*/
 /*************************************************************/
 Flt metal2Pos[4];
 Flt metal2Dim[4];  
@@ -555,32 +555,36 @@ void physics(void)
 
         if(!play1.block){
             if(!(keys[XK_a] && keys[XK_d])){
-		if(!keys[XK_f]){
-                if(keys[XK_a] == 1){
-                    play1.pos[0] -= stepVel;
-                    if(play1.walkClk)
-                        play1.beginWalk = clock();
-                    play1.walk = true;
+                if(!keys[XK_f]){
+                    if(keys[XK_a] == 1){
+                        play1.pos[0] -= stepVel;
+                        if(play1.walkClk)
+                            play1.beginWalk = clock();
+                        play1.walk = true;
+                    }
+                    if(keys[XK_d] == 1){
+                        play1.pos[0] += stepVel;
+                        if(play1.walkClk)
+                            play1.beginWalk = clock();
+                        play1.walk = true;
+                    }
                 }
-                if(keys[XK_d] == 1){
-                    play1.pos[0] += stepVel;
-                    if(play1.walkClk)
-                        play1.beginWalk = clock();
-                    play1.walk = true;
-                }
-		}
             }
-            if(keys[XK_d] == 0 && keys[XK_a] == 0){
+            if(!keys[XK_d] && !keys[XK_a]){
                 play1.walkClk = true;
                 play1.draw = true;
                 play1.walk = false;
-            }       
+            } 
+            if(keys[XK_d]  && keys[XK_a] && !play1.finPunch && 
+                            !play1.walk){
+                play1.draw = true;
+            }      
 
             if(keys[XK_f] == 1){
                 play1.punch = true;
-	    }
-	    if(!keys[XK_f])
-		play1.punchClk = true;
+            }
+            if(!keys[XK_f])
+                play1.punchClk = true;
         }
 
         if(!play1.punch && !play1.walk){
@@ -604,33 +608,38 @@ void physics(void)
 
         if(!play2.block){
             if(!(keys[XK_Left] && keys[XK_Right])){
-		if(!keys[XK_l]){
-                if(keys[XK_Left]){
-                    play2.pos[0] -= stepVel;
-                    if(play2.walkClk)
-                        play2.beginWalk = clock();
-                    play2.walk = true;
-                }
+                if(!keys[XK_l]){
+                    if(keys[XK_Left]){
+                        play2.pos[0] -= stepVel;
+                        if(play2.walkClk)
+                            play2.beginWalk = clock();
+                        play2.walk = true;
+                    }
 
-                if(keys[XK_Right]){
-                    play2.pos[0] += stepVel;
-                    if(play2.walkClk)
-                        play2.beginWalk = clock();
-                    play2.walk = true;
+                    if(keys[XK_Right]){
+                        play2.pos[0] += stepVel;
+                        if(play2.walkClk)
+                            play2.beginWalk = clock();
+                        play2.walk = true;
+                    }
                 }
-		}
             }
 
             if(keys[XK_Left] == 0 && keys[XK_Right] == 0){
                 play2.walkClk = true;
                 play2.draw = true;
                 play2.walk = false;
-            }       
+            } 
+
+            if(keys[XK_Left] && keys[XK_Right] && !play2.finPunch &&
+                                !play2.walk){
+                play2.draw = true;
+            }      
 
             if(keys[XK_l])
                 play2.punch = true;
-	    if(!keys[XK_l])
-		play2.punchClk = true;
+            if(!keys[XK_l])
+                play2.punchClk = true;
         }
 
         if(!play2.punch && !play2.walk){
@@ -764,14 +773,14 @@ void drawBox(Flt width, Flt height, int x)
         else if(player1guile==false && player1bguile==true && player1red==false && player1joker==false){
             glBindTexture(GL_TEXTURE_2D, play1bguiletext);
         }
-       else if(player1guile==false && player1bguile==false && player1red==true && player1joker==false){
+        else if(player1guile==false && player1bguile==false && player1red==true && player1joker==false){
             glBindTexture(GL_TEXTURE_2D, play1redtext);
-       }
-       else if(player1guile==false && player1bguile==false && player1red==false && player1joker==true){
+        }
+        else if(player1guile==false && player1bguile==false && player1red==false && player1joker==true){
             glBindTexture(GL_TEXTURE_2D, play1jokertext);
         }
-        
-	glEnable(GL_ALPHA_TEST);
+
+        glEnable(GL_ALPHA_TEST);
         glAlphaFunc(GL_GREATER,0.1f);
         glColor4ub(255,255,255,255);
     }
@@ -779,19 +788,19 @@ void drawBox(Flt width, Flt height, int x)
     {
         glEnable(GL_TEXTURE_2D);
 
-      if(player2guile==true && player2bguile==false && player2red==false && player2joker==false){
+        if(player2guile==true && player2bguile==false && player2red==false && player2joker==false){
             glBindTexture(GL_TEXTURE_2D, play2guiletext);
         }
         else if(player2guile==false && player2bguile==true && player2red==false && player2joker==false){
             glBindTexture(GL_TEXTURE_2D, play2bguiletext);
         }
-       else if(player2guile==false && player2bguile==false && player2red==true && player2joker==false){
+        else if(player2guile==false && player2bguile==false && player2red==true && player2joker==false){
             glBindTexture(GL_TEXTURE_2D, play2redtext);
-       }
-       else if(player2guile==false && player2bguile==false && player2red==false && player2joker==true){
+        }
+        else if(player2guile==false && player2bguile==false && player2red==false && player2joker==true){
             glBindTexture(GL_TEXTURE_2D, play2jokertext);
         }
-   
+
         glEnable(GL_ALPHA_TEST);
         glAlphaFunc(GL_GREATER,0.1f);
         glColor4ub(255,255,255,255);
@@ -808,9 +817,9 @@ void drawBox(Flt width, Flt height, int x)
     if(x==2)
         glDisable(GL_TEXTURE_2D);
 
-    
+
     glBegin(GL_QUADS);
-    
+
     /*Draw player1/player2 with texture*/
     if(x==1 || x==3)
     {
@@ -962,15 +971,15 @@ void render(void)
 
     if(!play1.punch && play1.punchHit){
         if(!play2.block){
-	play2.pos[0] += 100;
-        play2.hbar.pos[0] += punchDamage;
-        play2.hbar.width -= punchDamage;
-	}
-	else{
-	    play2.pos[0]+=10;
-	    play2.hbar.pos[0]+=punchDamage*0.2;
-	    play2.hbar.width-=punchDamage*0.2;
-	}
+            play2.pos[0] += 100;
+            play2.hbar.pos[0] += punchDamage;
+            play2.hbar.width -= punchDamage;
+        }
+        else{
+            play2.pos[0]+=10;
+            play2.hbar.pos[0]+=punchDamage*0.2;
+            play2.hbar.width-=punchDamage*0.2;
+        }
         int punchn=(rand()%3)+2;
 
         //play_sounds=0;
@@ -1011,16 +1020,16 @@ void render(void)
     }
 
     if(!play2.punch && play2.punchHit){
-	if(!play1.block){
-        play1.pos[0] -= 100;
-        play1.hbar.pos[0] -= punchDamage;
-        play1.hbar.width -= punchDamage;
-	}
-	else{
-	    play1.pos[0]-=10;
-	    play1.hbar.pos[0]-=punchDamage*0.2;
-	    play1.hbar.width-=punchDamage*0.2;
-	}
+        if(!play1.block){
+            play1.pos[0] -= 100;
+            play1.hbar.pos[0] -= punchDamage;
+            play1.hbar.width -= punchDamage;
+        }
+        else{
+            play1.pos[0]-=10;
+            play1.hbar.pos[0]-=punchDamage*0.2;
+            play1.hbar.width-=punchDamage*0.2;
+        }
         int punchn=(rand()%3)+2;
 
         play_sounds=0;
@@ -1039,12 +1048,12 @@ void render(void)
         //punchDamage = 0;
         play1.control=false;
         play2.control=false;
-	play2.block = false;
-	play2.punch = false;
-	play2.walk = false;	
-	play1.block = false;
-	play1.punch = false;
-	play1.walk = false;
+        play2.block = false;
+        play2.punch = false;
+        play2.walk = false;	
+        play1.block = false;
+        play1.punch = false;
+        play1.walk = false;
         play1.draw=true;
         play2.draw=true;
 
@@ -1056,8 +1065,11 @@ void render(void)
 	/********************************************************************/
 	drawCharBox(330, 100, 14);
 
-	/**********************************************************************/
-	glPopMatrix();
+        /********************************************************************/
+        //drawCharBox(230, 100, 14);
+
+        /**********************************************************************/
+        glPopMatrix();
 
         if(playone==true){
             play_sounds=0;
@@ -1074,12 +1086,12 @@ void render(void)
         play2.control=false;
         play1.draw=true;
         play2.draw=true;
-	play1.block = false;
-	play1.punch = false;
-	play1.walk = false;
-	play2.block = false;
-	play2.punch = false;
-	play2.walk = false;
+        play1.block = false;
+        play1.punch = false;
+        play1.walk = false;
+        play2.block = false;
+        play2.punch = false;
+        play2.walk = false;
 
         glColor3f(0.0, 0.0, 0.0);
         glPushMatrix();
@@ -1089,8 +1101,8 @@ void render(void)
 	//230
 	drawCharBox(330, 100, 15);
 
-	/**********************************************************************/
-	glPopMatrix();
+        /**********************************************************************/
+        glPopMatrix();
         if(playone==true){
             play_sounds=0;
             soundeffects(11);
