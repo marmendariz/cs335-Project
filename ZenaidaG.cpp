@@ -13,7 +13,7 @@ extern bool visted;// =false;
 extern bool selectedBack;//=false;
 extern bool streetback;//=false;
 extern bool forestback;//=false;
-
+bool chooseBack=false;
 extern bool player1choose;//=false;
 extern bool player2choose;//=false;
 extern bool player1guile;//=false;
@@ -70,6 +70,7 @@ void restart_game(void){
     goodbye();
     playone=true;
     playonce=false;
+    chooseBack = false;
 }
 
 int check_keys(XEvent *e)
@@ -105,14 +106,16 @@ int check_keys(XEvent *e)
             }
             else if (play_game == false) {
                 //at menu screen need to select characters
-                if(go_selchar==false && two_players==false && selectedBack==false)
+                if(go_selchar==false && two_players==false && selectedBack==false && chooseBack==false)
                     go_selchar=true;
 
                 //selected characters go to game
-                else if(go_selchar==true && two_players==true && selectedBack==true){
+                else if(go_selchar==true && player2choose==true && chooseBack==true ){
                     go_selchar=false;
                     play_game =true;
                     readyPrompt = true;
+		    selectedBack=true;
+		    two_players=true;
                 }
 
                 //in game 
@@ -246,20 +249,20 @@ int check_keys(XEvent *e)
             break;
 
         case XK_0:
-		  if(go_selchar==true && selectedBack==false && two_players==true){
+		  if(go_selchar==true && selectedBack==false && player2choose==true){
 
                 streetback=true;
                 forestback=false;
-                selectedBack=true;
+                chooseBack=true;
 
             }
             break;
         
 		case XK_9:
-			if(go_selchar==true && selectedBack==false && two_players==true ){
+			if(go_selchar==true && selectedBack==false && player2choose==true ){
                 streetback=false;
                 forestback=true;
-                selectedBack=true;
+                chooseBack=true;
        		}
 		     break;
 }

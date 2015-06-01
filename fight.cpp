@@ -75,7 +75,7 @@ bool two_players = false;
 bool play_game = false;
 bool go_selchar=false;
 bool sound_p = false;
-
+extern bool chooseBack;
 bool visted =false;
 bool selectedBack=false;
 bool streetback=false;
@@ -258,19 +258,10 @@ int main(void)
                 }
 
                 character_select_render();
-
-                if (player1choose==true && player2choose==true && selectedBack==false){
-                    //please++;
-                    printf("two players\n");
-                    two_players=true;
-                    printf("two players\n");
-                    if(selectedBack==true){
-                        printf("background selected");
-                        init_opengl();
-                    }
+		
 
                 }
-            }
+            
         }
         else if(play_game==false && two_players == true && go_selchar==false && selectedBack==true){
 

@@ -22,7 +22,7 @@
 int z=1;
 int leftButtonDown = 0;
 Vec leftButtonPos;
-
+extern bool chooseBack;
 bool help_screen=false;
 extern int xres, yres;
 extern int play_sounds;
@@ -772,8 +772,14 @@ void character_select_render(void)
 	//if (player1choose == true && player2choose == true && selectedBack == false) {
 		glColor3f(1.0,1.0,1.0);
 		glPushMatrix();
+		if(chooseBack==false){
 		glTranslatef(charPrompt3box.pos[0], charPrompt3box.pos[1], 0);
 		drawCharBox(charPrompt3box.width, charPrompt3box.height, 13);
+		}else if(chooseBack==true){
+		glTranslatef(charPrompt3box.pos[0], charPrompt3box.pos[1], 0);
+		drawCharBox(charPrompt3box.width, charPrompt3box.height, 14);
+
+	}
 		glPopMatrix();	
 	
 	}
