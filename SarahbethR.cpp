@@ -394,24 +394,24 @@ void init_character_boxes(void)
 	/********** Initialize Box Position (s) **********/
 	
     charBox1.pos[0] = 200;
-    charBox1.pos[1] = 480;
-    charBox1.width = 100;
-    charBox1.height = 150;
+    charBox1.pos[1] = 450;
+    charBox1.width = 120;
+    charBox1.height = 170;
 	
 	charBox2.pos[0] = 480;
-	charBox2.pos[1] = 480;
-	charBox2.width = 100;
-	charBox2.height = 150;
+	charBox2.pos[1] = 450;
+	charBox2.width = 120;
+	charBox2.height = 170;
 
-	charBox3.pos[0] = 1050;
-    charBox3.pos[1] = 480;
-    charBox3.width = 100;
-    charBox3.height = 150;
+	charBox3.pos[0] = 1070;
+    charBox3.pos[1] = 450;
+    charBox3.width = 120;
+    charBox3.height = 170;
 	
 	charBox4.pos[0] = 770;
-	charBox4.pos[1] = 480;
-	charBox4.width = 100;
-	charBox4.height = 150;
+	charBox4.pos[1] = 450;
+	charBox4.width = 120;
+	charBox4.height = 170;
 
 	backgroundBox1.pos[0] = 350;
 	backgroundBox1.pos[1] = 480;
@@ -424,7 +424,7 @@ void init_character_boxes(void)
 	backgroundBox2.height = 120; 
 
 	charPrompt1box.pos[0] = (xres/2);
-	charPrompt1box.pos[1] = 180;
+	charPrompt1box.pos[1] = 150;
 	charPrompt1box.width = 300;
 	charPrompt1box.height = 80;
 
