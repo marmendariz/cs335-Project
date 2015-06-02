@@ -137,7 +137,7 @@ int check_keys(XEvent *e)
 	case XK_h:
 		
             if((play_game==false && two_players == true && go_selchar==false && selectedBack==true) ||
-	    (play_game==false && two_players == false && go_selchar==false && selectedBack==false)){
+	    (play_game==false && two_players == false && go_selchar==false && selectedBack==false)){ 
 	         if(help_screen==true)
 		 	help_screen=false;
 		else if(help_screen==false)
