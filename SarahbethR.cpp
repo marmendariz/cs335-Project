@@ -663,6 +663,11 @@ void menu_render(void)
 		r.bot = 525;
 		r.left = 1050;
 		ggprint16(&r, 16, 0x2EFEC8, "CLICK TO PLAY!");
+		
+		r.center = 1;
+		r.bot = 130;
+		r.left = 430;
+		ggprint16(&r, 16, 0xFF0000, "Press H for Help Menu");
 
     	// Draw background box 
     	glColor3f(1.0,1.0,1.0);
