@@ -65,11 +65,8 @@ void menu_render();
 
 void restart_game(void);
 
-
 int xres=1280, yres=680;
-//int leftButtonDown=0;
 int punchDamage = 10;
-//Vec leftButtonPos;
 
 bool two_players = false;
 bool play_game = false;
@@ -87,6 +84,9 @@ int play_sounds = 0;
 
 Player play1;
 Player play2;
+
+Flt metal2Pos[4];
+Flt metal2Dim[4];  
 
 /*TEXTURE STUFF*/
 
@@ -106,46 +106,31 @@ Ppmimage *play1joker=NULL;
 GLuint play1jokertext;
 Ppmimage *play2joker=NULL;
 GLuint play2jokertext;
-
-
 Ppmimage *metalImage=NULL;
 GLuint metalTexture;
-
 Ppmimage *metal2Image=NULL;
 GLuint metal2Texture;
 
-
-/************************************************************/
-/*
-   Ppmimage *play1winsImage=NULL;
-   GLuint play1winsTexture;
-   Ppmimage *play2winsImage=NULL;
-   GLuint play2winsTexture;*/
-/*************************************************************/
-Flt metal2Pos[4];
-Flt metal2Dim[4];  
-
 Ppmimage *forestImage=NULL;
-GLuint forestTexture;
 int forest=1;
-int street=1;
+GLuint forestTexture;
 
 Ppmimage *streetImage=NULL;
+int street=1;
 GLuint streetTexture;
 
 Ppmimage *titleImage=NULL;
 int title =1;
 GLuint titleTexture;
 
-
 Ppmimage *selectcharacter_Image=NULL;
 int selchar=1;
 GLuint selectTexture;
 
-/*Holds character names*/
 char names[4][30];
 
-//character select
+// Character Select Variables
+
 bool player1choose=false;
 bool player2choose=false;
 bool player1guile=false;
@@ -179,15 +164,10 @@ void timeCopy(struct timespec *dest, struct timespec *source) {
     memcpy(dest, source, sizeof(struct timespec));
 }
 /**************************************/
-
-
 int i=0;
-
-//VARIABLES FOR SARAHBETH... NO TOUCHY!!!!!
 clock_t startTime;
 bool readyPrompt = false;
 bool readyPromptClk = true;
-//---------------------------//
 
 /***************MAIN*******************/
 int main(void)
@@ -203,10 +183,10 @@ int main(void)
     init_music();
     init_sound();
 
-    //init_opengl();
-    clock_gettime(CLOCK_REALTIME, &timePause);
+	clock_gettime(CLOCK_REALTIME, &timePause);
     clock_gettime(CLOCK_REALTIME, &timeStart);
-    int done=0;
+    
+	int done=0;
     while(!done) {
 
         while(XPending(dpy)) {
@@ -225,72 +205,40 @@ int main(void)
             physicsCountdown -= physicsRate;
         }
 
-        if(play_game == false && two_players==false && selectedBack ==false){
-            if(i==0){
-
+        if (play_game == false && two_players == false && selectedBack == false){
+            if (i == 0){
                 goodbye();
-
-                sound_p=true;
+                sound_p = true;
                 let_the_music_play(1);
                 i++;
             }
             menu_render();
 
-
             if(go_selchar == true){
-                if(i==1)
-                { 
+                if(i == 1) { 
                     goodbye();
                     i++;
-                    /*if (visted==false){
-                      sound_p=false;
-                      let_the_music_play(1);
-                      }
-                     */
-                    sound_p= true;
+                    sound_p = true;
                     let_the_music_play(15);
-
-
-                    play_sounds=0;
+                    play_sounds = 0;
                     soundeffects(9);
-                    //play_sounds=1;
-
                 }
-
                 character_select_render();
-		
-
-                }
+			}
             
         }
-        else if(play_game==false && two_players == true && go_selchar==false && selectedBack==true){
-
-            //goodbye();
-            //if(sound_p==true){
-            //sound_p=false;
-            //let_the_music_play(14);
-
-            //}
+        else if (play_game == false && two_players == true && go_selchar == false && selectedBack == true){
             menu_render();
-            //if(restart==true){
-            //	character_select_render();
-            //}
-
         }
-        else if(play_game ==true && two_players==true && go_selchar==false && selectedBack==true){
-            if(i==2)
-            {
-
+        else if (play_game == true && two_players == true && go_selchar == false && selectedBack == true){
+            if(i == 2) {
                 goodbye();
-                //sound_p=false;
-                //let_the_music_play(0);
                 i++;
                 sound_p=true;
                 int rd = (rand()%3)+12;
                 let_the_music_play(rd);
-
             }
-            play_sounds=0;
+            play_sounds = 0;
             render();
         }
         glXSwapBuffers(dpy, win);
@@ -308,7 +256,6 @@ void cleanupXWindows(void)
 
 void set_title(void)
 {
-    /*Set the window title bar*/
     XMapWindow(dpy, win);
     XStoreName(dpy, win, "Ultimate Punch Frenzy: Immortal Peacetime: Fighters in the Street");
 }
@@ -357,7 +304,6 @@ void initXWindows(void)
 
 void reshape_window(int width, int height)
 {
-    /*window has been resized*/
     setup_screen_res(width, height);
     glViewport(0, 0, (GLint)width, (GLint)height);
     glMatrixMode(GL_PROJECTION); glLoadIdentity();
@@ -370,10 +316,8 @@ void init_menu(void)
 {
 
     glViewport(0, 0, xres, yres);
-    /*Initialize matrices*/
     glMatrixMode(GL_PROJECTION); glLoadIdentity();
     glMatrixMode(GL_MODELVIEW); glLoadIdentity();
-    /*This sets 2D mode (no perspective)*/
     glOrtho(0, xres, 0, yres, -1, 1);
 
     glDisable(GL_LIGHTING);
@@ -382,7 +326,6 @@ void init_menu(void)
     glDisable(GL_CULL_FACE);
 
     glClearColor(1.0, 1.0, 1.0, 1.0);
-    /*Do this to allow fonts*/
     glEnable(GL_TEXTURE_2D);
     initialize_fonts();
 
@@ -407,10 +350,8 @@ void init_character_select(void)
 {
 
     glViewport(0, 0, xres, yres);
-    //Initialize matrices
     glMatrixMode(GL_PROJECTION); glLoadIdentity();
     glMatrixMode(GL_MODELVIEW); glLoadIdentity();
-    //This sets 2D mode (no perspective)
     glOrtho(0, xres, 0, yres, -1, 1);
 
     glDisable(GL_LIGHTING);
@@ -419,7 +360,6 @@ void init_character_select(void)
     glDisable(GL_CULL_FACE);
 
     glClearColor(1.0, 1.0, 1.0, 1.0);
-    //Do this to allow fonts
     glEnable(GL_TEXTURE_2D);
     initialize_fonts();
 
@@ -481,7 +421,6 @@ void init_players(void)
     play2.walk = false;
     play2.block = false;
     play2.blockClk = true;
-
 
     init_healthBars();
 }
@@ -754,8 +693,6 @@ void physics(void)
             (play2.pos[1] >= (Flt)yres-play2.radius && play2.vel[1] > 0.0)) {
         play2.vel[1] = -play2.vel[1];
     }
-
-
 }
 
 void drawBox(Flt width, Flt height, int x)
@@ -763,20 +700,20 @@ void drawBox(Flt width, Flt height, int x)
     int w = width, h = height;
 
     /*x= 1 or 3 - Bind player1 and player2 textures*/
-    if(x==1)
+    if(x == 1)
     {
         glEnable(GL_TEXTURE_2D);
 
-        if(player1guile==true && player1bguile==false && player1red==false && player1joker==false){
+        if(player1guile == true && player1bguile == false && player1red == false && player1joker == false){
             glBindTexture(GL_TEXTURE_2D, play1guiletext);
         }
-        else if(player1guile==false && player1bguile==true && player1red==false && player1joker==false){
+        else if(player1guile == false && player1bguile == true && player1red == false && player1joker == false){
             glBindTexture(GL_TEXTURE_2D, play1bguiletext);
         }
-        else if(player1guile==false && player1bguile==false && player1red==true && player1joker==false){
+        else if(player1guile == false && player1bguile == false && player1red == true && player1joker == false){
             glBindTexture(GL_TEXTURE_2D, play1redtext);
         }
-        else if(player1guile==false && player1bguile==false && player1red==false && player1joker==true){
+        else if(player1guile == false && player1bguile == false && player1red == false && player1joker == true){
             glBindTexture(GL_TEXTURE_2D, play1jokertext);
         }
 
@@ -784,7 +721,7 @@ void drawBox(Flt width, Flt height, int x)
         glAlphaFunc(GL_GREATER,0.1f);
         glColor4ub(255,255,255,255);
     }
-    if(x==3)
+    if(x == 3)
     {
         glEnable(GL_TEXTURE_2D);
 
@@ -946,15 +883,15 @@ void render(void)
             play2.hbar.pos[1], play2.hbar.pos[2]);
     drawBox(play2.hbar.width,play2.hbar.height,2);
     glPopMatrix();
-    /*****************END DRAW HEALTHBARS***********************/
-    if(readyPrompt == true){
-        if(readyPromptClk == true){
+    
+	/*****************END DRAW HEALTHBARS***********************/
+    if (readyPrompt == true){
+        if (readyPromptClk == true){
             startTime = clock();
             readyPromptClk = false;
         }
         animate_ReadySetGo();
     }
-
     /*****************Player 1 punch and hit******************/
 
     if((play1.punch && !play1.punchHit) || play1.finPunch)
@@ -981,12 +918,7 @@ void render(void)
             play2.hbar.width-=punchDamage*0.2;
         }
         int punchn=(rand()%3)+2;
-
-        //play_sounds=0;
         soundeffects(punchn);
-        //play_sounds=1;
-        //soundeffects(punchn);
-
         play1.punchHit = false;
     }
 
@@ -1034,58 +966,44 @@ void render(void)
 
         play_sounds=0;
         soundeffects(punchn);
-        //play_sounds=1;
-        //soundeffects(punchn);
-
         play2.punchHit = false;
     }
 
     /*healthbar check****************************/
 
-    if(play2.hbar.width <= 0){
+    if (play2.hbar.width <= 0) {
         play2.hbar.width = 0;
-
-        //punchDamage = 0;
-        play1.control=false;
-        play2.control=false;
+        play1.control = false;
+        play2.control = false;
         play2.block = false;
         play2.punch = false;
         play2.walk = false;	
         play1.block = false;
         play1.punch = false;
         play1.walk = false;
-        play1.draw=true;
-        play2.draw=true;
+        play1.draw = true;
+        play2.draw = true;
 
         glColor3f(0.0, 0.0, 0.0);
         glPushMatrix();
         glTranslatef(640, 400, 0.0);
-        //drawBox(230,100,5);
         
-	/********************************************************************/
-	drawCharBox(330, 100, 14);
-
-        /********************************************************************/
-        //drawCharBox(230, 100, 14);
-
-        /**********************************************************************/
+		drawCharBox(330, 100, 14);
         glPopMatrix();
 
-        if(playone==true){
-            play_sounds=0;
+        if(playone == true){
+            play_sounds = 0;
             soundeffects(10);
-            playone=false;
+            playone = false;
         }
-        //play_sounds=1;
-        //soundeffects(11);
     }
-    if(play1.hbar.width <= 0){
+    
+	if (play1.hbar.width <= 0) {
         play1.hbar.width = 0;
-        //punchDamage = 0;
-        play1.control=false;
-        play2.control=false;
-        play1.draw=true;
-        play2.draw=true;
+        play1.control = false;
+        play2.control = false;
+        play1.draw = true;
+        play2.draw = true;
         play1.block = false;
         play1.punch = false;
         play1.walk = false;
@@ -1096,22 +1014,15 @@ void render(void)
         glColor3f(0.0, 0.0, 0.0);
         glPushMatrix();
         glTranslatef(640, 400, 0.0);
-        //drawBox(230,100,6);
-        /***********************************************************************/
-	//230
-	drawCharBox(330, 100, 15);
+	
+		drawCharBox(330, 100, 15);
 
-        /**********************************************************************/
         glPopMatrix();
-        if(playone==true){
-            play_sounds=0;
+        if (playone == true) {
+            play_sounds = 0;
             soundeffects(11);
-            playone=false;
+            playone = false;
         }
-        //play_sounds=1;
-        //soundeffects(11);
-
-
     }
 
     glEnable(GL_TEXTURE_2D);
@@ -1124,6 +1035,10 @@ void render(void)
     r.left = play2.hbar.posOut[0]+180;
     r.bot  = play2.hbar.posOut[1]-10;
     ggprint16(&r, 20, 0x00ffff00, play2.name);
+
+	r.left = xres/2;
+    r.bot  = play2.hbar.posOut[1]-10;
+    ggprint16(&r, 20, 0x00ffff00, "Press P to Pause");
 }
 
 
