@@ -73,11 +73,12 @@ bool play_game = false;
 bool go_selchar=false;
 bool sound_p = false;
 extern bool chooseBack;
-bool visted =false;
-bool selectedBack=false;
-bool streetback=false;
-bool forestback=false;
-extern bool help_screen;// =false;
+bool visted = false;
+bool selectedBack = false;
+bool streetback = false;
+bool forestback = false;
+extern bool help_screen;
+
 #ifdef USE_SOUND
 int play_sounds = 0;
 #endif
@@ -88,65 +89,65 @@ Player play2;
 Flt metal2Pos[4];
 Flt metal2Dim[4];  
 
-/*TEXTURE STUFF*/
+/*TEXTURES*/
 
-Ppmimage *play2guile=NULL;
+Ppmimage *play2guile = NULL;
 GLuint play2guiletext;
-Ppmimage *play1guile=NULL;
+Ppmimage *play1guile = NULL;
 GLuint play1guiletext;
-Ppmimage *play1bguile=NULL;
+Ppmimage *play1bguile = NULL;
 GLuint play1bguiletext;
-Ppmimage *play2bguile=NULL;
+Ppmimage *play2bguile = NULL;
 GLuint play2bguiletext;
-Ppmimage *play1red=NULL;
+Ppmimage *play1red = NULL;
 GLuint play1redtext;
-Ppmimage *play2red=NULL;
+Ppmimage *play2red = NULL;
 GLuint play2redtext;
-Ppmimage *play1joker=NULL;
+Ppmimage *play1joker = NULL;
 GLuint play1jokertext;
-Ppmimage *play2joker=NULL;
+Ppmimage *play2joker = NULL;
 GLuint play2jokertext;
-Ppmimage *metalImage=NULL;
+Ppmimage *metalImage = NULL;
 GLuint metalTexture;
-Ppmimage *metal2Image=NULL;
+Ppmimage *metal2Image = NULL;
 GLuint metal2Texture;
 
-Ppmimage *forestImage=NULL;
-int forest=1;
+Ppmimage *forestImage = NULL;
+int forest = 1;
 GLuint forestTexture;
 
-Ppmimage *streetImage=NULL;
-int street=1;
+Ppmimage *streetImage = NULL;
+int street = 1;
 GLuint streetTexture;
 
 Ppmimage *titleImage=NULL;
-int title =1;
+int title = 1;
 GLuint titleTexture;
 
-Ppmimage *selectcharacter_Image=NULL;
-int selchar=1;
+Ppmimage *selectcharacter_Image = NULL;
+int selchar = 1;
 GLuint selectTexture;
 
 char names[4][30];
 
 // Character Select Variables
 
-bool player1choose=false;
-bool player2choose=false;
-bool player1guile=false;
-bool player1bguile=false;
-bool player2guile=false;
-bool player2bguile=false;
-bool player1red=false;
-bool player2red=false;
-bool player1joker=false;
-bool player2joker=false;
-int player1=0;
-int player2=0;
+bool player1choose = false;
+bool player2choose = false;
+bool player1guile = false;
+bool player1bguile = false;
+bool player2guile = false;
+bool player2bguile = false;
+bool player1red = false;
+bool player2red = false;
+bool player1joker = false;
+bool player2joker = false;
+int player1 = 0;
+int player2 = 0;
 
-int please=0;
-bool restart=false;
-bool playone=true;
+int please = 0;
+bool restart = false;
+bool playone = true;
 extern int q;
 
 /***********Setup timers **********/
@@ -154,8 +155,8 @@ const double physicsRate = 1.0 / 60.0;
 const double oobillion = 1.0 / 1e9;
 struct timespec timeStart, timeCurrent;
 struct timespec timePause;
-double physicsCountdown=0.0;
-double timeSpan=0.0;
+double physicsCountdown = 0.0;
+double timeSpan = 0.0;
 double timeDiff(struct timespec *start, struct timespec *end) {
     return (double)(end->tv_sec - start->tv_sec ) +
         (double)(end->tv_nsec - start->tv_nsec) * oobillion;
@@ -164,7 +165,7 @@ void timeCopy(struct timespec *dest, struct timespec *source) {
     memcpy(dest, source, sizeof(struct timespec));
 }
 /**************************************/
-int i=0;
+int i = 0;
 clock_t startTime;
 bool readyPrompt = false;
 bool readyPromptClk = true;
@@ -186,10 +187,10 @@ int main(void)
 	clock_gettime(CLOCK_REALTIME, &timePause);
     clock_gettime(CLOCK_REALTIME, &timeStart);
     
-	int done=0;
-    while(!done) {
+	int done = 0;
+    while (!done) {
 
-        while(XPending(dpy)) {
+        while (XPending(dpy)) {
             XEvent e;
             XNextEvent(dpy, &e);
             check_resize(&e);
@@ -200,13 +201,13 @@ int main(void)
         timeSpan = timeDiff(&timeStart, &timeCurrent);
         timeCopy(&timeStart, &timeCurrent);
         physicsCountdown += timeSpan;
-        while(physicsCountdown >= physicsRate) {
+        while (physicsCountdown >= physicsRate) {
             physics();
             physicsCountdown -= physicsRate;
         }
 
-        if (play_game == false && two_players == false && selectedBack == false){
-            if (i == 0){
+        if (play_game == false && two_players == false && selectedBack == false) {
+            if (i == 0) {
                 goodbye();
                 sound_p = true;
                 let_the_music_play(1);
@@ -214,7 +215,7 @@ int main(void)
             }
             menu_render();
 
-            if(go_selchar == true){
+            if(go_selchar == true) {
                 if(i == 1) { 
                     goodbye();
                     i++;
@@ -225,16 +226,15 @@ int main(void)
                 }
                 character_select_render();
 			}
-            
         }
-        else if (play_game == false && two_players == true && go_selchar == false && selectedBack == true){
+        else if (play_game == false && two_players == true && go_selchar == false && selectedBack == true) {
             menu_render();
         }
-        else if (play_game == true && two_players == true && go_selchar == false && selectedBack == true){
-            if(i == 2) {
+        else if (play_game == true && two_players == true && go_selchar == false && selectedBack == true) {
+            if (i == 2) {
                 goodbye();
                 i++;
-                sound_p=true;
+                sound_p = true;
                 int rd = (rand()%3)+12;
                 let_the_music_play(rd);
             }
@@ -273,13 +273,13 @@ void initXWindows(void)
 
     setup_screen_res(1280, 680);
     dpy = XOpenDisplay(NULL);
-    if(dpy == NULL) {
+    if (dpy == NULL) {
         std::cout << "\n\tcannot connect to X server\n" << std::endl;
         exit(EXIT_FAILURE);
     }
     Window root = DefaultRootWindow(dpy);
     XVisualInfo *vi = glXChooseVisual(dpy, 0, att);
-    if(vi == NULL) {
+    if (vi == NULL) {
         std::cout << "\n\tno appropriate visual found\n" << std::endl;
         exit(EXIT_FAILURE);
     } 
@@ -314,8 +314,8 @@ void reshape_window(int width, int height)
 
 void init_menu(void)
 {
-
-    glViewport(0, 0, xres, yres);
+ 
+	glViewport(0, 0, xres, yres);
     glMatrixMode(GL_PROJECTION); glLoadIdentity();
     glMatrixMode(GL_MODELVIEW); glLoadIdentity();
     glOrtho(0, xres, 0, yres, -1, 1);
@@ -376,15 +376,16 @@ void init_character_select(void)
 
 void init_players(void)
 {
-    /*Initialize player position & size*/
+    
+	/*Initialize player position & size*/
     /*Player ONE*/
     play1.pos[0] = 350;
     play1.pos[1] = 200;
     play1.vel[0] = 0.0;
     play1.vel[1] = 0.0;
     play1.width = 120.0;
-    play1.height= 120.0;
-    play1.radius= 30.0;
+    play1.height = 120.0;
+    play1.radius = 30.0;
     play1.mass = 1.0;
 
     play1.atk.wPunch = 100;
@@ -437,7 +438,7 @@ void init_healthBars()
     play1.hbar.posOut[0] = 250;
     play1.hbar.posOut[1] = 620;
     play1.hbar.wOut = 240;
-    play1.hbar.hOut =25;
+    play1.hbar.hOut = 25;
 
     metal2Pos[2] = play2.hbar.pos[0] = xres - 250;
     metal2Pos[3] = play2.hbar.pos[1] = 620;
@@ -492,16 +493,16 @@ void physics(void)
 
     if(play1.control && !(play1.hbar.width <=0)){
 
-        if(!play1.block){
-            if(!(keys[XK_a] && keys[XK_d])){
-                if(!keys[XK_f]){
-                    if(keys[XK_a] == 1){
+        if (!play1.block) {
+            if (!(keys[XK_a] && keys[XK_d])) {
+                if (!keys[XK_f]) {
+                    if (keys[XK_a] == 1) {
                         play1.pos[0] -= stepVel;
-                        if(play1.walkClk)
+                        if (play1.walkClk)
                             play1.beginWalk = clock();
                         play1.walk = true;
                     }
-                    if(keys[XK_d] == 1){
+                    if (keys[XK_d] == 1) {
                         play1.pos[0] += stepVel;
                         if(play1.walkClk)
                             play1.beginWalk = clock();
@@ -509,69 +510,64 @@ void physics(void)
                     }
                 }
             }
-            if(!keys[XK_d] && !keys[XK_a]){
+            if (!keys[XK_d] && !keys[XK_a]) {
                 play1.walkClk = true;
                 play1.draw = true;
                 play1.walk = false;
             } 
-            if(keys[XK_d]  && keys[XK_a] && !play1.finPunch && 
-                            !play1.walk){
+            if (keys[XK_d] && keys[XK_a] && !play1.finPunch && 
+                            !play1.walk) {
                 play1.draw = true;
             }      
-
-            if(keys[XK_f] == 1){
+			if (keys[XK_f] == 1) {
                 play1.punch = true;
             }
-            if(!keys[XK_f])
+            if (!keys[XK_f])
                 play1.punchClk = true;
         }
 
-        if(!play1.punch && !play1.walk){
-            if(keys[XK_g] == 1){
-
-                if(play1.blockClk)
+        if (!play1.punch && !play1.walk) {
+            if (keys[XK_g] == 1){
+				 if(play1.blockClk)
                     play1.beginBlock = clock();
                 play1.block = true;
             }
-
-            if(keys[XK_g] == 0){
-
+            if (keys[XK_g] == 0) {
                 play1.blockClk = true;
                 play1.block = false;
             }
         }
     }
+
     /*Player TWO*/
 
-    if(play2.control && !(play2.hbar.width <= 0)){
-
-        if(!play2.block){
-            if(!(keys[XK_Left] && keys[XK_Right])){
-                if(!keys[XK_l]){
-                    if(keys[XK_Left]){
+    if (play2.control && !(play2.hbar.width <= 0)) {
+        if (!play2.block) {
+            if (!(keys[XK_Left] && keys[XK_Right])) {
+                if (!keys[XK_l]) {
+                    if (keys[XK_Left]) {
                         play2.pos[0] -= stepVel;
-                        if(play2.walkClk)
+                        if (play2.walkClk)
                             play2.beginWalk = clock();
                         play2.walk = true;
                     }
-
-                    if(keys[XK_Right]){
+                    if (keys[XK_Right]) {
                         play2.pos[0] += stepVel;
-                        if(play2.walkClk)
+                        if (play2.walkClk)
                             play2.beginWalk = clock();
                         play2.walk = true;
                     }
                 }
             }
 
-            if(keys[XK_Left] == 0 && keys[XK_Right] == 0){
+            if (keys[XK_Left] == 0 && keys[XK_Right] == 0) {
                 play2.walkClk = true;
                 play2.draw = true;
                 play2.walk = false;
             } 
 
-            if(keys[XK_Left] && keys[XK_Right] && !play2.finPunch &&
-                                !play2.walk){
+            if (keys[XK_Left] && keys[XK_Right] && !play2.finPunch &&
+                                !play2.walk) {
                 play2.draw = true;
             }      
 
@@ -581,22 +577,18 @@ void physics(void)
                 play2.punchClk = true;
         }
 
-        if(!play2.punch && !play2.walk){
-
-            if(keys[XK_k] == 1){
-
-                if(play2.blockClk)
+        if (!play2.punch && !play2.walk) {
+            if (keys[XK_k] == 1) {
+                if (play2.blockClk)
                     play2.beginBlock = clock();
                 play2.block = true;
             }
 
-            if(keys[XK_k] == 0){
-
+            if (keys[XK_k] == 0) {
                 play2.blockClk = true;
                 play2.block = false;
             }
         }
-
     }
 
     /*END CHECK KEYS*/
@@ -639,13 +631,11 @@ void physics(void)
         }
     }
     //Update position
-    while(play1.pos[0] >= play2.pos[0])
-    {
+    while (play1.pos[0] >= play2.pos[0]) {
         play1.pos[0]-= 2;
         play2.pos[0]+= 2;
     }
-    if(play1.pos[0]>(30 + play2.pos[0]))
-    {
+    if (play1.pos[0]>(30 + play2.pos[0])) {
         play1.pos[0] += play1.vel[0];
         play2.pos[0] += play2.vel[0];
     }
@@ -653,22 +643,20 @@ void physics(void)
     play1.vel[0] = 0;
     play2.vel[0] = 0;
 
-    while(play1.pos[0] - play1.width  < 0){
+    while (play1.pos[0] - play1.width  < 0) {
         play1.pos[0] += 2;
     }
 
-    while(play2.pos[0] + play2.width > xres) {
-        play2.pos[0] -= 2;
+    while (play2.pos[0] + play2.width > xres) {
+		play2.pos[0] -= 2;
     }
 
     //Update position
-    while(play1.pos[0]+play1.width>=play2.pos[0]+play2.width)
-    {
+    while(play1.pos[0]+play1.width>=play2.pos[0]+play2.width) {
         play1.pos[0]-= 2;
         play2.pos[0]+= 2;
     }
-    if(play1.pos[0]<(30+play2.pos[0]))
-    {
+    if (play1.pos[0]<(30+play2.pos[0])) {
         play1.pos[0] += play1.vel[0];
         play2.pos[0] += play2.vel[0];
     }
@@ -700,20 +688,20 @@ void drawBox(Flt width, Flt height, int x)
     int w = width, h = height;
 
     /*x= 1 or 3 - Bind player1 and player2 textures*/
-    if(x == 1)
+    if (x == 1)
     {
         glEnable(GL_TEXTURE_2D);
 
-        if(player1guile == true && player1bguile == false && player1red == false && player1joker == false){
+        if (player1guile == true && player1bguile == false && player1red == false && player1joker == false) {
             glBindTexture(GL_TEXTURE_2D, play1guiletext);
         }
-        else if(player1guile == false && player1bguile == true && player1red == false && player1joker == false){
+        else if (player1guile == false && player1bguile == true && player1red == false && player1joker == false) {
             glBindTexture(GL_TEXTURE_2D, play1bguiletext);
         }
-        else if(player1guile == false && player1bguile == false && player1red == true && player1joker == false){
+        else if (player1guile == false && player1bguile == false && player1red == true && player1joker == false) {
             glBindTexture(GL_TEXTURE_2D, play1redtext);
         }
-        else if(player1guile == false && player1bguile == false && player1red == false && player1joker == true){
+        else if (player1guile == false && player1bguile == false && player1red == false && player1joker == true) {
             glBindTexture(GL_TEXTURE_2D, play1jokertext);
         }
 
@@ -721,20 +709,19 @@ void drawBox(Flt width, Flt height, int x)
         glAlphaFunc(GL_GREATER,0.1f);
         glColor4ub(255,255,255,255);
     }
-    if(x == 3)
-    {
+    if (x == 3) {
         glEnable(GL_TEXTURE_2D);
 
-        if(player2guile==true && player2bguile==false && player2red==false && player2joker==false){
+        if(player2guile==true && player2bguile==false && player2red==false && player2joker==false) {
             glBindTexture(GL_TEXTURE_2D, play2guiletext);
         }
-        else if(player2guile==false && player2bguile==true && player2red==false && player2joker==false){
+        else if(player2guile==false && player2bguile==true && player2red==false && player2joker==false) {
             glBindTexture(GL_TEXTURE_2D, play2bguiletext);
         }
-        else if(player2guile==false && player2bguile==false && player2red==true && player2joker==false){
+        else if(player2guile==false && player2bguile==false && player2red==true && player2joker==false) {
             glBindTexture(GL_TEXTURE_2D, play2redtext);
         }
-        else if(player2guile==false && player2bguile==false && player2red==false && player2joker==true){
+        else if(player2guile==false && player2bguile==false && player2red==false && player2joker==true) {
             glBindTexture(GL_TEXTURE_2D, play2jokertext);
         }
 
@@ -744,30 +731,26 @@ void drawBox(Flt width, Flt height, int x)
     }
 
     /*x=0, bind metal texture for healthbar*/
-    if(x==0)
+    if (x == 0)
         glBindTexture(GL_TEXTURE_2D, metalTexture);
-    if(x==4)
+    if (x == 4)
         glBindTexture(GL_TEXTURE_2D, metal2Texture);
 
-
     /*If x=2, Draw red bars - No texture*/
-    if(x==2)
+    if (x == 2)
         glDisable(GL_TEXTURE_2D);
-
 
     glBegin(GL_QUADS);
 
     /*Draw player1/player2 with texture*/
-    if(x==1 || x==3)
-    {
+    if (x == 1 || x == 3) {
         glTexCoord2f(0.0f, 1.0f/3.0f); glVertex2i(-w, -h);
         glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
         glTexCoord2f(0.1f, 0.0f); glVertex2i(w, h);
         glTexCoord2f(0.1f, 1.0f/3.0f); glVertex2i(w, -h);    
     }
     /*Draw regular full size of texture*/
-    if(x==0 || x==4)
-    {
+    if (x == 0 || x == 4) {
         glTexCoord2f(0.0f, 1.0f); glVertex2i(-w, -h);
         glTexCoord2f(0.0f, 0.0f); glVertex2i(-w, h);
         glTexCoord2f(1.0f, 0.0f); glVertex2i(w, h);
@@ -775,8 +758,7 @@ void drawBox(Flt width, Flt height, int x)
     }
 
     /*Draw non-textured rectangle*/
-    else
-    {
+    else {
         glVertex2i(-w, -h);
         glVertex2i(-w, h);
         glVertex2i(w, h);
@@ -793,7 +775,7 @@ void render(void)
     glColor3f(1.0, 1.0, 1.0);
 
     glEnable(GL_TEXTURE_2D);
-    if(forestback==true && streetback==false){
+    if (forestback == true && streetback == false) {
         if (forest) {
             glBindTexture(GL_TEXTURE_2D, forestTexture);
             glBegin(GL_QUADS);
@@ -804,7 +786,7 @@ void render(void)
             glEnd();
         }
     }
-    else if(forestback==false && streetback==true){
+    else if (forestback == false && streetback == true) {
         if (street) {
             glBindTexture(GL_TEXTURE_2D, streetTexture);
             glBegin(GL_QUADS);
@@ -894,77 +876,69 @@ void render(void)
     }
     /*****************Player 1 punch and hit******************/
 
-    if((play1.punch && !play1.punchHit) || play1.finPunch)
-    {
-        if(play1.punchClk)
-        {
+    if ((play1.punch && !play1.punchHit) || play1.finPunch) {
+        if(play1.punchClk) {
             play1.beginPunch = clock();
-
         }
         play1.control = false;
         play1.draw = false;
         animatePlayerOne(play1.width,play1.height);
     }
 
-    if(!play1.punch && play1.punchHit){
-        if(!play2.block){
+    if (!play1.punch && play1.punchHit) {
+        if (!play2.block) {
             play2.pos[0] += 100;
             play2.hbar.pos[0] += punchDamage;
             play2.hbar.width -= punchDamage;
+        } else {
+            play2.pos[0] += 10;
+            play2.hbar.pos[0] += punchDamage*0.2;
+            play2.hbar.width -= punchDamage*0.2;
         }
-        else{
-            play2.pos[0]+=10;
-            play2.hbar.pos[0]+=punchDamage*0.2;
-            play2.hbar.width-=punchDamage*0.2;
-        }
-        int punchn=(rand()%3)+2;
+        int punchn = (rand()%3) + 2;
         soundeffects(punchn);
         play1.punchHit = false;
     }
 
-    if(play1.walk && play1.control && !play1.block){
+    if (play1.walk && play1.control && !play1.block) {
         animatePlayerOneWalk(play1.width, play1.height);
     }
 
-    if(play1.block){
+    if (play1.block) {
         animatePlayerOneBlock(play1.width, play1.height);
     }
 
-    if(play2.block){
+    if (play2.block) {
         animatePlayerTwoBlock(play2.width, play2.height);
     }
 
-    if(play2.walk && play2.control){
+    if (play2.walk && play2.control) {
         animatePlayerTwoWalk(play2.width, play2.height);
     }
 
     /*****************Player 2 punch and hit******************/
-    if((play2.punch && !play2.punchHit) || play2.finPunch)
-    {
-        if(play2.punchClk)
-        {
+    if ((play2.punch && !play2.punchHit) || play2.finPunch) {
+        if (play2.punchClk) {
             play2.beginPunch = clock();
-
         }
         play2.control = false;
         play2.draw = false;
         animatePlayerTwo(play2.width,play2.height);
     }
 
-    if(!play2.punch && play2.punchHit){
-        if(!play1.block){
+    if (!play2.punch && play2.punchHit) {
+        if (!play1.block) {
             play1.pos[0] -= 100;
             play1.hbar.pos[0] -= punchDamage;
             play1.hbar.width -= punchDamage;
+        } else {
+            play1.pos[0] -= 10;
+            play1.hbar.pos[0] -= punchDamage * 0.2;
+            play1.hbar.width -= punchDamage * 0.2;
         }
-        else{
-            play1.pos[0]-=10;
-            play1.hbar.pos[0]-=punchDamage*0.2;
-            play1.hbar.width-=punchDamage*0.2;
-        }
-        int punchn=(rand()%3)+2;
+        int punchn = (rand()%3) + 2;
 
-        play_sounds=0;
+        play_sounds = 0;
         soundeffects(punchn);
         play2.punchHit = false;
     }
@@ -1028,16 +1002,16 @@ void render(void)
     glEnable(GL_TEXTURE_2D);
     r.bot = yres - 20;
     r.center = 5;
-    r.left = play1.hbar.posOut[0]-180;
-    r.bot  = play1.hbar.posOut[1]-10;
+    r.left = play1.hbar.posOut[0] - 180;
+    r.bot  = play1.hbar.posOut[1] - 10;
     ggprint16(&r, 20, 0x00ffff00, play1.name);
 
-    r.left = play2.hbar.posOut[0]+180;
-    r.bot  = play2.hbar.posOut[1]-10;
+    r.left = play2.hbar.posOut[0] + 180;
+    r.bot  = play2.hbar.posOut[1] - 10;
     ggprint16(&r, 20, 0x00ffff00, play2.name);
 
 	r.left = xres/2;
-    r.bot  = play2.hbar.posOut[1]-10;
+    r.bot  = play2.hbar.posOut[1] - 10;
     ggprint16(&r, 20, 0x00ffff00, "Press P to Pause");
 }
 

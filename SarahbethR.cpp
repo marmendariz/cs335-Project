@@ -769,7 +769,7 @@ void animate_ReadySetGo()
 	}
 
 	if (timeSpan2 >= 0.320) {
-		inc = 640;
+		inc = 0;
 		readyPrompt = false;
 		readyPromptClk = true;
 		play1.control = true;
